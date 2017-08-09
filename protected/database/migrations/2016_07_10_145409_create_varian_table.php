@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+
+class CreateVarianTable extends Migration {
+
+	public function up()
+	{
+		Schema::create('varian', function(Blueprint $table) {
+			$table->increments('id');
+			$table->integer('taxonomi_id');
+			$table->enum('kode', array('DB', 'KR', 'OT'));
+			$table->string('nama', 255);
+			$table->enum('type', array('item', 'bon', 'setor'));
+			$table->float('harga_satuan');
+			$table->timestamps();
+			$table->softDeletes();
+		});
+	}
+
+	public function down()
+	{
+		Schema::drop('varian');
+	}
+}
