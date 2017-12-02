@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Ubah Pegawai
+    Tambah Hutang
 @endsection
 
 @section('contentheader_title')
-    Ubah Pegawai
+    Tambah Hutang
 @endsection
 
 @section('main-content')
@@ -30,9 +30,10 @@
                 </div>
             @endif
         </div>
-        <form role="form" method="post" action="{{ route('employee.update', $data->id) }}">
+
+        <form role="form" method="post" action="{{ route('cicilan.store') }}">
             {!! csrf_field() !!}
-            {!! method_field('put') !!}
+            <input type="hidden" name="employee" value="{{ $employee->id }}">
             <div class="col-md-6">
                 <!-- general form elements disabled -->
                 <div class="box box-warning">
@@ -40,42 +41,34 @@
                         <div class="alert alert-info alert-dismissable" style="margin-top: 20px">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                             <h4><i class="icon fa fa-info"></i> Catatan!</h4>
-                            Nomor handphone hanya menggunakan angka dan jangan ada spasi.<br>
-                            contoh: 085234149966
+                            Harga tidak menggunakan titik atau koma.<br>
+                            contoh : 10000
                         </div>
                     </div><!-- /.box-header -->
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="nama">Nama</label>
-                            <input type="text" id="nama" name="nama" class="form-control" value="{{ $data->nama or old('nama') }}">
+                            <label>Nama Karyawan</label>
+                            <input type="text" class="form-control" value="{{ $employee->nama }}" disabled>
                         </div>
                         <div class="form-group">
-                            <label for="alamat">Alamat</label>
-                            <input type="text" id="alamat" name="alamat" class="form-control" value="{{ $data->alamat or old('alamat') }}">
+                            <label>Golongan</label>
+                            <input type="text" class="form-control"
+                                   value="{{ ucfirst($employee->golongan) }}" disabled>
                         </div>
                         <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input type="text" id="phone" name="phone" class="form-control" value="{{ $data->phone or old('phone') }}">
+                            <label for="nama">Rincian Hutang</label>
+                            <input type="text" id="nama" name="nama" class="form-control"
+                                   value="{{ old('nama') }}">
                         </div>
                         <div class="form-group">
-                            <label for="golongan">Golongan</label>
-                            <select class="form-control" name="golongan" id="golongan">
-                                <option hidden>Pilih golongan</option>
-                                <option value="bulanan" {{ $data->golongan == 'bulanan' ? 'selected':'' }}>Bulanan</option>
-                                <option value="mingguan" {{ $data->golongan == 'mingguan' ? 'selected':'' }}>Mingguan</option>
-                            </select>
+                            <label for="harga">Harga</label>
+                            <input type="text" id="harga" name="harga" class="form-control"
+                                   value="{{ old('harga') }}">
                         </div>
                         <div class="form-group">
-                            <label for="trx_type">Tipe Setor/Bon</label>
-                            <select class="form-control" name="trx_type" id="trx_type">
-                                <option hidden>Pilih Setor/Bon</option>
-                                <option value="setor" {{ $employee_log->type == 'setor' ? 'selected':'' }}>Setor</option>
-                                <option value="bon" {{ $employee_log->type == 'bon' ? 'selected':'' }}>Bon</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="total_trx">Total</label>
-                            <input type="text" id="total_trx" name="total_trx" class="form-control" value="{{ $employee_log->amount or old('total_trx') }}">
+                            <label for="angsuran">Jumlah Angsuran</label>
+                            <input type="int" id="angsuran" name="angsuran" class="form-control"
+                                   value="{{ old('angsuran') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

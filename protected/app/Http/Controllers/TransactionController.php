@@ -72,7 +72,7 @@ class TransactionController extends Controller
 
         //SELECT * FROM your_table WHERE YEARWEEK(`date`, 1) = YEARWEEK(CURDATE(), 1)
 
-        $data = Report::where('employee_id', $employee->id)
+        $data = Report::with(['detail.varian'])->where('employee_id', $employee->id)
             ->bon()
             ->orderBy('date_at', 'desc')
             ->get()->first();
@@ -158,11 +158,11 @@ class TransactionController extends Controller
 
         if ($data_bon instanceof Report) {
             $data_bon = $data_bon->detail()->with(['varian', 'varian.taxonomi'])->get()->toJson();
+            $delete_bon->detail()->forceDelete();
         } else {
             $data_bon = json_encode([]);
         }
-
-        $delete_bon->detail()->forceDelete();
+        
         Report::where('employee_id', $employee->id)->forceDelete();
 
         ReportGlobal::create([
@@ -390,16 +390,28 @@ class TransactionController extends Controller
             ->withInput();
     }
 
-    public function rollBack(Request $request)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function destroy(Request $request)
     {
-        $data = ReportGlobal::where('employee_id', $request->id)
-            ->orderBy('created_at', 'desc')
-            ->get()->first();
-
-        if (!$data instanceof ReportGlobal) {
-            abort('404');
+        if ($request->has('setor')) {
+            $data = Report::find($request->id);
+            if (!$data instanceof Report) {
+                return redirect()->back()->with("error", "Id not found")->withInput();
+            }
+        } else {
+            $data = ReportDetail::find($request->id);
+            if (!$data instanceof ReportDetail) {
+                return redirect()->back()->with("error", "Id not found")->withInput();
+            }
         }
+        
+        $data->delete();
 
-
+        return redirect()->back()->with("success", "Sukses menghapus data")->withInput();
     }
 }

@@ -50,9 +50,12 @@
                                 <td>{{ number_format($key->sub_total, 0, ',', '.') }}</td>
                                 <td>
                                     <a href="{{ route('transaction.bon.edit', ['id' => $key->id]) }}"
-                                       class="btn btn-xs btn-primary" title="Setor">
+                                       class="btn btn-xs btn-primary" title="Edit">
                                         <i class="fa fa-edit"></i> Edit
                                     </a>
+                                    <button type="button" class="btn btn-danger btn-xs btn-delete" data-href="{{ route('transaction.bon.delete', ['id' => $key->id]) }}">
+                                        <i class="fa fa-trash"></i> Hapus
+                                    </button>
                                 </td>
                             </tr>
                         @empty
@@ -143,5 +146,30 @@
                 </div>
             </div>
         </form>
+    </div>
+    <div class="example-modal">
+        <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="" method="post" id="deleteForm">
+                        {{ csrf_field() }}
+                        {{-- {{ method_field('DELETE') }} --}}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <h4 class="modal-title">Delete Data</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure want to delete this data?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-infp pull-left" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </div>
 @endsection

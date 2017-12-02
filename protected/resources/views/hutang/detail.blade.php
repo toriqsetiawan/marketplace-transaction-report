@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Detail Print
+    Daftar Cicilan
 @stop
 
 @section('contentheader_title')
-    Detail Print - {{ $employee->nama }}
+    Daftar Cicilan - {{ $employee->nama }}
 @stop
 
 @section('main-content')
@@ -26,28 +26,39 @@
                 </div>
             @endif
             <div class="box">
+                <div class="box-header">
+                    <a href="{{ route('cicilan.create').'?employee='.$employee->id }}" class="btn btn-primary">
+                        <i class="fa fa-plus-circle"></i> Tambah Hutang
+                    </a>
+                </div>
                 <div class="box-body table-responsive no-padding">
                     <table class="table table-hover">
                         <table class="table table-hover">
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
-                                <th>Tunai</th>
-                                <th>Giro</th>
-                                <th>Tanggal Rekap</th>
+                                <th>Jenis Hutang</th>
+                                <th>Status</th>
+                                <th>Jumlah Hutang</th>
+                                <th>Tanggal</th>
                                 <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
                                     <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
                                     <td>{{ $key->employee->nama }}</td>
-                                    <td>{{ number_format($key->tunai, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->giro, 0, ',', '.') }}</td>
+                                    <td>{{ $key->nama }}</td>
+                                    <td>{{ $key->status }}</td>
+                                    <td>{{ number_format($key->harga, 0, ',', '.') }}</td>
                                     <td>{{ dateIndonesia(strtotime($key->created_at)) }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary btn-xs btn-delete"
-                                                data-href="{{ route('print.edit', $key->id) }}">
-                                            <i class="fa fa-print"></i> Cetak
+                                        <a type="button" class="btn btn-primary btn-xs"
+                                                href="{{ route('cicilan.edit', $key->id) }}">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                        <button type="button" class="btn btn-info btn-xs btn-delete"
+                                                data-href="{{ url('cicilan/print').'?id='.$key->id }}">
+                                            <i class="fa fa-table"></i> Detail
                                         </button>
                                     </td>
                                 </tr>
@@ -81,28 +92,18 @@
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span></button>
-                            <h4 class="modal-title">Cetak Data</h4>
+                            <h4 class="modal-title">Detail Pembayaran</h4>
                         </div>
                         <div class="modal-body">
-                            <p>Silahkan tentukan enter untuk merapikan hasil cetakan.</p>
-                            <div class="form-group">
-                                <label for="phone">Enter Setor ke Bon</label>
-                                <select name="first_enter" class="form-control">
-                                    <option value="no">Tidak</option>
-                                    <option value="yes">Ya</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">Enter Bon ke Detail</label>
-                                <select name="second_enter" class="form-control">
-                                    <option value="no">Tidak</option>
-                                    <option value="yes">Ya</option>
-                                </select>
-                            </div>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-infp pull-left" data-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Cetak</button>
+                            <button type="button" class="btn btn-infp pull-left" data-dismiss="modal">Kembali</button>
                         </div>
                     </form>
                 </div><!-- /.modal-content -->

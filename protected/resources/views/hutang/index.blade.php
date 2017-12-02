@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Cetak Laporan
+    Manajemen Cicilan
 @stop
 
 @section('contentheader_title')
-    Cetak Laporan
+    Manajemen Cicilan
 @stop
 
 @section('main-content')
@@ -27,13 +27,13 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('print.index', 'type=all') }}" class="btn btn-info">
+                    <a href="{{ route('transaction.index', 'type=all') }}" class="btn btn-info">
                         <i class="fa fa-search"></i> Semua
                     </a>
-                    <a href="{{ route('print.index', 'type=bulanan') }}" class="btn btn-success">
+                    <a href="{{ route('transaction.index', 'type=bulanan') }}" class="btn btn-success">
                         <i class="fa fa-search"></i> Bulanan
                     </a>
-                    <a href="{{ route('print.index', 'type=mingguan') }}" class="btn btn-warning">
+                    <a href="{{ route('transaction.index', 'type=mingguan') }}" class="btn btn-warning">
                         <i class="fa fa-search"></i> Mingguan
                     </a>
                     <div class="box-tools">
@@ -55,8 +55,6 @@
                                 <th>No</th>
                                 <th>Nama</th>
                                 <th>Golongan</th>
-                                <th>Setor</th>
-                                <th>Bon</th>
                                 <th>Updated</th>
                                 <th>Action</th>
                             </tr>
@@ -65,17 +63,12 @@
                                     <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
                                     <td>{{ $key->nama }}</td>
                                     <td>{{ ucfirst($key->golongan) }}</td>
-                                    <td>{{ number_format($key->report->sum('total'), 0, ',', '.') }}</td>
-                                    <td>{{ is_null($key->bon) ? '0' : number_format($key->bon->detail->sum('sub_total'), 0, ',', '.') }}</td>
                                     <td>{{ $key->updated_at }}</td>
                                     <td>
-                                        <a href="{{ route('print.show', $key->id) }}"
-                                           class="btn btn-xs btn-info" title="Detail">
-                                            <i class="fa fa-bar-chart-o"></i> Detail
+                                        <a href="{{ route('cicilan.show', ['id' => $key->id]) }}"
+                                           class="btn btn-xs btn-info" title="Cicilan">
+                                            <i class="fa fa-table"></i> Cicilan
                                         </a>
-                                        <button type="button" class="btn btn-danger btn-xs btn-delete" data-href="{{ route('transaction.recovery', ['id' => $key->id]) }}">
-                                            <i class="fa fa-trash"></i> Recovery
-                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -98,30 +91,5 @@
                 </div>
             </div><!-- /.box -->
         </div>
-    </div>
-    <div class="example-modal">
-        <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <form action="" method="post" id="deleteForm">
-                        {{ csrf_field() }}
-                        {{-- {{ method_field('DELETE') }} --}}
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                            <h4 class="modal-title">Recovery Data</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure want to recovery this data?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-infp pull-left" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-danger">Recovery</button>
-                        </div>
-                    </form>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
     </div>
 @stop

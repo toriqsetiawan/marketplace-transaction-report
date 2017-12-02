@@ -143,6 +143,9 @@
                 </tr>
             </table>
             <br>
+            @if($first_enter)
+            <div class="page-break"></div>
+            @endif
             <table cellpadding="0" cellspacing="0">
                 <tr class="heading">
                     <td style="width: 2%">
@@ -240,7 +243,9 @@
             @php
                 $i = 0;
             @endphp
-            {{-- <div class="page-break"></div> --}}
+            @if($second_enter)
+            <div class="page-break"></div>
+            @endif
             <table cellpadding="0" cellspacing="0">
                 <tr class="heading">
                     <td style="width: 15px">

@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Entities\Employee;
+use App\Entities\EmployeeLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -53,9 +54,9 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required',
-            'phone' => 'required|numeric',
+            'nama'     => 'required|string|max:255',
+            'alamat'   => 'required',
+            'phone'    => 'required|numeric',
             'golongan' => 'required|in:bulanan,mingguan',
         ]);
 
@@ -63,7 +64,13 @@ class EmployeeController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        Employee::create($request->all());
+        $employee = Employee::create($request->all());
+        EmployeeLog::create([
+            'employee_id' => $employee->id,
+            'type'        => 'setor',
+            'amount'      => 0,
+            'correction'  => 0,
+        ]);
 
         return redirect()->back()->with("success", "Sukses menambah data")->withInput();
     }
@@ -87,9 +94,12 @@ class EmployeeController extends Controller
      */
     public function edit($id)
     {
-        $employee = Employee::find($id);
+        $employee     = Employee::find($id);
+        $employee_log = EmployeeLog::where('employee_id', $employee->id)->get()->first();
 
-        return view('pegawai.update')->with('data', $employee);
+        return view('pegawai.update')
+            ->with('data', $employee)
+            ->with('employee_log', $employee_log);
     }
 
     /**
@@ -101,10 +111,12 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required',
-            'phone' => 'required|numeric',
-            'golongan' => 'required|in:bulanan,mingguan',
+            'nama'      => 'required|string|max:255',
+            'alamat'    => 'required',
+            'phone'     => 'required|numeric',
+            'golongan'  => 'required|in:bulanan,mingguan',
+            'total_trx' => 'numeric|min:0',
+            'trx_type'  => 'in:setor,bon',
         ]);
 
         if ($validator->fails()) {
@@ -113,11 +125,18 @@ class EmployeeController extends Controller
 
         $employee = Employee::find($id);
 
-        $employee->nama = $request->nama;
-        $employee->alamat = $request->alamat;
-        $employee->phone = $request->phone;
+        $employee->nama     = $request->nama;
+        $employee->alamat   = $request->alamat;
+        $employee->phone    = $request->phone;
         $employee->golongan = $request->golongan;
         $employee->save();
+
+        $log = EmployeeLog::where('employee_id', $employee->id)->get()->first();
+
+        $log->amount     = $request->total_trx;
+        $log->correction = $request->total_trx;
+        $log->type       = $request->trx_type;
+        $log->save();
 
         return redirect()->back()->with("success", "Sukses merubah data")->withInput();
     }
@@ -131,6 +150,7 @@ class EmployeeController extends Controller
     public function destroy($id)
     {
         $employee = Employee::find($id);
+        EmployeeLog::where('employee_id', $employee->id)->delete();
         $employee->delete();
 
         return redirect()->back()->with("success", "Sukses menghapus data")->withInput();

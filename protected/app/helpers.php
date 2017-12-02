@@ -6,7 +6,7 @@ if (!function_exists('activateWhenRoute')) {
 
         if (is_array($route_name)) {
             foreach ($route_name as $name) {
-                if (fnmatch($name, Route::current()->getName())) {
+                if (fnmatch($name, Route::currentRouteName())) {
 
                     if (empty($params)) {
                         return $cssClass;
@@ -22,7 +22,7 @@ if (!function_exists('activateWhenRoute')) {
             return '';
         }
 
-        if (fnmatch($route_name, Route::current()->getName())) {
+        if (fnmatch($route_name, Route::currentRouteName())) {
             if (empty($params)) {
                 return $cssClass;
             } else {
