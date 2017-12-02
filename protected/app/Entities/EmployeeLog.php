@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EmployeeLog extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -28,7 +28,7 @@ class EmployeeLog extends Model
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    // protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.

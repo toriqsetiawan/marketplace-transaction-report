@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ReportDetail extends Model
 {
 
-    use SoftDeletes;
+    // use SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -29,7 +29,7 @@ class ReportDetail extends Model
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    // protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
