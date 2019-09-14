@@ -27,13 +27,13 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('transaction.index', 'type=all') }}" class="btn btn-info">
+                    <a href="{{ route('cicilan.index', 'type=all') }}" class="btn btn-info">
                         <i class="fa fa-search"></i> Semua
                     </a>
-                    <a href="{{ route('transaction.index', 'type=bulanan') }}" class="btn btn-success">
+                    <a href="{{ route('cicilan.index', 'type=bulanan') }}" class="btn btn-success">
                         <i class="fa fa-search"></i> Bulanan
                     </a>
-                    <a href="{{ route('transaction.index', 'type=mingguan') }}" class="btn btn-warning">
+                    <a href="{{ route('cicilan.index', 'type=mingguan') }}" class="btn btn-warning">
                         <i class="fa fa-search"></i> Mingguan
                     </a>
                     <div class="box-tools">

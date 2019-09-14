@@ -10,7 +10,7 @@
 | and give it the controller to call when that URI is requested.
 |
  */
-Route::group(['domain' => env('WEB_DOMAIN', 'sonyjaya.toriqbagus.com')], function() {
+Route::group(['domain' => env('WEB_DOMAIN', 'sonyjaya.toriqbagus.com')], function () {
     Route::get('/', function () {
         return redirect('login');
     });
@@ -26,6 +26,10 @@ Route::group(['domain' => env('WEB_DOMAIN', 'sonyjaya.toriqbagus.com')], functio
         Route::post('transaction/recovery', [
             'as' => 'transaction.recovery',
             'uses' => 'PrintController@recovery',
+        ]);
+        Route::post('weekly-report', [
+            'as' => 'weekly-report.print',
+            'uses' => 'PrintController@weeklyReport',
         ]);
         Route::get('transaction', [
             'as' => 'transaction.index',
@@ -82,7 +86,7 @@ Route::group(['domain' => env('WEB_DOMAIN', 'sonyjaya.toriqbagus.com')], functio
     });
 });
 
-Route::group(['domain' => env('API_DOMAIN', 'api.toriqbagus.com')], function() {
+Route::group(['domain' => env('API_DOMAIN', 'api.toriqbagus.com')], function () {
     Route::get('/', function () {
         return view('welcome-api');
     });
@@ -90,4 +94,3 @@ Route::group(['domain' => env('API_DOMAIN', 'api.toriqbagus.com')], function() {
         return view('welcome-api');
     });
 });
-

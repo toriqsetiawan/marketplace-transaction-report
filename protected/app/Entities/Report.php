@@ -3,7 +3,6 @@
 namespace App\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Report extends Model
 {
@@ -60,6 +59,11 @@ class Report extends Model
     public function scopeSetor($query)
     {
         return $query->whereType('setor');
+    }
+
+    public function setTotalAttribute($value)
+    {
+        $this->attributes['total'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
 }

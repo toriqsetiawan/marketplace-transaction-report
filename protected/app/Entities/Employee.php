@@ -2,12 +2,24 @@
 
 namespace App\Entities;
 
+use App\Scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends Model
 {
     // use SoftDeletes;
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new ActiveScope);
+    }
 
     /**
      * The table associated with the model.
@@ -43,12 +55,17 @@ class Employee extends Model
      */
     public function report()
     {
-        return $this->hasMany('App\Entities\Report');
+        return $this->hasMany('App\Entities\Report')->where('type', 'setor');
     }
 
     public function bon()
     {
         return $this->hasOne('App\Entities\Report')->where('type', 'bon');
+    }
+
+    public function reportPrint()
+    {
+        return $this->hasOne('App\Entities\ReportGlobal');
     }
 
     public function log()

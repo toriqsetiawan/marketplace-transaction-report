@@ -3,7 +3,6 @@
 namespace App\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EmployeeLog extends Model
 {
@@ -44,6 +43,16 @@ class EmployeeLog extends Model
     public function employee()
     {
         return $this->belongsTo('App\Entities\Employee');
+    }
+
+    public function setAmountAttribute($value)
+    {
+        $this->attributes['amount'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+    }
+
+    public function setCorrectionAttribute($value)
+    {
+        $this->attributes['correction'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
 }

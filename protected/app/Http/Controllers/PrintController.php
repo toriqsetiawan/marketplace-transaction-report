@@ -3,37 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Entities\Employee;
+use App\Entities\EmployeeLog;
 use App\Entities\Report;
 use App\Entities\ReportDetail;
-use App\Entities\EmployeeLog;
 use App\Entities\ReportGlobal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PrintController extends Controller
 {
 
     public function index(Request $request)
     {
-        $data = Employee::orderBy('golongan')->paginate(10);
+        $data = Employee::with(['report', 'bon', 'bon.detail', 'reportPrint' => function ($q) {
+            $q->orderBy('created_at', 'desc');
+        }]);
 
         if ($request->has('type')) {
             if ($request->type == 'bulanan') {
-                $data = Employee::whereGolongan('bulanan')->orderBy('nama')->paginate(10);
+                $data = $data->whereGolongan('bulanan');
             } elseif ($request->type == 'mingguan') {
-                $data = Employee::whereGolongan('mingguan')->orderBy('nama')->paginate(10);
+                $data = $data->whereGolongan('mingguan');
             }
         } else {
             if ($request->has('search')) {
-                $data = Employee::with(['report', 'bon.detail'])
-                    ->where('nama', 'like', '%' . $request->search . '%')
-                    ->orderBy('nama')
-                    ->paginate(10);
-            } else {
-                $data = Employee::with(['report', 'bon.detail'])
-                    ->orderBy('nama')
-                    ->paginate(10);
+                $data = $data->where('nama', 'like', '%' . $request->search . '%');
             }
         }
+
+        $data = $data->orderBy('nama')->paginate(10);
 
         return view('print.index')->with('data', $data);
     }
@@ -85,7 +83,7 @@ class PrintController extends Controller
         $pdf = \PDF::loadView('print.invoice', $arrData)
             ->setPaper('a4', 'potrait');
 
-        return $pdf->stream('rekap-' . str_slug($report->employee->nama) . '-' . date('d-m-Y'). '.pdf'); 
+        return $pdf->stream('rekap-' . str_slug($report->employee->nama) . '-' . date('d-m-Y') . '.pdf');
         // download('rekap-' . date('d_m_Y.pdf'));
     }
 
@@ -138,7 +136,7 @@ class PrintController extends Controller
 
             ReportDetail::insert($bon);
         }
-        
+
         $log = EmployeeLog::where('employee_id', $request->id)->get()->first();
         $log->type = $trx_log['type'];
         $log->amount = $trx_log['amount'];
@@ -149,4 +147,38 @@ class PrintController extends Controller
 
         return redirect()->back()->with("success", "Sukses recovery data. Silahkan menuju menu Manajemen Transaksi untuk edit data.")->withInput();
     }
+
+    public function weeklyReport(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'tanggal_awal' => 'required|date',
+            'tanggal_akhir' => 'required|date',
+        ]);
+
+        if ($request->tanggal_awal > $request->tanggal_akhir) {
+            return redirect()->back()
+                ->withError(['error' => 'Tanggal awal tidak boleh melebihi tanggal akhir.'])
+                ->withInput();
+        }
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = Employee::with(['report', 'bon', 'log'])->orderBy('nama')->get();
+
+        $arrData = [
+            'data' => $data,
+            'startdate' => $request->tanggal_awal,
+            'enddate' => $request->tanggal_akhir,
+        ];
+
+        $pdf = \PDF::loadView('print.weekly', $arrData)
+            ->setPaper('a4', 'potrait');
+
+        return $pdf->stream('rekap-mingguan-' . date('d-m-Y') . '.pdf');
+        // download('rekap-' . date('d_m_Y.pdf'));
+
+    }
+
 }

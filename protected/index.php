@@ -66,20 +66,21 @@
     </head>
     <body>
         <div class="flex-center position-ref full-height">
-            
+            <div class="top-right links">
+                <a href="{{ url('/') }}">Home</a>
+            </div>
+
             <div class="content">
                 <div class="title m-b-md">
-                    404. That’s an error.
+                    Laravel
                 </div>
 
                 <div class="links">
-                    <p>
-                        The requested URL /{{ request()->path() }} was not found on this server.
-                    </p>
-
-                    <p>
-                        That’s all we know.
-                    </p>
+                    <a href="https://laravel.com/docs">Documentation</a>
+                    <a href="https://laracasts.com">Laracasts</a>
+                    <a href="https://laravel-news.com">News</a>
+                    <a href="https://forge.laravel.com">Forge</a>
+                    <a href="https://github.com/laravel/laravel">GitHub</a>
                 </div>
             </div>
         </div>

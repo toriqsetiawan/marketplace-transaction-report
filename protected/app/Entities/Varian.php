@@ -50,4 +50,9 @@ class Varian extends Model
     {
         $this->attributes['nama'] = ucwords($value);
     }
+
+    public function setHargaSatuanAttribute($value)
+    {
+        $this->attributes['harga_satuan'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+    }
 }

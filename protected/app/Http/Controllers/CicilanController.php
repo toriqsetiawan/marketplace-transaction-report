@@ -1,10 +1,9 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Entities\Employee;
 use App\Entities\Hutang;
-use App\Entities\Report;
-use App\Entities\ReportHutang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

@@ -50,7 +50,7 @@
                         </div>
                         <div class="form-group">
                             <label for="harga">Harga satuan</label>
-                            <input type="text" id="harga" name="harga_satuan" class="form-control" value="{{ $data->harga_satuan or old('harga_satuan') }}">
+                            <input type="text" id="harga" name="harga_satuan" class="form-control money" value="{{ $data->harga_satuan or old('harga_satuan') }}">
                         </div>
                         <div class="form-group">
                             <label for="satuan">Satuan</label>

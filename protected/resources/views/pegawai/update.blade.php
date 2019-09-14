@@ -74,8 +74,16 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label for="status">Aktif / Non-aktif</label>
+                            <select class="form-control" name="status" id="status">
+                                <option hidden>Pilih Setor/Bon</option>
+                                <option value="1" {{ $data->is_active == 1 ? 'selected':'' }}>Aktif</option>
+                                <option value="0" {{ $data->is_active == 0 ? 'selected':'' }}>Non-aktif</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="total_trx">Total</label>
-                            <input type="text" id="total_trx" name="total_trx" class="form-control" value="{{ $employee_log->amount or old('total_trx') }}">
+                            <input type="text" id="total_trx" name="total_trx" class="form-control money" value="{{ $employee_log->amount or old('total_trx') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

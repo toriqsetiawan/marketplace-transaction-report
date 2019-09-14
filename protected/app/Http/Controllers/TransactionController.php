@@ -129,9 +129,12 @@ class TransactionController extends Controller
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|exists:employee,id',
             'total_global' => 'required|numeric',
-            'tunai' => 'required|numeric',
-            'giro' => 'numeric',
+            'tunai' => 'required',
+            // 'giro' => 'nullable',
         ]);
+
+        $tunai = preg_replace("/[^\p{L}\p{N}\s]/u", "", $request->tunai);
+        $giro = preg_replace("/[^\p{L}\p{N}\s]/u", "", $request->giro);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -162,13 +165,13 @@ class TransactionController extends Controller
         } else {
             $data_bon = json_encode([]);
         }
-        
+
         Report::where('employee_id', $employee->id)->forceDelete();
 
         ReportGlobal::create([
             'employee_id' => $employee->id,
-            'tunai' => $request->tunai,
-            'giro' => $request->giro,
+            'tunai' => $tunai,
+            'giro' => $giro,
             'json_setor' => $data_setor,
             'json_bon' => $data_bon,
             'json_trx_log' => $data_last_trx,
@@ -176,7 +179,7 @@ class TransactionController extends Controller
 
         $log_type = 'bon';
 
-        $new_total_global = $request->total_global - ($request->tunai + $request->giro);
+        $new_total_global = $request->total_global - ($tunai + $giro);
 
         if ($new_total_global >= 0) {
             $log_type = 'setor';
@@ -207,7 +210,7 @@ class TransactionController extends Controller
             'employee_id' => 'required|exists:employee,id',
             'type' => 'required|in:setor,bon',
             'count' => 'required|min:1|max:31',
-            'total' => 'required|numeric',
+            'total' => 'required',
             'kodi' => 'required|numeric',
             'date_at' => 'required|date',
         ]);
@@ -409,7 +412,7 @@ class TransactionController extends Controller
                 return redirect()->back()->with("error", "Id not found")->withInput();
             }
         }
-        
+
         $data->delete();
 
         return redirect()->back()->with("success", "Sukses menghapus data")->withInput();

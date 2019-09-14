@@ -9,6 +9,8 @@
 <!-- AdminLTE App -->
 <script src="{{ asset('js/app.min.js') }}" type="text/javascript"></script>
 
+<script src="{{ asset('js/jquery.mask.min.js') }}" type="text/javascript"></script>
+
 <script type="text/javascript">
     $(document).ready(function() {
         //Initialize Select2 Elements
@@ -19,5 +21,15 @@
             $('#deleteForm').attr('action', $(this).data('href'));
         });
 
+        $('.btn-print').click(function() {
+            $('#myModalPrint').modal('show');
+            $('#printForm').attr('action', $(this).data('href'));
+        });
+
+        $('.money').mask('000.000.000.000.000,-', {reverse: true});
+
+        $('#weekly_report').click(function() {
+            $('#modalWeekly').modal('show');
+        });
     });
 </script>

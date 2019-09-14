@@ -69,6 +69,11 @@
                                     <td>{{ is_null($key->bon) ? '0' : number_format($key->bon->detail->sum('sub_total'), 0, ',', '.') }}</td>
                                     <td>{{ $key->updated_at }}</td>
                                     <td>
+                                        @if($key->reportPrint)
+                                        <button type="button" class="btn btn-primary btn-xs btn-print" data-href="{{ route('print.edit', $key->reportPrint->id) }}">
+                                            <i class="fa fa-print"></i> Cetak
+                                        </button>
+                                        @endif
                                         <a href="{{ route('print.show', $key->id) }}"
                                            class="btn btn-xs btn-info" title="Detail">
                                             <i class="fa fa-bar-chart-o"></i> Detail
@@ -118,6 +123,43 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-infp pull-left" data-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-danger">Recovery</button>
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+    <div class="example-modal">
+        <div class="modal" id="myModalPrint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="" method="get" id="printForm">
+                        {{ csrf_field() }}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span></button>
+                            <h4 class="modal-title">Cetak Data</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Silahkan tentukan enter untuk merapikan hasil cetakan.</p>
+                            <div class="form-group">
+                                <label for="phone">Enter Setor ke Bon</label>
+                                <select name="first_enter" class="form-control">
+                                    <option value="no">Tidak</option>
+                                    <option value="yes">Ya</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Enter Bon ke Detail</label>
+                                <select name="second_enter" class="form-control">
+                                    <option value="no">Tidak</option>
+                                    <option value="yes">Ya</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-infp pull-left" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Cetak</button>
                         </div>
                     </form>
                 </div><!-- /.modal-content -->

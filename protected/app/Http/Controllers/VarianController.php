@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Entities\Taxonomi;
 use App\Entities\Varian;
@@ -47,7 +49,7 @@ class VarianController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'harga_satuan' => 'required|numeric',
+            'harga_satuan' => 'required',
             'taxonomi_id' => 'required|exists:taxonomy,id',
         ]);
 
@@ -95,7 +97,7 @@ class VarianController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'harga_satuan' => 'required|numeric',
+            'harga_satuan' => 'required',
             'taxonomi_id' => 'required|exists:taxonomy,id',
         ]);
 

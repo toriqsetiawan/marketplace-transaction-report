@@ -123,7 +123,7 @@
                         </div>
                         <div class="form-group">
                             <label for="total">Total</label>
-                            <input type="text" id="total" name="total" class="form-control"
+                            <input type="text" id="total" name="total" class="form-control money"
                                    value="{{ old('harga_satuan') }}">
                         </div>
                         <div class="form-group">

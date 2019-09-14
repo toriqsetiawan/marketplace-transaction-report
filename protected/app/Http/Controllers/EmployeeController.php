@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Entities\Employee;
 use App\Entities\EmployeeLog;
@@ -15,21 +17,23 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Employee::orderBy('nama')->paginate(10);
+        $data = Employee::withoutGlobalScopes()->orderBy('nama')->paginate(10);
 
         if ($request->has('type')) {
             if ($request->type == 'bulanan') {
-                $data = Employee::whereGolongan('bulanan')->orderBy('nama')->paginate(10);
+                $data = Employee::withoutGlobalScopes()->whereGolongan('bulanan')
+                    ->orderBy('nama')->paginate(10);
             } elseif ($request->type == 'mingguan') {
-                $data = Employee::whereGolongan('mingguan')->orderBy('nama')->paginate(10);
+                $data = Employee::withoutGlobalScopes()->whereGolongan('mingguan')
+                    ->orderBy('nama')->paginate(10);
             }
         } else {
             if ($request->has('search')) {
-                $data = Employee::where('nama', 'like', '%' . $request->search . '%')
+                $data = Employee::withoutGlobalScopes()->where('nama', 'like', '%' . $request->search . '%')
                     ->orderBy('nama')
                     ->paginate(10);
             } else {
-                $data = Employee::orderBy('nama')->paginate(10);
+                $data = Employee::withoutGlobalScopes()->orderBy('nama')->paginate(10);
             }
         }
 
@@ -54,9 +58,9 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama'     => 'required|string|max:255',
-            'alamat'   => 'required',
-            'phone'    => 'required|numeric',
+            'nama' => 'required|string|max:255',
+            'alamat' => 'required',
+            'phone' => 'required|numeric',
             'golongan' => 'required|in:bulanan,mingguan',
         ]);
 
@@ -67,9 +71,9 @@ class EmployeeController extends Controller
         $employee = Employee::create($request->all());
         EmployeeLog::create([
             'employee_id' => $employee->id,
-            'type'        => 'setor',
-            'amount'      => 0,
-            'correction'  => 0,
+            'type' => 'setor',
+            'amount' => 0,
+            'correction' => 0,
         ]);
 
         return redirect()->back()->with("success", "Sukses menambah data")->withInput();
@@ -94,7 +98,7 @@ class EmployeeController extends Controller
      */
     public function edit($id)
     {
-        $employee     = Employee::find($id);
+        $employee = Employee::withoutGlobalScopes()->find($id);
         $employee_log = EmployeeLog::where('employee_id', $employee->id)->get()->first();
 
         return view('pegawai.update')
@@ -111,31 +115,33 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'nama'      => 'required|string|max:255',
-            'alamat'    => 'required',
-            'phone'     => 'required|numeric',
-            'golongan'  => 'required|in:bulanan,mingguan',
-            'total_trx' => 'numeric|min:0',
-            'trx_type'  => 'in:setor,bon',
+            'nama' => 'required|string|max:255',
+            'alamat' => 'required',
+            'phone' => 'required|numeric',
+            'golongan' => 'required|in:bulanan,mingguan',
+            'total_trx' => 'required|min:0',
+            'trx_type' => 'in:setor,bon',
+            'status' => 'in:1,0',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $employee = Employee::find($id);
+        $employee = Employee::withoutGlobalScopes()->find($id);
 
-        $employee->nama     = $request->nama;
-        $employee->alamat   = $request->alamat;
-        $employee->phone    = $request->phone;
+        $employee->nama = $request->nama;
+        $employee->alamat = $request->alamat;
+        $employee->phone = $request->phone;
         $employee->golongan = $request->golongan;
+        $employee->is_active = $request->status ? 1 : 0;
         $employee->save();
 
         $log = EmployeeLog::where('employee_id', $employee->id)->get()->first();
 
-        $log->amount     = $request->total_trx;
+        $log->amount = $request->total_trx;
         $log->correction = $request->total_trx;
-        $log->type       = $request->trx_type;
+        $log->type = $request->trx_type;
         $log->save();
 
         return redirect()->back()->with("success", "Sukses merubah data")->withInput();
@@ -149,7 +155,7 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
-        $employee = Employee::find($id);
+        $employee = Employee::withoutGlobalScopes()->find($id);
         EmployeeLog::where('employee_id', $employee->id)->delete();
         $employee->delete();
 

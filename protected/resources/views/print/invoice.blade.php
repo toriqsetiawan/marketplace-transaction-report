@@ -235,7 +235,11 @@
                         <strong style="padding-left: 80%">Total </strong>
                     </td>
                     <td style="text-align: right;">
-                       <strong>Rp. {{ number_format($total_bon, 0, ',', '.') }}</strong>
+                        @if($total_bon < 0)
+                        <strong>Rp. {{ number_format(abs($total_bon), 0, ',', '.') }}</strong>
+                        @else
+                        <strong>Rp. {{ number_format(($total_bon*-1), 0, ',', '.') }}</strong>
+                        @endif
                     </td>
                 </tr>
             </table>
