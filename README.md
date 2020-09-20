@@ -1,6 +1,6 @@
-# sistem rekap (mingguan dan bulanan)
+# sistem rekap (mingguan dan bulanan) v.2.0.1
 Sistem pencatatan setoran dan bon setiap hari
-- menggunakan Laravel 5.2.*
+- menggunakan Laravel 6.*
 
 # Laravel PHP Framework
 
