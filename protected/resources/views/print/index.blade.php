@@ -28,13 +28,13 @@
             <div class="box">
                 <div class="box-header">
                     <a href="{{ route('print.index', 'type=all') }}" class="btn btn-info">
-                        <i class="fa fa-search"></i> Semua
+                        <i class="fa fa-search"></i> All
                     </a>
                     <a href="{{ route('print.index', 'type=bulanan') }}" class="btn btn-success">
-                        <i class="fa fa-search"></i> Bulanan
+                        <i class="fa fa-search"></i> Month
                     </a>
                     <a href="{{ route('print.index', 'type=mingguan') }}" class="btn btn-warning">
-                        <i class="fa fa-search"></i> Mingguan
+                        <i class="fa fa-search"></i> Week
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
@@ -52,36 +52,36 @@
                     <table class="table table-hover">
                         <table class="table table-hover">
                             <tr>
-                                <th>No</th>
+                                <th class="text-center">Action</th>
+                                {{-- <th>No</th> --}}
                                 <th>Nama</th>
                                 <th>Golongan</th>
                                 <th>Setor</th>
                                 <th>Bon</th>
                                 <th>Updated</th>
-                                <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
+                                    <td class="text-center">
+                                        @if($key->reportPrint)
+                                        <button type="button" class="btn btn-primary btn-xs btn-print" data-href="{{ route('print.edit', $key->reportPrint->id) }}">
+                                            <i class="fa fa-print"></i> {{-- Cetak --}}
+                                        </button>
+                                        @endif
+                                        <a href="{{ route('print.show', $key->id) }}"
+                                           class="btn btn-xs btn-info" title="Detail">
+                                            <i class="fa fa-bar-chart-o"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-danger btn-xs btn-delete" data-href="{{ route('transaction.recovery', ['id' => $key->id]) }}">
+                                            {{-- <i class="fa fa-trash"></i> --}} Recovery
+                                        </button>
+                                    </td>
+                                    {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
                                     <td>{{ $key->nama }}</td>
                                     <td>{{ ucfirst($key->golongan) }}</td>
                                     <td>{{ number_format($key->report->sum('total'), 0, ',', '.') }}</td>
                                     <td>{{ is_null($key->bon) ? '0' : number_format($key->bon->detail->sum('sub_total'), 0, ',', '.') }}</td>
                                     <td>{{ $key->updated_at }}</td>
-                                    <td>
-                                        @if($key->reportPrint)
-                                        <button type="button" class="btn btn-primary btn-xs btn-print" data-href="{{ route('print.edit', $key->reportPrint->id) }}">
-                                            <i class="fa fa-print"></i> Cetak
-                                        </button>
-                                        @endif
-                                        <a href="{{ route('print.show', $key->id) }}"
-                                           class="btn btn-xs btn-info" title="Detail">
-                                            <i class="fa fa-bar-chart-o"></i> Detail
-                                        </a>
-                                        <button type="button" class="btn btn-danger btn-xs btn-delete" data-href="{{ route('transaction.recovery', ['id' => $key->id]) }}">
-                                            <i class="fa fa-trash"></i> Recovery
-                                        </button>
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>

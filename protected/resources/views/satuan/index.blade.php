@@ -46,21 +46,16 @@
                     <table class="table table-hover">
                         <table class="table table-hover">
                             <tr>
-                                <th>No</th>
+                                <th class="text-center">Action</th>
+                                {{-- <th>No</th> --}}
                                 <th>Nama</th>
                                 <th>Slug</th>
                                 <th>Created</th>
                                 <th>Updated</th>
-                                <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
-                                    <td>{{ $key->nama }}</td>
-                                    <td>{{ $key->slug }}</td>
-                                    <td>{{ $key->created_at }}</td>
-                                    <td>{{ $key->updated_at }}</td>
-                                    <td>
+                                    <td class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
                                                 data-href="{{ route('taxonomi.destroy', $key->id) }}">
                                             <i class="fa fa-trash"></i>
@@ -69,6 +64,11 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
+                                    {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
+                                    <td>{{ $key->nama }}</td>
+                                    <td>{{ $key->slug }}</td>
+                                    <td>{{ $key->created_at }}</td>
+                                    <td>{{ $key->updated_at }}</td>                                    
                                 </tr>
                             @empty
                                 <tr>

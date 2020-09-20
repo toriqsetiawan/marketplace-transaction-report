@@ -28,16 +28,16 @@
             <div class="box">
                 <div class="box-header">
                     <a href="{{ route('employee.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Tambah Pegawai
+                        <i class="fa fa-plus-circle"></i> Pegawai
                     </a>
                     <a href="{{ route('employee.index', 'type=all') }}" class="btn btn-info">
-                        <i class="fa fa-search"></i> Semua
+                        <i class="fa fa-search"></i> All
                     </a>
                     <a href="{{ route('employee.index', 'type=bulanan') }}" class="btn btn-success">
-                        <i class="fa fa-search"></i> Bulanan
+                        <i class="fa fa-search"></i> Month
                     </a>
                     <a href="{{ route('employee.index', 'type=mingguan') }}" class="btn btn-warning">
-                        <i class="fa fa-search"></i> Mingguan
+                        <i class="fa fa-search"></i> Week
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
@@ -55,23 +55,17 @@
                     <table class="table table-hover">
                         <table class="table table-hover">
                             <tr>
-                                <th>No</th>
+                                <th class="text-center">Action</th>
+                                {{-- <th>No</th> --}}
                                 <th>Nama</th>
-                                <th>Alamat</th>
                                 <th>Golongan</th>
+                                <th>Alamat</th>
                                 <th>Phone</th>
                                 <th>Updated</th>
-                                <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
-                                    <td>{{ $key->nama }}</td>
-                                    <td>{{ $key->alamat }}</td>
-                                    <td>{{ ucfirst($key->golongan) }}</td>
-                                    <td>{{ $key->phone }}</td>
-                                    <td>{{ $key->updated_at }}</td>
-                                    <td>
+                                    <td class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
                                                 data-href="{{ route('employee.destroy', $key->id) }}">
                                             <i class="fa fa-trash"></i>
@@ -80,6 +74,12 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
+                                    {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
+                                    <td>{{ $key->nama }}</td>
+                                    <td>{{ ucfirst($key->golongan) }}</td>
+                                    <td>{{ $key->alamat }}</td>
+                                    <td>{{ $key->phone }}</td>
+                                    <td>{{ $key->updated_at }}</td>
                                 </tr>
                             @empty
                                 <tr>

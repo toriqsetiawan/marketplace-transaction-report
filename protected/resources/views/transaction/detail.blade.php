@@ -224,7 +224,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="tunai">Tunai</label>
-                                                    <input type="text" id="tunai" name="tunai" class="form-control money" value="" required>
+                                                    <input type="text" id="tunai" name="tunai" class="form-control money" value="0" autocomplete="off" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -232,7 +232,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="tunai">Giro</label>
-                                                    <input type="text" id="giro" name="giro" class="form-control money" value="0">
+                                                    <input type="text" id="giro" name="giro" class="form-control money" value="0" autocomplete="off">
                                                 </div>
                                             </div>
                                         </div>

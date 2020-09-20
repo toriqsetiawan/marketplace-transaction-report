@@ -28,7 +28,7 @@
             <div class="box">
                 <div class="box-header">
                     <a href="{{ route('varian.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Tambah Varian
+                        <i class="fa fa-plus-circle"></i> Barang
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
@@ -46,21 +46,16 @@
                     <table class="table table-hover">
                         <table class="table table-hover">
                             <tr>
-                                <th>No</th>
+                                <th class="text-center">Action</th>
+                                {{-- <th>No</th> --}}
                                 <th>Nama</th>
                                 <th>Satuan</th>
                                 <th>Harga/item</th>
                                 <th>Updated</th>
-                                <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
-                                    <td>{{ $key->nama }}</td>
-                                    <td>{{ $key->taxonomi->nama }}</td>
-                                    <td>{{ number_format($key->harga_satuan, 0, ',', '.') }}</td>
-                                    <td>{{ $key->updated_at }}</td>
-                                    <td>
+                                    <td class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
                                                 data-href="{{ route('varian.destroy', $key->id) }}">
                                             <i class="fa fa-trash"></i>
@@ -69,6 +64,12 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
+                                    {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
+                                    <td>{{ $key->nama }}</td>
+                                    <td>{{ $key->taxonomi->nama }}</td>
+                                    <td>{{ number_format($key->harga_satuan, 0, ',', '.') }}</td>
+                                    <td>{{ $key->updated_at }}</td>
+                                    
                                 </tr>
                             @empty
                                 <tr>

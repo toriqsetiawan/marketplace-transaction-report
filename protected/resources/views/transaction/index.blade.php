@@ -27,15 +27,17 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('transaction.index', 'type=all') }}" class="btn btn-info">
-                        <i class="fa fa-search"></i> Semua
-                    </a>
-                    <a href="{{ route('transaction.index', 'type=bulanan') }}" class="btn btn-success">
-                        <i class="fa fa-search"></i> Bulanan
-                    </a>
-                    <a href="{{ route('transaction.index', 'type=mingguan') }}" class="btn btn-warning">
-                        <i class="fa fa-search"></i> Mingguan
-                    </a>
+                    <div class="action-button">
+                        <a href="{{ route('transaction.index', 'type=all') }}" class="btn btn-info">
+                            <i class="fa fa-search"></i> Semua
+                        </a>
+                        <a href="{{ route('transaction.index', 'type=bulanan') }}" class="btn btn-success">
+                            <i class="fa fa-search"></i> Bulanan
+                        </a>
+                        <a href="{{ route('transaction.index', 'type=mingguan') }}" class="btn btn-warning">
+                            <i class="fa fa-search"></i> Mingguan
+                        </a>
+                    </div>
                     <div class="box-tools">
                         <form action="?" method="get">
                             <div class="input-group" style="width: 200px;">
@@ -52,36 +54,36 @@
                     <table class="table table-hover">
                         <table class="table table-hover">
                             <tr>
-                                <th>No</th>
+                                <th class="text-center">Action</th>
+                                {{-- <th>No</th> --}}
                                 <th>Nama</th>
                                 <th>Golongan</th>
                                 <th>Setor</th>
                                 <th>Bon</th>
                                 <th>Updated</th>
-                                <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ route('transaction.detail', ['id' => $key->id]) }}"
+                                           class="btn btn-xs btn-info" title="Detail">
+                                            <i class="fa fa-bar-chart-o"></i>
+                                        </a>
+                                        <a href="{{ route('transaction.setor', ['id' => $key->id]) }}"
+                                           class="btn btn-xs btn-success" title="Setor">
+                                            {{-- <i class="fa fa-plus"></i> --}} Setor
+                                        </a>
+                                        <a href="{{ route('transaction.bon', ['id' => $key->id]) }}"
+                                           class="btn btn-xs btn-danger" title="Bon">
+                                            {{-- <i class="fa fa-plus"></i> --}} Bon
+                                        </a>
+                                    </td>
+                                    {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
                                     <td>{{ $key->nama }}</td>
                                     <td>{{ ucfirst($key->golongan) }}</td>
                                     <td>{{ number_format($key->report->sum('total'), 0, ',', '.') }}</td>
                                     <td>{{ is_null($key->bon) ? '0' : number_format($key->bon->detail->sum('sub_total'), 0, ',', '.') }}</td>
                                     <td>{{ $key->updated_at }}</td>
-                                    <td>
-                                        <a href="{{ route('transaction.detail', ['id' => $key->id]) }}"
-                                           class="btn btn-xs btn-info" title="Detail">
-                                            <i class="fa fa-bar-chart-o"></i> Detail
-                                        </a>
-                                        <a href="{{ route('transaction.setor', ['id' => $key->id]) }}"
-                                           class="btn btn-xs btn-primary" title="Setor">
-                                            <i class="fa fa-plus"></i> Setor
-                                        </a>
-                                        <a href="{{ route('transaction.bon', ['id' => $key->id]) }}"
-                                           class="btn btn-xs btn-danger" title="Bon">
-                                            <i class="fa fa-plus"></i> Bon
-                                        </a>
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>

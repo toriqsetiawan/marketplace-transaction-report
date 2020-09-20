@@ -4,6 +4,7 @@ namespace App\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Taxonomi extends Model
 {
@@ -45,7 +46,7 @@ class Taxonomi extends Model
     public function setNamaAttribute($value)
     {
         $this->attributes['nama'] = $value;
-        $this->attributes['slug'] = str_slug($value);
+        $this->attributes['slug'] = Str::slug($value);
     }
 
 }

@@ -9,6 +9,8 @@ use App\Entities\ReportDetail;
 use App\Entities\ReportGlobal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class PrintController extends Controller
 {
@@ -83,7 +85,7 @@ class PrintController extends Controller
         $pdf = \PDF::loadView('print.invoice', $arrData)
             ->setPaper('a4', 'potrait');
 
-        return $pdf->stream('rekap-' . str_slug($report->employee->nama) . '-' . date('d-m-Y') . '.pdf');
+        return $pdf->stream('rekap-' . Str::slug($report->employee->nama) . '-' . date('d-m-Y') . '.pdf');
         // download('rekap-' . date('d_m_Y.pdf'));
     }
 
@@ -120,7 +122,7 @@ class PrintController extends Controller
 
             foreach ($dataBon as $key) {
                 $temp = collect($key)->toArray();
-                array_forget($temp, 'varian');
+                Arr::forget($temp, 'varian');
                 $bon[] = $temp;
             }
 
