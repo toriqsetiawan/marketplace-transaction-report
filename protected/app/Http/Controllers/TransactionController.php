@@ -140,6 +140,11 @@ class TransactionController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        if (!is_double($tunai))
+            return redirect()->back()
+                ->with("error", "Nominal tunai salah")
+                ->withInput();
+
         $employee = Employee::find($request->employee_id);
 
         if (!$employee) {
