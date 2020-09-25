@@ -140,7 +140,7 @@ class TransactionController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        if (!is_double($tunai))
+        if (!is_numeric($tunai))
             return redirect()->back()
                 ->with("error", "Nominal tunai salah")
                 ->withInput();
