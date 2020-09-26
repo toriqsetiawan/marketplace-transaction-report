@@ -46,7 +46,7 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="password">Nama Satuan</label>
-                            <input type="text" id="nama" name="nama" placeholder="Kilogram/Lembar/Meter" class="form-control" value="{{ $data->nama or old('nama') }}">
+                            <input type="text" id="nama" name="nama" placeholder="Kilogram/Lembar/Meter" class="form-control" value="{{ $data->nama ?? old('nama') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

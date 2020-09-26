@@ -47,15 +47,15 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="nama">Nama</label>
-                            <input type="text" id="nama" name="nama" class="form-control" value="{{ $data->nama or old('nama') }}">
+                            <input type="text" id="nama" name="nama" class="form-control" value="{{ $data->nama ?? old('nama') }}">
                         </div>
                         <div class="form-group">
                             <label for="alamat">Alamat</label>
-                            <input type="text" id="alamat" name="alamat" class="form-control" value="{{ $data->alamat or old('alamat') }}">
+                            <input type="text" id="alamat" name="alamat" class="form-control" value="{{ $data->alamat ?? old('alamat') }}">
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone</label>
-                            <input type="text" id="phone" name="phone" class="form-control" value="{{ $data->phone or old('phone') }}">
+                            <input type="text" id="phone" name="phone" class="form-control" value="{{ $data->phone ?? old('phone') }}">
                         </div>
                         <div class="form-group">
                             <label for="golongan">Golongan</label>
@@ -83,7 +83,7 @@
                         </div>
                         <div class="form-group">
                             <label for="total_trx">Total</label>
-                            <input type="text" id="total_trx" name="total_trx" class="form-control money" value="{{ $employee_log->amount or old('total_trx') }}">
+                            <input type="text" id="total_trx" name="total_trx" class="form-control money" value="{{ $employee_log->amount ?? old('total_trx') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

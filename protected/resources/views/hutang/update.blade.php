@@ -59,17 +59,17 @@
                         <div class="form-group">
                             <label for="nama">Rincian Hutang</label>
                             <input type="text" id="nama" name="nama" class="form-control"
-                                   value="{{ $data->nama or old('nama') }}">
+                                   value="{{ $data->nama ?? old('nama') }}">
                         </div>
                         <div class="form-group">
                             <label for="harga">Harga</label>
                             <input type="text" id="harga" name="harga" class="form-control"
-                                   value="{{  $data->harga or old('harga') }}">
+                                   value="{{  $data->harga ?? old('harga') }}">
                         </div>
                         <div class="form-group">
                             <label for="angsuran">Jumlah Angsuran</label>
                             <input type="int" id="angsuran" name="angsuran" class="form-control"
-                                   value="{{ $data->angsuran or old('angsuran') }}">
+                                   value="{{ $data->angsuran ?? old('angsuran') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

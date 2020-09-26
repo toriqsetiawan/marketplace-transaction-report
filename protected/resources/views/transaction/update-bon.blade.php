@@ -123,12 +123,12 @@
                         </div>
                         <div class="form-group">
                             <label for="quantity">Jumlah</label>
-                            <input type="text" id="quantity" name="quantity" class="form-control" value="{{ $update->quantity or old('quantity')}}">
+                            <input type="text" id="quantity" name="quantity" class="form-control" value="{{ $update->quantity ?? old('quantity')}}">
                         </div>
                         <div class="form-group">
                             <label for="date_at">Tanggal Bon</label>
                             <input type="date" id="date_at" name="date_at" class="form-control"
-                                   value="{{ $update->date_at or date('Y-m-d') }}">
+                                   value="{{ $update->date_at ?? date('Y-m-d') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

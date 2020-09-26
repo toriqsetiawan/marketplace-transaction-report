@@ -115,21 +115,21 @@
                         <div class="form-group">
                             <label for="total">Total</label>
                             <input type="text" id="total" name="total" class="form-control"
-                                   value="{{ $update->total or old('total') }}">
+                                   value="{{ $update->total ?? old('total') }}">
                         </div>
                         <div class="form-group">
                             <label for="count">Setoran ke</label>
                             <input type="text" id="count" name="count" class="form-control"
-                                   value="{{ $update->count or $counter }}">
+                                   value="{{ $update->count ?? $counter }}">
                         </div>
                         <div class="form-group">
                             <label for="kodi">Jumlah Kodian</label>
-                            <input type="text" id="kodi" name="kodi" class="form-control" value="{{ $update->kodi or old('kodi') }}">
+                            <input type="text" id="kodi" name="kodi" class="form-control" value="{{ $update->kodi ?? old('kodi') }}">
                         </div>
                         <div class="form-group">
                             <label for="date_at">Tanggal Setor</label>
                             <input type="date" id="date_at" name="date_at" class="form-control"
-                                   value="{{ $update->date_at or date('Y-m-d') }}">
+                                   value="{{ $update->date_at ?? date('Y-m-d') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

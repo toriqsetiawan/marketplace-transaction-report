@@ -97,11 +97,11 @@
                         </div>
                         <div class="form-group">
                             <label for="bank_name">Bank Name</label>
-                            <input type="text" id="bank_name" name="bank_name" class="form-control" value="{{ $user->profile->bank_name or old('bank_name') }}" required>
+                            <input type="text" id="bank_name" name="bank_name" class="form-control" value="{{ $user->profile->bank_name ?? old('bank_name') }}" required>
                         </div>
                         <div class="form-group">
                             <label for="bank_number">Bank Number</label>
-                            <input type="text" id="bank_number" name="bank_number" class="form-control" value="{{ $user->profile->bank_number or old('bank_number') }}" required>
+                            <input type="text" id="bank_number" name="bank_number" class="form-control" value="{{ $user->profile->bank_number ?? old('bank_number') }}" required>
                         </div>
                     </div><!-- /.box-body -->
                 </div><!-- /.box -->
