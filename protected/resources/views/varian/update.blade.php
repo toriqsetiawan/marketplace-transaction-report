@@ -62,6 +62,14 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label for="status">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option hidden>Pilih status</option>
+                                <option value="true" {{ $data->status == true ? 'selected':'' }}>Aktif</option>
+                                <option value="false" {{ $data->status == false ? 'selected':'' }}>Non-Aktif</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>
                         </div>
                     </div>

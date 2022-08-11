@@ -20,6 +20,7 @@ class VarianController extends Controller
         if ($request->has('search')) {
             $data = Varian::where('nama', 'like', '%' . $request->search . '%')
                 ->where('type', 'item')
+                ->where('status', true)
                 ->orderBy('nama')
                 ->paginate(10);
         } else {
@@ -99,6 +100,7 @@ class VarianController extends Controller
             'nama' => 'required|string|max:255',
             'harga_satuan' => 'required',
             'taxonomi_id' => 'required|exists:taxonomy,id',
+            'status' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -110,6 +112,7 @@ class VarianController extends Controller
         $varian->nama = $request->nama;
         $varian->taxonomi_id = $request->taxonomi_id;
         $varian->harga_satuan = $request->harga_satuan;
+        $varian->status = $request->status;
         $varian->save();
 
         return redirect()->back()->with("success", "Sukses merubah data")->withInput();
