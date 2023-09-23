@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Varian;
+use App\Entities\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -15,13 +16,11 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         if ($request->has('search')) {
-            $data = Varian::where('nama', 'like', '%' . $request->search . '%')
-                ->where('type', 'item')
-                ->where('status', true)
+            $data = Product::where('nama', 'like', '%' . $request->search . '%')
                 ->orderBy('nama')
                 ->paginate(10);
         } else {
-            $data = Varian::where('type', 'item')->orderBy('nama')->paginate(10);
+            $data = Product::orderBy('nama')->paginate(10);
         }
 
         return view('product.index')->with('data', $data);
@@ -34,7 +33,16 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $ukuran = [
+            '26-30',
+            '28-32',
+            '29-33',
+            '31-35',
+            '33-37',
+            '36-40',
+            '39-43'
+        ];
+        return view('product.create')->with('ukuran', $ukuran);
     }
 
     /**
@@ -45,7 +53,21 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'sku' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
+            'ukuran' => 'required',
+            'harga_beli' => 'required',
+            'harga_tambahan' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        Product::create($request->all());
+
+        return redirect()->back()->with("success", "Sukses menambah produk")->withInput();
     }
 
     /**
@@ -67,7 +89,18 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        $product = Product::find($id);
+        $ukuran = [
+            '26-30',
+            '28-32',
+            '29-33',
+            '31-35',
+            '33-37',
+            '36-40',
+            '39-43'
+        ];
+
+        return view('product.update')->with('data', $product)->with('ukuran', $ukuran);
     }
 
     /**
@@ -79,7 +112,27 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'sku' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
+            'ukuran' => 'required',
+            'harga_beli' => 'required',
+            'harga_tambahan' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $product = Product::find($id);
+
+        $product->nama = $request->nama;
+        $product->ukuran = $request->ukuran;
+        $product->harga_beli = $request->harga_beli;
+        $product->harga_tambahan = $request->harga_tambahan;
+        $product->save();
+
+        return redirect()->back()->with("success", "Sukses merubah data")->withInput();
     }
 
     /**
@@ -90,6 +143,9 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $product = Product::find($id);
+        $product->delete();
+
+        return redirect()->back()->with("success", "Sukses menghapus data")->withInput();
     }
 }

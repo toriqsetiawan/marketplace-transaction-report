@@ -17,9 +17,7 @@ class CreateProductsTable extends Migration
             $table->bigIncrements('id');
             $table->string('sku');
             $table->string('nama', 255);
-            $table->integer('ukuran');
-            $table->string('warna', 30);
-            $table->string('motif', 30);
+            $table->string('ukuran', 30);
             $table->float('harga_beli');
             $table->float('harga_tambahan');
             $table->timestamps();

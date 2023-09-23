@@ -14,7 +14,7 @@ class Product extends Model
      *
      * @var string
      */
-    protected $table = 'varian';
+    protected $table = 'products';
 
     /**
      * Indicates if the model should be timestamped.
@@ -35,24 +35,29 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = ['nama', 'taxonomi_id', 'harga_satuan'];
+    protected $fillable = ['sku', 'nama', 'ukuran', 'harga_beli', 'harga_tambahan'];
 
     /**
      * Handling relation tables.
      *
      */
-    public function taxonomi()
-    {
-        return $this->belongsTo('App\Entities\Taxonomi');
-    }
+    // public function taxonomi()
+    // {
+    //     return $this->belongsTo('App\Entities\Taxonomi');
+    // }
 
     public function setNamaAttribute($value)
     {
         $this->attributes['nama'] = ucwords($value);
     }
 
-    public function setHargaSatuanAttribute($value)
+    public function setHargaBeliAttribute($value)
     {
-        $this->attributes['harga_satuan'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+        $this->attributes['harga_beli'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+    }
+
+    public function setHargaTambahanAttribute($value)
+    {
+        $this->attributes['harga_tambahan'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 }

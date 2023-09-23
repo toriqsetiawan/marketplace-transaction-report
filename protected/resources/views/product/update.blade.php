@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Ubah Varian
+    Ubah Produk
 @endsection
 
 @section('contentheader_title')
-    Ubah Varian
+    Ubah Produk
 @endsection
 
 @section('main-content')
@@ -30,44 +30,37 @@
                 </div>
             @endif
         </div>
-        <form role="form" method="post" action="{{ route('varian.update', $data->id) }}">
+        <form role="form" method="post" action="{{ route('product.update', $data->id) }}">
             {!! csrf_field() !!}
             {!! method_field('put') !!}
             <div class="col-md-5">
                 <!-- general form elements disabled -->
                 <div class="box box-warning">
-                    <div class="box-header with-border">
-                        <div class="alert alert-info alert-dismissable" style="margin-top: 20px">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <h4><i class="icon fa fa-info"></i> Catatan!</h4>
-                            Tulis nama satuan lengkap, Jangan menggunkan singkatan.
-                        </div>
-                    </div><!-- /.box-header -->
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="password">Nama Varian</label>
+                            <label for="nama">SKU</label>
+                            <input type="text" id="sku" name="sku" class="form-control" value="{{ $data->sku ?? old('sku') }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Nama produk</label>
                             <input type="text" id="nama" name="nama" class="form-control" value="{{ $data->nama ?? old('nama') }}">
                         </div>
                         <div class="form-group">
-                            <label for="harga">Harga satuan</label>
-                            <input type="text" id="harga" name="harga_satuan" class="form-control money" value="{{ $data->harga_satuan ?? old('harga_satuan') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="satuan">Satuan</label>
-                            <select class="form-control" id="satuan" name="taxonomi_id">
-                                <option hidden>Pilih satuan</option>
-                                @foreach($satuan as $key)
-                                    <option value="{{ $key->id }}" {{ $data->taxonomi_id == $key->id ? 'selected':'' }}>{{ ucfirst($key->nama) }}</option>
+                            <label for="ukuran">Ukuran</label>
+                            <select class="form-control" id="ukuran" name="ukuran">
+                                <option hidden>Pilih ukuran</option>
+                                @foreach($ukuran as $key)
+                                    <option value="{{ $key }}" {{ $data->ukuran == $key ? 'selected':'' }}>{{ $key }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="status">Status</label>
-                            <select class="form-control" id="status" name="status">
-                                <option hidden>Pilih status</option>
-                                <option value="true" {{ $data->status == true ? 'selected':'' }}>Aktif</option>
-                                <option value="false" {{ $data->status == false ? 'selected':'' }}>Non-Aktif</option>
-                            </select>
+                            <label for="harga">Harga beli</label>
+                            <input type="text" id="harga_beli" name="harga_beli" class="form-control money" value="{{ $data->harga_beli ?? old('harga_beli') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="harga">Harga packing</label>
+                            <input type="text" id="harga_tambahan" name="harga_tambahan" class="form-control money" value="{{ $data->harga_tambahan ?? old('harga_tambahan') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

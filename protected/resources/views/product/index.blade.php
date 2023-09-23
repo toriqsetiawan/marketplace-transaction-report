@@ -47,10 +47,10 @@
                         <table class="table table-hover">
                             <tr>
                                 <th class="text-center">Action</th>
-                                {{-- <th>No</th> --}}
+                                <th>SKU</th>
                                 <th>Nama</th>
-                                <th>Satuan</th>
-                                <th>Harga/item</th>
+                                <th>Ukuran</th>
+                                <th>Packing</th>
                                 <th>Updated</th>
                             </tr>
                             @forelse($data as $key)
@@ -65,9 +65,10 @@
                                         </a>
                                     </td>
                                     {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
+                                    <td>{{ $key->sku }}</td>
                                     <td>{{ $key->nama }}</td>
-                                    <td>{{ $key->taxonomi->nama }}</td>
-                                    <td>{{ number_format($key->harga_satuan, 0, ',', '.') }}</td>
+                                    <td>{{ $key->ukuran }}</td>
+                                    <td>{{ number_format($key->harga_tambahan, 0, ',', '.') }}</td>
                                     <td>{{ $key->updated_at }}</td>
 
                                 </tr>

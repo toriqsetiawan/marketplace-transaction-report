@@ -16,6 +16,9 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('variable_price_id');
+            $table->integer('jumlah');
+            $table->integer('ukuran');
+            $table->string('motif', 30);
             $table->float('harga_beli');
             $table->float('harga_jual');
             $table->float('biaya_tambahan')->default(0);
