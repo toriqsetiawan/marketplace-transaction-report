@@ -38,7 +38,7 @@
             <li class="{{ activateWhenRoute('varian*')  }}"><a href="{{ route('varian.index') }}"><i class='fa fa-truck'></i> <span>Manajemen Barang</span></a></li>
             <li class="{{ activateWhenRoute('employee*')  }}"><a href="{{ route('employee.index') }}"><i class='fa fa-users'></i> <span>Manajemen Pegawai</span></a></li>
             <li class="{{ activateWhenRoute('transaction*')  }}"><a href="{{ route('transaction.index') }}"><i class='fa fa-book'></i> <span>Manajemen Transaksi</span></a></li>
-            {{-- <li class="{{ activateWhenRoute('cicilan*')  }}"><a href="{{ route('cicilan.index') }}"><i class='fa fa-money'></i> <span>Manajemen Cicilan</span></a></li> --}}
+            <li class="{{ activateWhenRoute('penjualan*')  }}"><a href="{{ route('penjualan.index') }}"><i class='fa fa-money'></i> <span>Input Penjualan</span></a></li>
             <li class="{{ activateWhenRoute('print*')  }}"><a href="{{ route('print.index') }}"><i class='fa fa-print'></i> <span>Cetak Laporan</span></a></li>
         </ul><!-- /.sidebar-menu -->
     </section>

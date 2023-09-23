@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Manajemen Cicilan
+    Input Penjualan
 @stop
 
 @section('contentheader_title')
-    Manajemen Cicilan
+    Input Penjualan
 @stop
 
 @section('main-content')
@@ -27,13 +27,13 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('cicilan.index', 'type=all') }}" class="btn btn-info">
+                    <a href="{{ route('penjualan.index', 'type=all') }}" class="btn btn-info">
                         <i class="fa fa-search"></i> Semua
                     </a>
-                    <a href="{{ route('cicilan.index', 'type=bulanan') }}" class="btn btn-success">
+                    <a href="{{ route('penjualan.index', 'type=bulanan') }}" class="btn btn-success">
                         <i class="fa fa-search"></i> Bulanan
                     </a>
-                    <a href="{{ route('cicilan.index', 'type=mingguan') }}" class="btn btn-warning">
+                    <a href="{{ route('penjualan.index', 'type=mingguan') }}" class="btn btn-warning">
                         <i class="fa fa-search"></i> Mingguan
                     </a>
                     <div class="box-tools">
@@ -65,7 +65,7 @@
                                     <td>{{ ucfirst($key->golongan) }}</td>
                                     <td>{{ $key->updated_at }}</td>
                                     <td>
-                                        <a href="{{ route('cicilan.show', ['id' => $key->id]) }}"
+                                        <a href="{{ route('penjualan.show', $key->id) }}"
                                            class="btn btn-xs btn-info" title="Cicilan">
                                             <i class="fa fa-table"></i> Cicilan
                                         </a>

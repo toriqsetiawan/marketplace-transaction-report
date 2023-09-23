@@ -12,7 +12,7 @@
         "acacha/admin-lte-template-laravel": "6.3",
         "barryvdh/laravel-dompdf": "^0.8.7",
         "fideloper/proxy": "^4.0",
-        "laravel/framework": "^6.20.14",
+        "laravel/framework": "^6.0",
         "laravel/tinker": "^2.0"
     },
     "require-dev": {

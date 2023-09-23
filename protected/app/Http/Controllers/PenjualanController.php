@@ -7,7 +7,7 @@ use App\Entities\Hutang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CicilanController extends Controller
+class PenjualanController extends Controller
 {
 
     /**
@@ -38,7 +38,7 @@ class CicilanController extends Controller
             }
         }
 
-        return view('hutang.index')->with('data', $data);
+        return view('penjualan.index')->with('data', $data);
     }
 
     /**
