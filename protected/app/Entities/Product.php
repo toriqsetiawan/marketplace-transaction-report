@@ -60,4 +60,19 @@ class Product extends Model
     {
         $this->attributes['harga_tambahan'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
+
+    public function setHargaOnlineAttribute($value)
+    {
+        $this->attributes['harga_online'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+    }
+
+    public function setHargaOfflineAttribute($value)
+    {
+        $this->attributes['harga_offline'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+    }
+
+    public function setHargaMitraAttribute($value)
+    {
+        $this->attributes['harga_mitra'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+    }
 }
