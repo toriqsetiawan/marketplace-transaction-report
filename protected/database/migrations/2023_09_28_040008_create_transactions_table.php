@@ -15,7 +15,8 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('variable_price_id');
+            $table->string('name');
+            $table->string('marketplace');
             $table->integer('jumlah');
             $table->integer('ukuran');
             $table->string('motif', 30);
@@ -25,7 +26,8 @@ class CreateTransactionsTable extends Migration
             $table->float('biaya_lain_lain')->default(0);
             $table->float('pajak')->default(0);
             $table->float('total_paid');
-            $table->boolean('status')->default(1);
+            $table->boolean('status')->default(1)->comment('1:pending, 2:lunas, 3:retur');
+            $table->text('keterangan');
             $table->timestamps();
             $table->softDeletes();
         });
