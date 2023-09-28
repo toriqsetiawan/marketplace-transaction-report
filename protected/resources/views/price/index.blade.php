@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Manajemen Produk
+    Konfigurasi biaya admin
 @stop
 
 @section('contentheader_title')
-    Manajemen Produk
+    Konfigurasi biaya admin
 @stop
 
 @section('main-content')
@@ -27,8 +27,8 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('product.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Barang
+                    <a href="{{ route('config-fee.create') }}" class="btn btn-primary">
+                        <i class="fa fa-plus-circle"></i> Config
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
@@ -47,34 +47,24 @@
                         <table class="table table-hover">
                             <tr>
                                 <th class="text-center">Action</th>
-                                <th>SKU</th>
-                                <th>Nama</th>
-                                <th>Ukuran</th>
-                                <th>Mitra</th>
-                                <th>Offline</th>
-                                <th>Online</th>
-                                <th>Packing</th>
+                                <th>Marketplace</th>
+                                <th>Persentase</th>
                                 <th>Updated</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
-                                                data-href="{{ route('product.destroy', $key->id) }}">
+                                                data-href="{{ route('config-fee.destroy', $key->id) }}">
                                             <i class="fa fa-trash"></i>
                                         </button>
-                                        <a href="{{ route('product.edit', $key->id) }}" class="btn btn-xs btn-info">
+                                        <a href="{{ route('config-fee.edit', $key->id) }}" class="btn btn-xs btn-info">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
                                     {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
-                                    <td>{{ $key->sku }}</td>
-                                    <td>{{ $key->nama }}</td>
-                                    <td>{{ $key->ukuran }}</td>
-                                    <td>{{ number_format($key->harga_mitra, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_offline, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_online, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_tambahan, 0, ',', '.') }}</td>
+                                    <td>{{ $key->marketplace }}</td>
+                                    <td>{{ ($key->persentase * 100) }}%</td>
                                     <td>{{ $key->updated_at }}</td>
                                 </tr>
                             @empty

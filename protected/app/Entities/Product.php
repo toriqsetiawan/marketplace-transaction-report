@@ -35,7 +35,7 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = ['sku', 'nama', 'ukuran', 'harga_beli', 'harga_tambahan'];
+    protected $fillable = ['sku', 'nama', 'ukuran', 'harga_beli', 'harga_tambahan', 'harga_online', 'harga_offline', 'harga_mitra'];
 
     /**
      * Handling relation tables.

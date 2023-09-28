@@ -59,6 +59,9 @@ class ProductController extends Controller
             'ukuran' => 'required',
             'harga_beli' => 'required',
             'harga_tambahan' => 'required',
+            'harga_online' => 'required',
+            'harga_offline' => 'required',
+            'harga_mitra' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -118,6 +121,9 @@ class ProductController extends Controller
             'ukuran' => 'required',
             'harga_beli' => 'required',
             'harga_tambahan' => 'required',
+            'harga_online' => 'required',
+            'harga_offline' => 'required',
+            'harga_mitra' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -130,6 +136,9 @@ class ProductController extends Controller
         $product->ukuran = $request->ukuran;
         $product->harga_beli = $request->harga_beli;
         $product->harga_tambahan = $request->harga_tambahan;
+        $product->harga_online = $request->harga_online;
+        $product->harga_offline = $request->harga_offline;
+        $product->harga_mitra = $request->harga_mitra;
         $product->save();
 
         return redirect()->back()->with("success", "Sukses merubah data")->withInput();

@@ -63,6 +63,18 @@
                             <input type="text" id="harga_tambahan" name="harga_tambahan" class="form-control money" value="{{ $data->harga_tambahan ?? old('harga_tambahan') }}">
                         </div>
                         <div class="form-group">
+                            <label for="harga">Harga online</label>
+                            <input type="text" id="harga_online" name="harga_online" class="form-control money" value="{{ $data->harga_online ?? old('harga_online') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="harga">Harga offline</label>
+                            <input type="text" id="harga_offline" name="harga_offline" class="form-control money" value="{{ $data->harga_offline ?? old('harga_offline') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="harga">Harga mitra</label>
+                            <input type="text" id="harga_mitra" name="harga_mitra" class="form-control money" value="{{ $data->harga_mitra ?? old('harga_mitra') }}">
+                        </div>
+                        <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>
                         </div>
                     </div>
