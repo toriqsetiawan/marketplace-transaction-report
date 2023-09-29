@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\ConfigFee;
 use App\Entities\Employee;
 use App\Entities\Hutang;
+use App\Entities\Product;
+use App\Entities\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,25 +20,14 @@ class PenjualanController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Employee::orderBy('golongan')->paginate(10);
-
-        if ($request->has('type')) {
-            if ($request->type == 'bulanan') {
-                $data = Employee::whereGolongan('bulanan')->orderBy('nama')->paginate(10);
-            } elseif ($request->type == 'mingguan') {
-                $data = Employee::whereGolongan('mingguan')->orderBy('nama')->paginate(10);
-            }
+        if ($request->has('search')) {
+            $data = Transaction::where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('marketplace', $request->search)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
         } else {
-            if ($request->has('search')) {
-                $data = Employee::with(['report', 'bon.detail'])
-                    ->where('nama', 'like', '%' . $request->search . '%')
-                    ->orderBy('nama')
-                    ->paginate(10);
-            } else {
-                $data = Employee::with(['report', 'bon.detail'])
-                    ->orderBy('nama')
-                    ->paginate(10);
-            }
+            $data = Transaction::orderBy('created_at', 'desc')
+                ->paginate(10);
         }
 
         return view('penjualan.index')->with('data', $data);
@@ -48,10 +40,10 @@ class PenjualanController extends Controller
      */
     public function create(Request $request)
     {
-        $employee = Employee::find($request->employee);
+        $products = Product::all();
+        $marketplaces = ConfigFee::all();
 
-        return view('hutang.create')
-            ->with('employee', $employee);
+        return view('penjualan.create', compact('products', 'marketplaces'));
     }
 
     /**

@@ -27,14 +27,8 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('penjualan.index', 'type=all') }}" class="btn btn-info">
-                        <i class="fa fa-search"></i> Semua
-                    </a>
-                    <a href="{{ route('penjualan.index', 'type=bulanan') }}" class="btn btn-success">
-                        <i class="fa fa-search"></i> Bulanan
-                    </a>
-                    <a href="{{ route('penjualan.index', 'type=mingguan') }}" class="btn btn-warning">
-                        <i class="fa fa-search"></i> Mingguan
+                    <a href="{{ route('penjualan.create') }}" class="btn btn-primary">
+                        <i class="fa fa-plus-circle"></i> Tambah
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
