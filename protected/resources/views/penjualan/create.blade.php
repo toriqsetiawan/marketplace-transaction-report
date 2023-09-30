@@ -105,16 +105,3 @@
         </form>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        $('#channel').on('change', function() {
-            console.log(this.value)
-            if (this.value == 'online') {
-                $('.marketplace-block').show();
-            } else {
-                $('.marketplace-block').hide();
-            }
-        })
-    </script>
-@endpush

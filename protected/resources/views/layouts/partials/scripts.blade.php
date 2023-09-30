@@ -31,5 +31,13 @@
         $('#weekly_report').click(function() {
             $('#modalWeekly').modal('show');
         });
+
+        $('#channel').on('change', function() {
+            if (this.value == 'online') {
+                $('.marketplace-block').show();
+            } else {
+                $('.marketplace-block').hide();
+            }
+        })
     });
 </script>
