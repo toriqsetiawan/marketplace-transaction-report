@@ -48,20 +48,28 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
-                                <th>Golongan</th>
-                                <th>Updated</th>
+                                <th>Marketplace</th>
+                                <th>Produk</th>
+                                <th>Ukuran</th>
+                                <th>Warna/Motif</th>
+                                <th>Jumlah</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
                                     <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
-                                    <td>{{ $key->nama }}</td>
-                                    <td>{{ ucfirst($key->golongan) }}</td>
-                                    <td>{{ $key->updated_at }}</td>
+                                    <td>{{ $key->name }}</td>
+                                    <td>{{ $key->channel->marketplace }}</td>
+                                    <td>{{ $key->product->nama }}</td>
+                                    <td>{{ $key->ukuran }}</td>
+                                    <td>{{ $key->motif }}</td>
+                                    <td>{{ $key->jumlah }}</td>
+                                    <td>{{ $key->status }}</td>
                                     <td>
-                                        <a href="{{ route('penjualan.show', $key->id) }}"
-                                           class="btn btn-xs btn-info" title="Cicilan">
-                                            <i class="fa fa-table"></i> Cicilan
+                                        <a href="{{ route('penjualan.edit', $key->id) }}"
+                                           class="btn btn-xs btn-info" title="Update">
+                                            <i class="fa fa-edit"></i> Update
                                         </a>
                                     </td>
                                 </tr>

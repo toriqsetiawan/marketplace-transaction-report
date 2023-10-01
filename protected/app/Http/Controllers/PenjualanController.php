@@ -26,7 +26,8 @@ class PenjualanController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
         } else {
-            $data = Transaction::orderBy('created_at', 'desc')
+            $data = Transaction::with(['channel', 'product'])
+                ->orderBy('created_at', 'desc')
                 ->paginate(10);
         }
 
@@ -54,27 +55,56 @@ class PenjualanController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'employee' => 'required|exists:employee,id',
-            'nama' => 'required|max:255',
-            'harga' => 'required|numeric',
-            'angsuran' => 'required|int',
+            'channel' => 'required|in:online,offline,mitra',
+            'marketplace' => 'required_if:channel,online',
+            'name' => 'required',
+            'product_id' => 'required|exists:products,id',
+            'jumlah' => 'required|integer|min:1',
+            'ukuran' => 'required|integer|min:26|max:43',
+            'motif' => 'required',
+            'date_at' => 'required|date'
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        Hutang::create([
-            'employee_id' => $request->employee,
-            'nama' => $request->nama,
-            'harga' => $request->harga,
-            'angsuran' => $request->angsuran,
-            'status' => 'aktif',
+        $product = Product::findOrFail($request->product_id);
+
+        $variableHargaJual = 'harga_' . $request->channel;
+        $hargaJual = $product->$variableHargaJual;
+        $pajak = $this->calculateTax($request, $hargaJual);
+
+        Transaction::create([
+            'product_id' => $request->product_id,
+            'name' => $request->name,
+            'marketplace' => $request->marketplace,
+            'jumlah' => $request->jumlah,
+            'ukuran' => $request->ukuran,
+            'motif' => $request->motif,
+            'harga_beli' => $product->harga_beli,
+            'harga_jual' => $hargaJual,
+            'biaya_tambahan' => $request->packing ? $product->harga_tambahan : 0,
+            'biaya_lain_lain' => $request->insole ? 5000 : 0,
+            'pajak' => $pajak,
+            'total_paid' => $hargaJual - $pajak,
+            'status' => $request->status,
+            'keterangan' => $request->keterangan
         ]);
 
         return redirect()->back()
-            ->with("success", "Sukses menambah data")
+            ->with("success", "Sukses menambah transaksi")
             ->withInput();
+    }
+
+    private function calculateTax($request, $hargaJual)
+    {
+        if ($request->channel == 'online') {
+            $fee = ConfigFee::findOrFail($request->marketplace);
+            return $fee->persentase * $hargaJual;
+        }
+
+        return 0;
     }
 
     /**

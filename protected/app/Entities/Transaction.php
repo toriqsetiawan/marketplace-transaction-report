@@ -35,6 +35,31 @@ class Transaction extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'marketplace', 'jumlah', 'ukuran', 'motif', 'harga_beli', 'harga_jual', 'biaya_tambahan', 'biaya_lain_lain', 'pajak', 'total_paid', 'status', 'keterangan'];
+    protected $fillable = [
+        'product_id', 'name', 'marketplace', 'jumlah', 'ukuran', 'motif', 'harga_beli', 'harga_jual', 'biaya_tambahan',
+        'biaya_lain_lain', 'pajak', 'total_paid', 'status', 'keterangan'
+    ];
 
+    public function channel()
+    {
+        return $this->belongsTo('App\Entities\ConfigFee', 'marketplace');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo('App\Entities\Product');
+    }
+
+    public function getStatusAttribute($value)
+    {
+        if ($value == 1) {
+            return 'Pending';
+        } elseif ($value == 2) {
+            return 'Lunas';
+        } elseif ($value == 3) {
+            return 'Retur';
+        } else {
+            return '-';
+        }
+    }
 }

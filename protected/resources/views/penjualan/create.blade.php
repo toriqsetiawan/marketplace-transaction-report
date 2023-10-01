@@ -85,11 +85,31 @@
                                    value="{{ old('motif') }}">
                         </div>
                         <div class="form-group">
+                            <label for="packing">Packing</label>
+                            <select name="packing" id="packing" class="form-control select2">
+                                <option value="1" {{ old('packing') == 1 ? 'selected':'' }}>Ya</option>
+                                <option value="0" {{ old('packing') == 0 ? 'selected':'' }}>Tidak</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="insole">Insole</label>
                             <select name="insole" id="insole" class="form-control select2">
                                 <option value="1" {{ old('insole') == 1 ? 'selected':'' }}>Ya</option>
                                 <option value="0" {{ old('insole') == 0 ? 'selected':'' }}>Tidak</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select name="status" id="status" class="form-control select2">
+                                <option value="1" {{ old('status') == 1 ? 'selected':'' }}>Pending</option>
+                                <option value="2" {{ old('status') == 1 ? 'selected':'' }}>Lunas</option>
+                                <option value="3" {{ old('status') == 1 ? 'selected':'' }}>Retur</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="keterangan">Keterangan</label>
+                            <input type="text" id="keterangan" name="keterangan" class="form-control"
+                                   value="{{ old('keterangan') }}">
                         </div>
                         <div class="form-group">
                             <label for="date_at">Tanggal</label>
