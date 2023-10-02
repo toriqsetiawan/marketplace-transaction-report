@@ -102,8 +102,8 @@
                             <label for="status">Status</label>
                             <select name="status" id="status" class="form-control select2">
                                 <option value="1" {{ old('status') == 1 ? 'selected':'' }}>Pending</option>
-                                <option value="2" {{ old('status') == 1 ? 'selected':'' }}>Lunas</option>
-                                <option value="3" {{ old('status') == 1 ? 'selected':'' }}>Retur</option>
+                                <option value="2" {{ old('status') == 2 ? 'selected':'' }}>Lunas</option>
+                                <option value="3" {{ old('status') == 3 ? 'selected':'' }}>Retur</option>
                             </select>
                         </div>
                         <div class="form-group">

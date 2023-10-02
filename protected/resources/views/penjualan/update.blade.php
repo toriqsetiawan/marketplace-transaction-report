@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Edit Hutang
+    Edit Penjualan
 @endsection
 
 @section('contentheader_title')
-    Edit Hutang
+    Edit Penjualan
 @endsection
 
 @section('main-content')
@@ -31,45 +31,91 @@
             @endif
         </div>
 
-        <form role="form" method="post" action="{{ route('cicilan.update', $data->id) }}">
+        <form role="form" method="post" action="{{ route('penjualan.update', $data->id) }}">
             {!! csrf_field() !!}
             {!! method_field('PUT') !!}
-            <input type="hidden" name="employee" value="{{ $employee->id }}">
             <div class="col-md-6">
                 <!-- general form elements disabled -->
                 <div class="box box-warning">
-                    <div class="box-header with-border">
-                        <div class="alert alert-info alert-dismissable" style="margin-top: 20px">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <h4><i class="icon fa fa-info"></i> Catatan!</h4>
-                            Harga tidak menggunakan titik atau koma.<br>
-                            contoh : 10000
-                        </div>
-                    </div><!-- /.box-header -->
                     <div class="box-body">
                         <div class="form-group">
-                            <label>Nama Karyawan</label>
-                            <input type="text" class="form-control" value="{{ $employee->nama }}" disabled>
+                            <label>Channel</label>
+                            <select name="channel" id="channel" class="form-control select2">
+                                @foreach (['online', 'offline', 'mitra'] as $channel)
+                                    <option value="{{ $channel }}" {{ $data->channel == $channel ? 'selected' : '' }}>{{ $channel }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group marketplace-block">
+                            <label>Marketplace</label>
+                            <select name="marketplace" id="marketplace" class="form-control select2">
+                                @foreach ($marketplaces as $marketplace)
+                                    <option value="{{ $marketplace->id }}" {{ $data->marketplace == $marketplace->id ? 'selected' : '' }}>{{ $marketplace->marketplace }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group mitra-block">
+                            <label for="name">Nama customer</label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   value="{{ $data->name ?? old('name') }}">
                         </div>
                         <div class="form-group">
-                            <label>Golongan</label>
-                            <input type="text" class="form-control"
-                                   value="{{ ucfirst($employee->golongan) }}" disabled>
+                            <label>Produk</label>
+                            <select name="product_id" id="product_id" class="form-control select2">
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}" {{ $data->product_id == $product->id ? 'selected' : '' }}>{{ "$product->nama [$product->ukuran]" }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="nama">Rincian Hutang</label>
-                            <input type="text" id="nama" name="nama" class="form-control"
-                                   value="{{ $data->nama ?? old('nama') }}">
+                            <label for="jumlah">Jumlah</label>
+                            <input type="int" id="jumlah" name="jumlah" class="form-control" min="1"
+                                   value="{{ $data->jumlah ?? old('jumlah') }}">
                         </div>
                         <div class="form-group">
-                            <label for="harga">Harga</label>
-                            <input type="text" id="harga" name="harga" class="form-control"
-                                   value="{{  $data->harga ?? old('harga') }}">
+                            <label for="ukuran">Ukuran</label>
+                            <select name="ukuran" id="ukuran" class="form-control select2">
+                                @foreach (range(26,43) as $item)
+                                    <option value="{{ $item }}" {{ $data->ukuran == $item ? 'selected' : '' }}>{{ $item }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="angsuran">Jumlah Angsuran</label>
-                            <input type="int" id="angsuran" name="angsuran" class="form-control"
-                                   value="{{ $data->angsuran ?? old('angsuran') }}">
+                            <label for="motif">Warna / Motif</label>
+                            <input type="text" id="motif" name="motif" class="form-control"
+                                   value="{{ $data->motif ?? old('motif') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="packing">Packing</label>
+                            <select name="packing" id="packing" class="form-control select2">
+                                <option value="1" {{ $data->biaya_tambahan ?? old('packing') == 1 ? 'selected':'' }}>Ya</option>
+                                <option value="0" {{ $data->biaya_tambahan ?? old('packing') == 0 ? 'selected':'' }}>Tidak</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="insole">Insole</label>
+                            <select name="insole" id="insole" class="form-control select2">
+                                <option value="1" {{ $data->biaya_lain_lain ?? old('insole') == 1 ? 'selected':'' }}>Ya</option>
+                                <option value="0" {{ $data->biaya_lain_lain ?? old('insole') == 0 ? 'selected':'' }}>Tidak</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select name="status" id="status" class="form-control select2">
+                                <option value="1" {{ $data->status == 'Pending' ? 'selected':'' }}>Pending</option>
+                                <option value="2" {{ $data->status == 'Lunas' ? 'selected':'' }}>Lunas</option>
+                                <option value="3" {{ $data->status == 'Retur' ? 'selected':'' }}>Retur</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="keterangan">Keterangan</label>
+                            <input type="text" id="keterangan" name="keterangan" class="form-control"
+                                   value="{{ old('keterangan') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="date_at">Tanggal</label>
+                            <input type="date" id="date_at" name="date_at" class="form-control"
+                                   value="{{ date('Y-m-d') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

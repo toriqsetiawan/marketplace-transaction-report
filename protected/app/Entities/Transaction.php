@@ -40,6 +40,11 @@ class Transaction extends Model
         'biaya_tambahan', 'biaya_lain_lain', 'pajak', 'total_paid', 'status', 'keterangan'
     ];
 
+    public function mitra()
+    {
+        return $this->belongsTo('App\Entities\Mitra', 'name', 'id_mitra');
+    }
+
     public function configFee()
     {
         return $this->belongsTo('App\Entities\ConfigFee', 'marketplace');

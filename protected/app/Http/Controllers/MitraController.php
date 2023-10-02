@@ -1,0 +1,125 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Entities\Mitra;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class MitraController extends Controller
+{
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index(Request $request)
+    {
+        $data = Mitra::orderBy('nama')->paginate(10);
+
+        if ($request->has('search')) {
+            $data = Mitra::where('nama', 'like', '%' . $request->search . '%')
+                ->orderBy('nama')
+                ->paginate(10);
+        } else {
+            $data = Mitra::orderBy('nama')->paginate(10);
+        }
+
+        return view('mitra.index')->with('data', $data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return Response
+     */
+    public function create()
+    {
+        return view('mitra.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return Response
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required|string|max:255',
+            'id_mitra' => 'required|unique:mitra,id_mitra',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        Mitra::create($request->all());
+
+        return redirect()->back()->with("success", "Sukses menambah data")->withInput();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function show($id)
+    {
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function edit($id)
+    {
+        $mitra = Mitra::findOrFail($id);
+
+        return view('mitra.update')
+            ->with('data', $mitra);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required|string|max:255',
+            'id_mitra' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $mitra = Mitra::findOrFail($id);
+        $mitra->nama = $request->nama;
+        $mitra->id_mitra = $request->id_mitra;
+        $mitra->save();
+
+        return redirect()->back()->with("success", "Sukses merubah data")->withInput();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        $mitra = Mitra::findOrFail($id);
+        $mitra->delete();
+
+        return redirect()->back()->with("success", "Sukses menghapus data")->withInput();
+    }
+}

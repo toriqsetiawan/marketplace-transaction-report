@@ -21,12 +21,13 @@ class PenjualanController extends Controller
     public function index(Request $request)
     {
         if ($request->has('search')) {
-            $data = Transaction::where('name', 'like', '%' . $request->search . '%')
+            $data = Transaction::with(['configFee', 'product', 'mitra'])
+                ->where('name', 'like', '%' . $request->search . '%')
                 ->orWhere('marketplace', $request->search)
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
         } else {
-            $data = Transaction::with(['configFee', 'product'])
+            $data = Transaction::with(['configFee', 'product', 'mitra'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
         }
@@ -116,20 +117,7 @@ class PenjualanController extends Controller
      */
     public function show($id)
     {
-        $employee = Employee::find($id);
 
-        if (!$employee) {
-            abort('404');
-        }
-
-        $data = Hutang::with(['employee'])
-            ->where('employee_id', $employee->id)
-            ->orderBy('created_at')
-            ->paginate(10);
-
-        return view('hutang.detail')
-            ->with('employee', $employee)
-            ->with('data', $data);
     }
 
     /**
@@ -140,13 +128,11 @@ class PenjualanController extends Controller
      */
     public function edit($id)
     {
-        $data = Hutang::find($id);
+        $data = Transaction::findOrFail($id);
+        $products = Product::all();
+        $marketplaces = ConfigFee::all();
 
-        $employee = Employee::find($data->employee_id);
-
-        return view('hutang.update')
-            ->with('employee', $employee)
-            ->with('data', $data);
+        return view('penjualan.update', compact('data', 'products', 'marketplaces'));
     }
 
     /**
@@ -158,22 +144,43 @@ class PenjualanController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'employee' => 'required|exists:employee,id',
-            'nama' => 'required|max:255',
-            'harga' => 'required|numeric',
-            'angsuran' => 'required|int',
+            'channel' => 'required|in:online,offline,mitra',
+            'marketplace' => 'required_if:channel,online',
+            'name' => 'required',
+            'product_id' => 'required|exists:products,id',
+            'jumlah' => 'required|integer|min:1',
+            'ukuran' => 'required|integer|min:26|max:43',
+            'motif' => 'required',
+            'date_at' => 'required|date'
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $hutang = Hutang::find($id);
+        $product = Product::findOrFail($request->product_id);
 
-        $hutang->nama = $request->nama;
-        $hutang->harga = $request->harga;
-        $hutang->angsuran = $request->angsuran;
-        $hutang->save();
+        $variableHargaJual = 'harga_' . $request->channel;
+        $hargaJual = $product->$variableHargaJual;
+        $pajak = $this->calculateTax($request, $hargaJual);
+
+        $transaction = Transaction::findOrFail($id);
+        $transaction->product_id = $request->product_id;
+        $transaction->name = $request->name;
+        $transaction->channel = $request->channel;
+        $transaction->marketplace = $request->channel == 'online' ? $request->marketplace : 0;
+        $transaction->jumlah = $request->jumlah;
+        $transaction->ukuran = $request->ukuran;
+        $transaction->motif = $request->motif;
+        $transaction->harga_beli = $product->harga_beli;
+        $transaction->harga_jual = $hargaJual;
+        $transaction->biaya_tambahan = $request->packing ? $product->harga_tambahan : 0;
+        $transaction->biaya_lain_lain = $request->insole ? 5000 : 0;
+        $transaction->pajak = $pajak;
+        $transaction->total_paid = $hargaJual - $pajak;
+        $transaction->status = $request->status;
+        $transaction->keterangan = $request->keterangan ?? '';
+        $transaction->save();
 
         return redirect()->back()
             ->with("success", "Sukses merubah data")

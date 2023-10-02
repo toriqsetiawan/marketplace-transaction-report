@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Input Penjualan
+    Manajemen Mitra
 @stop
 
 @section('contentheader_title')
-    Input Penjualan
+    Manajemen Mitra
 @stop
 
 @section('main-content')
@@ -27,8 +27,8 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('penjualan.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Tambah
+                    <a href="{{ route('mitra.create') }}" class="btn btn-primary">
+                        <i class="fa fa-plus-circle"></i> Mitra
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
@@ -46,34 +46,25 @@
                     <table class="table table-hover">
                         <table class="table table-hover">
                             <tr>
-                                <th>No</th>
+                                <th class="text-center">Action</th>
+                                <th>Id Mitra</th>
                                 <th>Nama</th>
-                                <th>Channel</th>
-                                <th>Marketplace</th>
-                                <th>Produk</th>
-                                <th>Ukuran</th>
-                                <th>Warna/Motif</th>
-                                <th>Jumlah</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th>Updated</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
-                                    <td>{{ $key->channel == 'mitra' ? $key->mitra->nama : $key->name }}</td>
-                                    <td>{{ $key->channel }}</td>
-                                    <td>{{ $key->channel == 'online' ? $key->configFee->marketplace : '-' }}</td>
-                                    <td>{{ $key->product->nama }}</td>
-                                    <td>{{ $key->ukuran }}</td>
-                                    <td>{{ $key->motif }}</td>
-                                    <td>{{ $key->jumlah }}</td>
-                                    <td>{{ $key->status }}</td>
-                                    <td>
-                                        <a href="{{ route('penjualan.edit', $key->id) }}"
-                                           class="btn btn-xs btn-info" title="Update">
-                                            <i class="fa fa-edit"></i> Update
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger btn-xs btn-delete"
+                                                data-href="{{ route('mitra.destroy', $key->id) }}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                        <a href="{{ route('mitra.edit', $key->id) }}" class="btn btn-xs btn-info">
+                                            <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
+                                    <td>{{ $key->id_mitra }}</td>
+                                    <td>{{ $key->nama }}</td>
+                                    <td>{{ $key->updated_at }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -95,5 +86,29 @@
                 </div>
             </div><!-- /.box -->
         </div>
+    </div>
+    <div class="example-modal">
+        <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="" method="post" id="deleteForm">
+                        {{ csrf_field() }}
+                        {{ method_field('DELETE') }}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                            <h4 class="modal-title">Delete Data</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure want to delete this data?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-infp pull-left" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </div>
 @stop
