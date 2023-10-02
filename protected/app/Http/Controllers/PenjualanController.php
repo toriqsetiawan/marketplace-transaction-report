@@ -26,7 +26,7 @@ class PenjualanController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
         } else {
-            $data = Transaction::with(['channel', 'product'])
+            $data = Transaction::with(['configFee', 'product'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
         }
@@ -78,7 +78,8 @@ class PenjualanController extends Controller
         Transaction::create([
             'product_id' => $request->product_id,
             'name' => $request->name,
-            'marketplace' => $request->marketplace,
+            'channel' => $request->channel,
+            'marketplace' => $request->channel == 'online' ? $request->marketplace : 0,
             'jumlah' => $request->jumlah,
             'ukuran' => $request->ukuran,
             'motif' => $request->motif,
@@ -89,7 +90,7 @@ class PenjualanController extends Controller
             'pajak' => $pajak,
             'total_paid' => $hargaJual - $pajak,
             'status' => $request->status,
-            'keterangan' => $request->keterangan
+            'keterangan' => $request->keterangan ?? ''
         ]);
 
         return redirect()->back()

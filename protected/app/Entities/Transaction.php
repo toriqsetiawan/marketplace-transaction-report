@@ -36,11 +36,11 @@ class Transaction extends Model
      * @var array
      */
     protected $fillable = [
-        'product_id', 'name', 'marketplace', 'jumlah', 'ukuran', 'motif', 'harga_beli', 'harga_jual', 'biaya_tambahan',
-        'biaya_lain_lain', 'pajak', 'total_paid', 'status', 'keterangan'
+        'product_id', 'channel', 'name', 'marketplace', 'jumlah', 'ukuran', 'motif', 'harga_beli', 'harga_jual',
+        'biaya_tambahan', 'biaya_lain_lain', 'pajak', 'total_paid', 'status', 'keterangan'
     ];
 
-    public function channel()
+    public function configFee()
     {
         return $this->belongsTo('App\Entities\ConfigFee', 'marketplace');
     }

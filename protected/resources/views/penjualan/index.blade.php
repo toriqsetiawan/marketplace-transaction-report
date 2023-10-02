@@ -48,6 +48,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
+                                <th>Channel</th>
                                 <th>Marketplace</th>
                                 <th>Produk</th>
                                 <th>Ukuran</th>
@@ -60,7 +61,8 @@
                                 <tr>
                                     <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
                                     <td>{{ $key->name }}</td>
-                                    <td>{{ $key->channel->marketplace }}</td>
+                                    <td>{{ $key->channel }}</td>
+                                    <td>{{ $key->channel == 'online' ? $key->configFee->marketplace : '-' }}</td>
                                     <td>{{ $key->product->nama }}</td>
                                     <td>{{ $key->ukuran }}</td>
                                     <td>{{ $key->motif }}</td>
