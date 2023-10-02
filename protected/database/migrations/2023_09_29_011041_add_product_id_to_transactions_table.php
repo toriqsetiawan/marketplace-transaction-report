@@ -14,7 +14,7 @@ class AddProductIdToTransactionsTable extends Migration
     public function up()
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->bigInteger('product_id')->after('id');
+            $table->bigInteger('product_id')->after('id')->default('online');
         });
     }
 
