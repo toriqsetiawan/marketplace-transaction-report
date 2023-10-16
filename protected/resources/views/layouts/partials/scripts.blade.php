@@ -11,6 +11,9 @@
 
 <script src="{{ asset('js/jquery.mask.min.js') }}" type="text/javascript"></script>
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 <script type="text/javascript">
     $(document).ready(function() {
         //Initialize Select2 Elements
@@ -26,7 +29,9 @@
             $('#printForm').attr('action', $(this).data('href'));
         });
 
-        $('.money').mask('000.000.000.000.000,-', {reverse: true});
+        $('.money').mask('000.000.000.000.000,-', {
+            reverse: true
+        });
 
         $('#weekly_report').click(function() {
             $('#modalWeekly').modal('show');
@@ -39,5 +44,20 @@
                 $('.marketplace-block').hide();
             }
         })
+    });
+
+    $(function() {
+        $('input[name="daterange"]').daterangepicker({
+            minYear: 2023,
+            startDate: moment().subtract(29, 'days'),
+            end: moment(),
+            locale: {
+                format: 'DD/MM/YYYY '
+            },
+            ranges: true
+        }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end
+                .format('YYYY-MM-DD'));
+        });
     });
 </script>

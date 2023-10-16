@@ -110,12 +110,12 @@
                         <div class="form-group">
                             <label for="keterangan">Keterangan</label>
                             <input type="text" id="keterangan" name="keterangan" class="form-control"
-                                   value="{{ old('keterangan') }}">
+                                   value="{{ $data->keterangan ?? old('keterangan') }}">
                         </div>
                         <div class="form-group">
                             <label for="date_at">Tanggal</label>
                             <input type="date" id="date_at" name="date_at" class="form-control"
-                                   value="{{ date('Y-m-d') }}">
+                                   value="{{ $data->created_at->format('Y-m-d') ?? date('Y-m-d') }}">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>
