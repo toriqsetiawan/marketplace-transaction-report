@@ -27,6 +27,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('product', 'ProductController');
     Route::resource('config-fee', 'ConfigPriceController');
     Route::resource('penjualan', 'PenjualanController');
+    Route::resource('report-penjualan', 'ReportPenjualanController');
     Route::resource('mitra', 'MitraController');
     Route::post('transaction/recovery', [
         'as' => 'transaction.recovery',

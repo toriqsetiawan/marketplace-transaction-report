@@ -31,7 +31,7 @@
                         <i class="fa fa-plus-circle"></i> Tambah
                     </a>
                     <div class="d-block my-3">
-                        <input type="text" name="daterange" class="form-control" value="" style="min-width: 17rem"/>
+                        <input type="text" name="daterange" class="form-control" value="" style="width: 17rem; margin: 1rem 0"/>
                     </div>
                     <div class="box-tools">
                         <form action="?" method="get">
