@@ -25,11 +25,11 @@ class PenjualanController extends Controller
                 ->where('name', 'like', '%' . $request->search . '%')
                 ->orWhere('marketplace', $request->search)
                 ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(20);
         } else {
             $data = Transaction::with(['configFee', 'product', 'mitra'])
                 ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(20);
         }
 
         return view('penjualan.index')->with('data', $data);

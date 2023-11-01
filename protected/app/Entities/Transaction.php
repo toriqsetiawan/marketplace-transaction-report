@@ -47,7 +47,7 @@ class Transaction extends Model
 
     public function configFee()
     {
-        return $this->belongsTo('App\Entities\ConfigFee', 'marketplace');
+        return $this->belongsTo('App\Entities\ConfigFee', 'marketplace', 'id');
     }
 
     public function product()
