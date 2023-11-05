@@ -47,17 +47,27 @@
     });
 
     $(function() {
+        let startDate = '{{ request("start_date") }}';
+        let endDate = '{{ request("end_date") }}';
+
         $('input[name="daterange"]').daterangepicker({
             minYear: 2023,
-            startDate: moment().subtract(29, 'days'),
-            end: moment(),
+            startDate: (startDate != "Invalid date" && startDate != "") ? startDate : moment().startOf('month'),
+            endDate: (endDate != "Invalid date" && endDate != "") ? endDate : moment().endOf('month'),
             locale: {
-                format: 'DD/MM/YYYY '
+                format: 'DD/MM/YYYY'
             },
             ranges: true
         }, function(start, end, label) {
-            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end
-                .format('YYYY-MM-DD'));
+            let startDate = start.format('DD/MM/YYYY'),
+                endDate = end.format('DD/MM/YYYY'),
+                url = new URL(window.location.href),
+                params = url.searchParams;
+
+            params.set('start_date', startDate);
+            params.set('end_date', endDate);
+
+            window.location.href = url.toString();
         });
     });
 </script>

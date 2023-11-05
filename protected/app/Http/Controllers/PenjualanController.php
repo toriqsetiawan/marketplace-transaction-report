@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Entities\ConfigFee;
-use App\Entities\Employee;
-use App\Entities\Hutang;
 use App\Entities\Product;
 use App\Entities\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,17 +19,25 @@ class PenjualanController extends Controller
      */
     public function index(Request $request)
     {
+        $start = $request->start_date
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfMonth()->format('Y-m-d H:i:s')
+            : now()->startOfMonth();
+        $end = $request->end_date
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->endOfMonth()->format('Y-m-d H:i:s')
+            : now()->endOfMonth();
+
+        $data = Transaction::with(['configFee', 'product', 'mitra'])
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end);
+
         if ($request->has('search')) {
-            $data = Transaction::with(['configFee', 'product', 'mitra'])
-                ->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('marketplace', $request->search)
-                ->orderBy('created_at', 'desc')
-                ->paginate(20);
-        } else {
-            $data = Transaction::with(['configFee', 'product', 'mitra'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(20);
+            $data->where('name', 'like', '%' . $request->search . '%');
+            $data->orWhere('marketplace', $request->search);
         }
+
+        $data = $data->orderBy('created_at', 'desc')
+            ->paginate(20);
+
 
         return view('penjualan.index')->with('data', $data);
     }
@@ -117,7 +124,6 @@ class PenjualanController extends Controller
      */
     public function show($id)
     {
-
     }
 
     /**
@@ -195,7 +201,5 @@ class PenjualanController extends Controller
      */
     public function destroy($id)
     {
-
     }
-
 }

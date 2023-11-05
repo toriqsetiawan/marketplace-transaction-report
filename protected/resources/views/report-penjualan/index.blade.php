@@ -9,6 +9,16 @@
 @endsection
 
 @section('main-content')
+    <div>
+        <div class="box">
+            <div class="box-header">
+                <div class="d-block my-3">
+                    <input type="text" name="daterange" class="form-control" value=""
+                        style="width: 17rem; margin: 1rem 0" />
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-4 col-xs-6">
             <!-- small box -->
@@ -87,11 +97,13 @@
                         @php
                             $totalMitra = 0;
                         @endphp
-                        @foreach ($data['mitra'] as $item)
-                            @php
-                                $totalMitra += collect($item)->sum();
-                            @endphp
-                        @endforeach
+                        @if (array_key_exists('mitra', $data))
+                            @foreach ($data['mitra'] as $item)
+                                @php
+                                    $totalMitra += collect($item)->sum();
+                                @endphp
+                            @endforeach
+                        @endif
                         {{ number_format($totalMitra) }}
                     </h4>
                 </div>
@@ -163,7 +175,7 @@
                         @php
                             $keuntungan = 0;
                             foreach ($data as $item => $value) {
-                                if ($item == 'online' || $item == 'mitra') {
+                                if (in_array($item, ['online', 'offline', 'mitra'])) {
                                     foreach ($value as $key) {
                                         $keuntungan += collect($key)->sum();
                                     }

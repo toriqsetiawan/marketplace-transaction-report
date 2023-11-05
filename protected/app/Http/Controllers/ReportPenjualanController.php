@@ -10,9 +10,13 @@ class ReportPenjualanController extends Controller
 {
     public function index(Request $request)
     {
-        $date = '2023-10-01 00:00:00';
-        $start = Carbon::parse($date)->startOfMonth();
-        $end = Carbon::parse($date)->endOfMonth();
+        $start = $request->start_date
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfMonth()->format('Y-m-d H:i:s')
+            : now()->startOfMonth();
+        $end = $request->end_date
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->endOfMonth()->format('Y-m-d H:i:s')
+            : now()->endOfMonth();
+
         $transactions = Transaction::with(['configFee', 'mitra'])
             ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end)
@@ -21,24 +25,28 @@ class ReportPenjualanController extends Controller
 
         $data = [];
 
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'online')->groupBy('channel') as $marketplace) {
-            foreach ($marketplace as $trx) {
-                $data[$trx->channel][$trx->marketplace][] = ($trx->total_paid - $trx->biaya_tambahan - $trx->biaya_lain_lain - $trx->harga_beli) * $trx->jumlah;
+        foreach ($transactions->filter(fn ($q) => $q->channel == 'online')->groupBy('channel') as $trxMarketplace) {
+            foreach ($trxMarketplace as $online) {
+                $data[$online->channel][$online->marketplace][] = ($online->total_paid - $online->biaya_tambahan - $online->biaya_lain_lain - $online->harga_beli) * $online->jumlah;
             }
         }
 
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'mitra')->groupBy('name') as $marketplace) {
-            foreach ($marketplace as $trx) {
-                $data[$trx->channel][$trx->mitra->nama][] = ($trx->total_paid - $trx->biaya_tambahan - $trx->biaya_lain_lain - $trx->harga_beli) * $trx->jumlah;
+        foreach ($transactions->filter(fn ($q) => $q->channel == 'mitra')->groupBy('name') as $trxMitra) {
+            foreach ($trxMitra as $mitra) {
+                $data[$mitra->channel][$mitra->mitra->nama][] = ($mitra->total_paid - $mitra->biaya_tambahan - $mitra->biaya_lain_lain - $mitra->harga_beli) * $mitra->jumlah;
             }
         }
 
-        foreach ($transactions->filter(fn ($q) => $q->harga_beli > 15000) as $transaction) {
-            $data['gudang'][] = $transaction->harga_beli * $trx->jumlah;
+        foreach ($transactions->filter(fn ($q) => $q->channel == 'offline') as $offline) {
+            $data['offline'][] = ($offline->total_paid - $offline->biaya_tambahan - $offline->biaya_lain_lain - $offline->harga_beli) * $offline->jumlah;
         }
 
-        foreach ($transactions->filter(fn ($q) => in_array($q->product_id, [40, 41, 42, 43, 44])) as $transaction) {
-            $data['trading'][] = $transaction->harga_beli * $trx->jumlah;
+        foreach ($transactions->filter(fn ($q) => $q->harga_beli > 15000) as $gudang) {
+            $data['gudang'][] = $gudang->harga_beli * $gudang->jumlah;
+        }
+
+        foreach ($transactions->filter(fn ($q) => in_array($q->product_id, [40, 41, 42, 43, 44])) as $trading) {
+            $data['trading'][] = $trading->harga_beli * $trading->jumlah;
         }
 
         return view('report-penjualan.index', compact('data'));
@@ -46,9 +54,13 @@ class ReportPenjualanController extends Controller
 
     public function show(Request $request, $id)
     {
-        $date = '2023-10-01 00:00:00';
-        $start = Carbon::parse($date)->startOfMonth();
-        $end = Carbon::parse($date)->endOfMonth();
+        $start = $request->start_date
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfMonth()->format('Y-m-d H:i:s')
+            : now()->startOfMonth();
+        $end = $request->end_date
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->endOfMonth()->format('Y-m-d H:i:s')
+            : now()->endOfMonth();
+
         $transactions = Transaction::with(['configFee', 'mitra']);
 
         // todo filter
