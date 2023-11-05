@@ -17,20 +17,31 @@ class ReportPenjualanController extends Controller
             ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end)
             ->where('status', 2)
-            ->get()
-            ->groupBy('channel');
+            ->get();
 
         $data = [];
 
-        foreach ($transactions as $marketplace) {
+        foreach ($transactions->filter(fn ($q) => $q->channel == 'online')->groupBy('channel') as $marketplace) {
             foreach ($marketplace as $trx) {
-                $data[$trx->channel][$trx->marketplace][] = $trx->total_paid - $trx->biaya_tambahan - $trx->biaya_lain_lain - $trx->harga_beli;
+                $data[$trx->channel][$trx->marketplace][] = ($trx->total_paid - $trx->biaya_tambahan - $trx->biaya_lain_lain - $trx->harga_beli) * $trx->jumlah;
             }
         }
 
-        // dd($data);
+        foreach ($transactions->filter(fn ($q) => $q->channel == 'mitra')->groupBy('name') as $marketplace) {
+            foreach ($marketplace as $trx) {
+                $data[$trx->channel][$trx->mitra->nama][] = ($trx->total_paid - $trx->biaya_tambahan - $trx->biaya_lain_lain - $trx->harga_beli) * $trx->jumlah;
+            }
+        }
 
-        return view('report-penjualan.index');
+        foreach ($transactions->filter(fn ($q) => $q->harga_beli > 15000) as $transaction) {
+            $data['gudang'][] = $transaction->harga_beli * $trx->jumlah;
+        }
+
+        foreach ($transactions->filter(fn ($q) => in_array($q->product_id, [40, 41, 42, 43, 44])) as $transaction) {
+            $data['trading'][] = $transaction->harga_beli * $trx->jumlah;
+        }
+
+        return view('report-penjualan.index', compact('data'));
     }
 
     public function show(Request $request, $id)
@@ -63,11 +74,19 @@ class ReportPenjualanController extends Controller
             case 'offline':
                 $transactions->where('channel', 'offline');
                 break;
+            case 'gudang':
+                $transactions->where('harga_beli', '>', 15000)
+                    ->whereNotIn('product_id', [40, 41, 42, 43, 44]);
+                break;
+            case 'trading':
+                $transactions->whereIn('product_id', [40, 41, 42, 43, 44]);
+                break;
             default:
                 break;
         }
 
-        $data = $transactions->paginate(25);
+        $data = $transactions->orderBy('created_at', 'desc')
+            ->paginate(25);
 
         return view('report-penjualan.show', compact('data'));
     }

@@ -67,7 +67,6 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
-                                    {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
                                     <td>{{ $key->sku }}</td>
                                     <td>{{ $key->nama }}</td>
                                     <td>{{ $key->ukuran }}</td>

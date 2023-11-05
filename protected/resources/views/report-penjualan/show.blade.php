@@ -56,11 +56,12 @@
                                 <th>Warna/Motif</th>
                                 <th>Jumlah</th>
                                 <th>Status</th>
+                                <th>Tanggal</th>
                                 <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * 10 + ++$i }}
+                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
                                     </td>
                                     <td>{{ $key->channel == 'mitra' ? $key->mitra->nama : $key->name }}</td>
                                     <td>{{ $key->channel }}</td>
@@ -70,6 +71,7 @@
                                     <td>{{ $key->motif }}</td>
                                     <td>{{ $key->jumlah }}</td>
                                     <td>{{ $key->status }}</td>
+                                    <td>{{ $key->created_at->format('d-m-Y') }}</td>
                                     <td>
                                         <a href="{{ route('penjualan.edit', $key->id) }}" class="btn btn-xs btn-info"
                                             title="Update">

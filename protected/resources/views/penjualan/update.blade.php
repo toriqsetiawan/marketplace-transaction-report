@@ -88,15 +88,15 @@
                         <div class="form-group">
                             <label for="packing">Packing</label>
                             <select name="packing" id="packing" class="form-control select2">
-                                <option value="1" {{ $data->biaya_tambahan ?? old('packing') == 1 ? 'selected':'' }}>Ya</option>
-                                <option value="0" {{ $data->biaya_tambahan ?? old('packing') == 0 ? 'selected':'' }}>Tidak</option>
+                                <option value="1" {{ $data->biaya_tambahan == 1 ? 'selected':'' }}>Ya</option>
+                                <option value="0" {{ $data->biaya_tambahan == 0 ? 'selected':'' }}>Tidak</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="insole">Insole</label>
                             <select name="insole" id="insole" class="form-control select2">
-                                <option value="1" {{ $data->biaya_lain_lain ?? old('insole') == 1 ? 'selected':'' }}>Ya</option>
-                                <option value="0" {{ $data->biaya_lain_lain ?? old('insole') == 0 ? 'selected':'' }}>Tidak</option>
+                                <option value="1" {{ $data->biaya_lain_lain == 1 ? 'selected':'' }}>Ya</option>
+                                <option value="0" {{ $data->biaya_lain_lain == 0 ? 'selected':'' }}>Tidak</option>
                             </select>
                         </div>
                         <div class="form-group">

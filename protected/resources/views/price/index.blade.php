@@ -62,7 +62,6 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
-                                    {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
                                     <td>{{ $key->marketplace }}</td>
                                     <td>{{ ($key->persentase * 100) }}%</td>
                                     <td>{{ $key->updated_at }}</td>
