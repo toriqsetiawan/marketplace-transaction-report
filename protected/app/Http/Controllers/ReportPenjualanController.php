@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\Supplier;
 use App\Entities\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class ReportPenjualanController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->start_date)->endOfMonth()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $transactions = Transaction::with(['configFee', 'mitra'])
+        $transactions = Transaction::with(['configFee', 'mitra', 'product.supplier'])
             ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end)
             ->where('status', 2)
@@ -41,15 +42,23 @@ class ReportPenjualanController extends Controller
             $data['offline'][] = ($offline->total_paid - $offline->biaya_tambahan - $offline->biaya_lain_lain - $offline->harga_beli) * $offline->jumlah;
         }
 
-        foreach ($transactions->filter(fn ($q) => $q->harga_beli > 15000) as $gudang) {
-            $data['gudang'][] = $gudang->harga_beli * $gudang->jumlah;
+        $supplier = Supplier::all();
+
+        foreach ($supplier as $key) {
+            $filteredData = $transactions->filter(function ($q) use ($key) {
+                if ($q->product) {
+                    if ($q->product->supplier) {
+                        return $q->product->supplier->id == $key->id;
+                    }
+                }
+                return null;
+            });
+            foreach ($filteredData as $trx) {
+                $data[$key->nama][] = $trx->harga_beli * $trx->jumlah;
+            }
         }
 
-        foreach ($transactions->filter(fn ($q) => in_array($q->product_id, [40, 41, 42, 43, 44])) as $trading) {
-            $data['trading'][] = $trading->harga_beli * $trading->jumlah;
-        }
-
-        return view('report-penjualan.index', compact('data'));
+        return view('report-penjualan.index', compact('data', 'supplier'));
     }
 
     public function show(Request $request, $id)

@@ -38,6 +38,15 @@
                 <div class="box box-warning">
                     <div class="box-body">
                         <div class="form-group">
+                            <label for="supplier_id">Supplier</label>
+                            <select class="form-control" id="supplier_id" name="supplier_id">
+                                <option hidden>Pilih supplier</option>
+                                @foreach($supplier as $key)
+                                    <option value="{{ $key->id }}" {{ $data->supplier_id == $key->id ? 'selected':'' }}>{{ $key->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="nama">SKU</label>
                             <input type="text" id="sku" name="sku" class="form-control" value="{{ $data->sku ?? old('sku') }}" readonly>
                         </div>

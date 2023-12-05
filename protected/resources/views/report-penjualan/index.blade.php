@@ -134,40 +134,6 @@
         </div>
         <div class="col-lg-4 col-xs-6">
             <!-- small box -->
-            <div class="small-box bg-red">
-                <div class="inner">
-                    <h3>Gudang</h3>
-                    <h4>Total bayar Rp.
-                        {{ array_key_exists('gudang', $data) ? number_format(collect($data['gudang'])->sum() ?? 0) : 0 }}
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-person-stalker"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode=gudang') }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-red">
-                <div class="inner">
-                    <h3>Trading</h3>
-                    <h4>Total bayar Rp.
-                        {{ array_key_exists('trading', $data) ? number_format(collect($data['trading'])->sum() ?? 0) : 0 }}
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-person-stalker"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode=trading') }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
             <div class="small-box bg-green">
                 <div class="inner">
                     <h3>Keuntungan</h3>
@@ -193,5 +159,24 @@
                 </a>
             </div>
         </div>
+        @foreach ($supplier as $item)
+        <div class="col-lg-4 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-red">
+                <div class="inner">
+                    <h3>{{ $item->nama }}</h3>
+                    <h4>Total bayar Rp.
+                        {{ array_key_exists($item->nama, $data) ? number_format(collect($data[$item->nama])->sum() ?? 0) : 0 }}
+                    </h4>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-stalker"></i>
+                </div>
+                <a href="{{ url('report-penjualan/1?mode='. $item->nama) }}" class="small-box-footer">
+                    More info <i class="fa fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        @endforeach
     </div>
 @endsection

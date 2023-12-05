@@ -29,6 +29,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('penjualan', 'PenjualanController');
     Route::resource('report-penjualan', 'ReportPenjualanController');
     Route::resource('mitra', 'MitraController');
+    Route::resource('supplier', 'SupplierController');
     Route::post('transaction/recovery', [
         'as' => 'transaction.recovery',
         'uses' => 'PrintController@recovery',

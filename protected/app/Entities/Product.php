@@ -35,16 +35,18 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = ['sku', 'nama', 'ukuran', 'harga_beli', 'harga_tambahan', 'harga_online', 'harga_offline', 'harga_mitra'];
+    protected $fillable = [
+        'supplier_id', 'sku', 'nama', 'ukuran', 'harga_beli', 'harga_tambahan', 'harga_online', 'harga_offline', 'harga_mitra'
+    ];
 
     /**
      * Handling relation tables.
      *
      */
-    // public function taxonomi()
-    // {
-    //     return $this->belongsTo('App\Entities\Taxonomi');
-    // }
+    public function supplier()
+    {
+        return $this->belongsTo('App\Entities\Supplier');
+    }
 
     public function setNamaAttribute($value)
     {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entities\Product;
+use App\Entities\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,14 +17,20 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         if ($request->has('search')) {
-            $data = Product::where('nama', 'like', '%' . $request->search . '%')
+            $data = Product::with('supplier')
+                ->where('nama', 'like', '%' . $request->search . '%')
                 ->orderBy('nama')
-                ->paginate(10);
+                ->paginate(20);
         } else {
-            $data = Product::orderBy('nama')->paginate(10);
+            $data = Product::with('supplier')
+                ->orderBy('nama')
+                ->paginate(20);
         }
 
-        return view('product.index')->with('data', $data);
+        $supplier = Supplier::all();
+
+        return view('product.index')->with('data', $data)
+            ->with('supplier', $supplier);
     }
 
     /**
@@ -42,7 +49,11 @@ class ProductController extends Controller
             '36-40',
             '39-43'
         ];
-        return view('product.create')->with('ukuran', $ukuran);
+
+        $supplier = Supplier::all();
+
+        return view('product.create')->with('ukuran', $ukuran)
+            ->with('supplier', $supplier);
     }
 
     /**
@@ -54,6 +65,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'supplier_id' => 'required|exists:supplier,id',
             'sku' => 'required|string|max:255',
             'nama' => 'required|string|max:255',
             'ukuran' => 'required',
@@ -103,7 +115,11 @@ class ProductController extends Controller
             '39-43'
         ];
 
-        return view('product.update')->with('data', $product)->with('ukuran', $ukuran);
+        $supplier = Supplier::all();
+
+        return view('product.update')->with('data', $product)
+            ->with('ukuran', $ukuran)
+            ->with('supplier', $supplier);
     }
 
     /**
@@ -116,6 +132,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
+            'supplier_id' => 'required|exists:supplier,id',
             'sku' => 'required|string|max:255',
             'nama' => 'required|string|max:255',
             'ukuran' => 'required',
@@ -131,7 +148,7 @@ class ProductController extends Controller
         }
 
         $product = Product::find($id);
-
+        $product->supplier_id = $request->supplier_id;
         $product->nama = $request->nama;
         $product->ukuran = $request->ukuran;
         $product->harga_beli = $request->harga_beli;
