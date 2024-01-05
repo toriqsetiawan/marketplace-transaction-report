@@ -70,11 +70,13 @@ class ReportPenjualanController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->start_date)->endOfMonth()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $transactions = Transaction::with(['configFee', 'mitra']);
+        $transactions = Transaction::with(['product.supplier', 'configFee', 'mitra']);
 
         // todo filter
         $transactions->where('created_at', '>=', $start);
         $transactions->where('created_at', '<=', $end);
+
+        $ownerName = null;
 
         switch ($request->mode) {
             case 'shopee':
@@ -95,20 +97,17 @@ class ReportPenjualanController extends Controller
             case 'offline':
                 $transactions->where('channel', 'offline');
                 break;
-            case 'gudang':
-                $transactions->where('harga_beli', '>', 15000)
-                    ->whereNotIn('product_id', [40, 41, 42, 43, 44]);
-                break;
-            case 'trading':
-                $transactions->whereIn('product_id', [40, 41, 42, 43, 44]);
-                break;
             default:
+                $ownerName = Supplier::find($request->mode);
+                $transactions->whereHas('product', fn ($q) => $q->where('supplier_id', $request->mode));
                 break;
         }
 
         $data = $transactions->orderBy('created_at', 'desc')
             ->paginate(25);
 
-        return view('report-penjualan.show', compact('data'));
+        $ownerName = $ownerName ? 'Produk dari ' . $ownerName->nama : null;
+
+        return view('report-penjualan.show', compact('data', 'ownerName'));
     }
 }

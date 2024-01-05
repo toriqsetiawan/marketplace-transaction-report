@@ -154,25 +154,25 @@
                 <div class="icon">
                     <i class="ion ion-social-usd"></i>
                 </div>
-                <a href="{{ url('report-penjualan/1?mode=trading') }}" class="small-box-footer">
+                <a href="?" class="small-box-footer">
                     More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
-        @foreach ($supplier as $item)
+        @foreach ($supplier as $key)
         <div class="col-lg-4 col-xs-6">
             <!-- small box -->
             <div class="small-box bg-red">
                 <div class="inner">
-                    <h3>{{ $item->nama }}</h3>
+                    <h3>{{ $key->nama }}</h3>
                     <h4>Total bayar Rp.
-                        {{ array_key_exists($item->nama, $data) ? number_format(collect($data[$item->nama])->sum() ?? 0) : 0 }}
+                        {{ array_key_exists($key->nama, $data) ? number_format(collect($data[$key->nama])->sum() ?? 0) : 0 }}
                     </h4>
                 </div>
                 <div class="icon">
                     <i class="ion ion-person-stalker"></i>
                 </div>
-                <a href="{{ url('report-penjualan/1?mode='. $item->nama) }}" class="small-box-footer">
+                <a href="{{ url('report-penjualan/1?mode='. $key->id.'&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
                     More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>

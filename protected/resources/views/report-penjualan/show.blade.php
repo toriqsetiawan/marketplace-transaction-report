@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Report penjualan - {{ request()->mode }}
+    Report penjualan - {{ $ownerName ?? request()->mode }}
 @stop
 
 @section('contentheader_title')
-    Report penjualan - {{ request()->mode }}
+    Report penjualan - {{ $ownerName ?? request()->mode }}
 @stop
 
 @section('main-content')
@@ -28,7 +28,8 @@
             <div class="box">
                 <div class="box-header">
                     <div class="d-block my-3">
-                        <input type="text" name="daterange" class="form-control" value="" style="width: 17rem; margin: 1rem 0"/>
+                        <input type="text" name="daterange" class="form-control" value=""
+                            style="width: 17rem; margin: 1rem 0" />
                     </div>
                     <div class="box-tools">
                         <form action="?" method="get">
@@ -45,48 +46,55 @@
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                     <table class="table table-hover">
-                        <table class="table table-hover">
-                            <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>Channel</th>
-                                <th>Marketplace</th>
-                                <th>Produk</th>
-                                <th>Ukuran</th>
-                                <th>Warna/Motif</th>
-                                <th>Jumlah</th>
-                                <th>Status</th>
-                                <th>Tanggal</th>
-                                <th>Action</th>
-                            </tr>
-                            @forelse($data as $key)
-                                <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
-                                    </td>
-                                    <td>{{ $key->channel == 'mitra' ? $key->mitra->nama : $key->name }}</td>
-                                    <td>{{ $key->channel }}</td>
-                                    <td>{{ $key->channel == 'online' ? $key->configFee->marketplace : '-' }}</td>
-                                    <td>{{ $key->product->nama }}</td>
-                                    <td>{{ $key->ukuran }}</td>
-                                    <td>{{ $key->motif }}</td>
-                                    <td>{{ $key->jumlah }}</td>
-                                    <td>{{ $key->status }}</td>
-                                    <td>{{ $key->created_at->format('d-m-Y') }}</td>
-                                    <td>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Channel</th>
+                            <th>Marketplace</th>
+                            <th>Produk</th>
+                            <th>Ukuran</th>
+                            <th>Warna/Motif</th>
+                            <th>Jumlah</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                            {{-- <th>Action</th> --}}
+                        </tr>
+                        @forelse($data as $key)
+                            @php
+                                $color = '';
+
+                                if (strtolower($key->status) == 'pending') {
+                                    $color = 'bg-info';
+                                } elseif (strtolower($key->status) == 'retur') {
+                                    $color = 'bg-red';
+                                }
+                            @endphp
+                            <tr class="{{ $color }}">
+                                <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
+                                </td>
+                                <td>{{ $key->channel == 'mitra' ? $key->mitra->nama : $key->name }}</td>
+                                <td>{{ $key->channel }}</td>
+                                <td>{{ $key->channel == 'online' ? $key->configFee->marketplace : '-' }}</td>
+                                <td>{{ $key->product->nama }}</td>
+                                <td>{{ $key->ukuran }}</td>
+                                <td>{{ $key->motif }}</td>
+                                <td>{{ $key->jumlah }}</td>
+                                <td>{{ $key->status }}</td>
+                                <td>{{ $key->created_at->format('d-m-Y') }}</td>
+                                {{-- <td>
                                         <a href="{{ route('penjualan.edit', $key->id) }}" class="btn btn-xs btn-info"
                                             title="Update">
                                             <i class="fa fa-edit"></i> Update
                                         </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center">
-                                        Tidak ada data yang ditampilkan
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </table>
+                                    </td> --}}
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    Tidak ada data yang ditampilkan
+                                </td>
+                            </tr>
+                        @endforelse
                     </table>
                 </div><!-- /.box-body -->
                 <div class="box-footer text-right">
