@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Edit Hutang
+    Tambah Konfigurasi biaya admin
 @endsection
 
 @section('contentheader_title')
-    Edit Hutang
+    Tambah Konfigurasi biaya admin
 @endsection
 
 @section('main-content')
@@ -30,46 +30,34 @@
                 </div>
             @endif
         </div>
-
-        <form role="form" method="post" action="{{ route('cicilan.update', $data->id) }}">
+        <form role="form" method="post" action="{{ route('config-fee.store') }}">
             {!! csrf_field() !!}
-            {!! method_field('PUT') !!}
-            <input type="hidden" name="employee" value="{{ $employee->id }}">
             <div class="col-md-6">
                 <!-- general form elements disabled -->
                 <div class="box box-warning">
-                    <div class="box-header with-border">
+                    {{-- <div class="box-header with-border">
                         <div class="alert alert-info alert-dismissable" style="margin-top: 20px">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                             <h4><i class="icon fa fa-info"></i> Catatan!</h4>
-                            Harga tidak menggunakan titik atau koma.<br>
+                            Harga per satuan tidak menggunakan titik atau koma.<br>
                             contoh : 10000
                         </div>
-                    </div><!-- /.box-header -->
+                    </div><!-- /.box-header --> --}}
                     <div class="box-body">
                         <div class="form-group">
-                            <label>Nama Karyawan</label>
-                            <input type="text" class="form-control" value="{{ $employee->nama }}" disabled>
+                            <label for="marketplace">Marketplace</label>
+                            <select class="form-control" id="marketplace" name="marketplace">
+                                <option hidden>Pilih marketplace</option>
+                                @foreach(['shopee', 'tiktok', 'tokopedia', 'lazada'] as $key)
+                                    <option value="{{ $key }}" {{ old('marketplace') == $key ? 'selected':'' }}>{{ $key }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label>Golongan</label>
-                            <input type="text" class="form-control"
-                                   value="{{ ucfirst($employee->golongan) }}" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label for="nama">Rincian Hutang</label>
-                            <input type="text" id="nama" name="nama" class="form-control"
-                                   value="{{ $data->nama ?? old('nama') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="harga">Harga</label>
-                            <input type="text" id="harga" name="harga" class="form-control"
-                                   value="{{  $data->harga ?? old('harga') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="angsuran">Jumlah Angsuran</label>
-                            <input type="int" id="angsuran" name="angsuran" class="form-control"
-                                   value="{{ $data->angsuran ?? old('angsuran') }}">
+                            <label for="harga">Biaya admin</label>
+                            <div style="display: flex">
+                                <input type="text" placeholder="Biaya admin %" name="persentase" class="form-control" value="0.101">
+                            </div>
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

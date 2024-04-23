@@ -74,7 +74,6 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
-                                    {{-- <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td> --}}
                                     <td>{{ $key->nama }}</td>
                                     <td>{{ ucfirst($key->golongan) }}</td>
                                     <td>{{ $key->alamat }}</td>

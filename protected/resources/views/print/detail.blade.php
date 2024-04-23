@@ -39,7 +39,7 @@
                             </tr>
                             @forelse($data as $key)
                                 <tr>
-                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * 10) + ++$i }}</td>
+                                    <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : ((request('page') - 1) * $data->perPage()) + ++$i }}</td>
                                     <td>{{ $key->employee->nama }}</td>
                                     <td>{{ number_format($key->tunai, 0, ',', '.') }}</td>
                                     <td>{{ number_format($key->giro, 0, ',', '.') }}</td>

@@ -38,8 +38,14 @@
             <li class="{{ activateWhenRoute('varian*')  }}"><a href="{{ route('varian.index') }}"><i class='fa fa-truck'></i> <span>Manajemen Barang</span></a></li>
             <li class="{{ activateWhenRoute('employee*')  }}"><a href="{{ route('employee.index') }}"><i class='fa fa-users'></i> <span>Manajemen Pegawai</span></a></li>
             <li class="{{ activateWhenRoute('transaction*')  }}"><a href="{{ route('transaction.index') }}"><i class='fa fa-book'></i> <span>Manajemen Transaksi</span></a></li>
-            {{-- <li class="{{ activateWhenRoute('cicilan*')  }}"><a href="{{ route('cicilan.index') }}"><i class='fa fa-money'></i> <span>Manajemen Cicilan</span></a></li> --}}
             <li class="{{ activateWhenRoute('print*')  }}"><a href="{{ route('print.index') }}"><i class='fa fa-print'></i> <span>Cetak Laporan</span></a></li>
+            <hr>
+            <li class="{{ activateWhenRoute('supplier*')  }}"><a href="{{ route('supplier.index') }}"><i class='fa fa-industry'></i> <span>Manajemen Supplier</span></a></li>
+            <li class="{{ activateWhenRoute('mitra*')  }}"><a href="{{ route('mitra.index') }}"><i class='fa fa-users'></i> <span>Manajemen Mitra</span></a></li>
+            <li class="{{ activateWhenRoute('product*')  }}"><a href="{{ route('product.index') }}"><i class='fa fa-folder'></i> <span>Manajemen Produk</span></a></li>
+            <li class="{{ activateWhenRoute('config-fee*')  }}"><a href="{{ route('config-fee.index') }}"><i class='fa fa-dollar'></i> <span>Config fee</span></a></li>
+            <li class="{{ activateWhenRoute('penjualan*')  }}"><a href="{{ route('penjualan.index') }}"><i class='fa fa-money'></i> <span>Penjualan</span></a></li>
+            <li class="{{ activateWhenRoute('report-penjualan*')  }}"><a href="{{ route('report-penjualan.index') }}"><i class='fa fa-print'></i> <span>Report Penjualan</span></a></li>
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

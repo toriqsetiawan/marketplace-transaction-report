@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Manajemen Transaksi
+    Manajemen Supplier
 @stop
 
 @section('contentheader_title')
-    Manajemen Transaksi
+    Manajemen Supplier
 @stop
 
 @section('main-content')
@@ -27,17 +27,9 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <div class="action-button">
-                        <a href="{{ route('transaction.index', 'type=all') }}" class="btn btn-info">
-                            <i class="fa fa-search"></i> Semua
-                        </a>
-                        <a href="{{ route('transaction.index', 'type=bulanan') }}" class="btn btn-success">
-                            <i class="fa fa-search"></i> Bulanan
-                        </a>
-                        <a href="{{ route('transaction.index', 'type=mingguan') }}" class="btn btn-warning">
-                            <i class="fa fa-search"></i> Mingguan
-                        </a>
-                    </div>
+                    <a href="{{ route('supplier.create') }}" class="btn btn-primary">
+                        <i class="fa fa-plus-circle"></i> Supplier
+                    </a>
                     <div class="box-tools">
                         <form action="?" method="get">
                             <div class="input-group" style="width: 200px;">
@@ -55,33 +47,23 @@
                         <table class="table table-hover">
                             <tr>
                                 <th class="text-center">Action</th>
-                                {{-- <th>No</th> --}}
                                 <th>Nama</th>
-                                <th>Golongan</th>
-                                <th>Setor</th>
-                                <th>Bon</th>
+                                <th>Keterangan</th>
                                 <th>Updated</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
                                     <td class="text-center">
-                                        <a href="{{ route('transaction.detail', ['id' => $key->id]) }}"
-                                           class="btn btn-xs btn-info" title="Detail">
-                                            <i class="fa fa-bar-chart-o"></i>
-                                        </a>
-                                        <a href="{{ route('transaction.setor', ['id' => $key->id]) }}"
-                                           class="btn btn-xs btn-success" title="Setor">
-                                            {{-- <i class="fa fa-plus"></i> --}} Setor
-                                        </a>
-                                        <a href="{{ route('transaction.bon', ['id' => $key->id]) }}"
-                                           class="btn btn-xs btn-danger" title="Bon">
-                                            {{-- <i class="fa fa-plus"></i> --}} Bon
+                                        <button type="button" class="btn btn-danger btn-xs btn-delete"
+                                                data-href="{{ route('supplier.destroy', $key->id) }}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                        <a href="{{ route('supplier.edit', $key->id) }}" class="btn btn-xs btn-info">
+                                            <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
                                     <td>{{ $key->nama }}</td>
-                                    <td>{{ ucfirst($key->golongan) }}</td>
-                                    <td>{{ number_format($key->report->sum('total'), 0, ',', '.') }}</td>
-                                    <td>{{ is_null($key->bon) ? '0' : number_format($key->bon->detail->sum('sub_total'), 0, ',', '.') }}</td>
+                                    <td>{{ $key->keterangan }}</td>
                                     <td>{{ $key->updated_at }}</td>
                                 </tr>
                             @empty

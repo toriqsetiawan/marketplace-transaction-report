@@ -24,7 +24,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('varian', 'VarianController');
     Route::resource('employee', 'EmployeeController');
     Route::resource('print', 'PrintController');
-    Route::resource('cicilan', 'CicilanController');
+    Route::resource('product', 'ProductController');
+    Route::resource('config-fee', 'ConfigPriceController');
+    Route::resource('penjualan', 'PenjualanController');
+    Route::resource('report-penjualan', 'ReportPenjualanController');
+    Route::resource('mitra', 'MitraController');
+    Route::resource('supplier', 'SupplierController');
     Route::post('transaction/recovery', [
         'as' => 'transaction.recovery',
         'uses' => 'PrintController@recovery',
