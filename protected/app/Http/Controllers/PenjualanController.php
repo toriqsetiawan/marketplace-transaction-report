@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entities\ConfigFee;
+use App\Entities\Mitra;
 use App\Entities\Product;
 use App\Entities\Transaction;
 use Carbon\Carbon;
@@ -51,8 +52,9 @@ class PenjualanController extends Controller
     {
         $products = Product::all();
         $marketplaces = ConfigFee::all();
+        $mitra = Mitra::all();
 
-        return view('penjualan.create', compact('products', 'marketplaces'));
+        return view('penjualan.create', compact('products', 'marketplaces', 'mitra'));
     }
 
     /**
@@ -96,7 +98,7 @@ class PenjualanController extends Controller
             'biaya_tambahan' => $request->packing ? $product->harga_tambahan : 0,
             'biaya_lain_lain' => $request->insole ? 5000 : 0,
             'pajak' => $pajak,
-            'total_paid' => $hargaJual - $pajak,
+            'total_paid' => $request->harga ?? ($hargaJual - $pajak),
             'status' => $request->status,
             'keterangan' => $request->keterangan ?? ''
         ]);
@@ -137,8 +139,9 @@ class PenjualanController extends Controller
         $data = Transaction::findOrFail($id);
         $products = Product::all();
         $marketplaces = ConfigFee::all();
+        $mitra = Mitra::all();
 
-        return view('penjualan.update', compact('data', 'products', 'marketplaces'));
+        return view('penjualan.update', compact('data', 'products', 'marketplaces', 'mitra'));
     }
 
     /**
@@ -183,7 +186,7 @@ class PenjualanController extends Controller
         $transaction->biaya_tambahan = $request->packing ? $product->harga_tambahan : 0;
         $transaction->biaya_lain_lain = $request->insole ? 5000 : 0;
         $transaction->pajak = $pajak;
-        $transaction->total_paid = $hargaJual - $pajak;
+        $transaction->total_paid = $request->harga ?? ($hargaJual - $pajak);
         $transaction->status = $request->status;
         $transaction->keterangan = $request->keterangan ?? '';
         $transaction->save();

@@ -38,15 +38,18 @@
                 <!-- general form elements disabled -->
                 <div class="box box-warning">
                     <div class="box-body">
+                        @php
+                            $selectedChannel = request('channel') ??  $data->channel;
+                        @endphp
                         <div class="form-group">
                             <label>Channel</label>
                             <select name="channel" id="channel" class="form-control select2">
                                 @foreach (['online', 'offline', 'mitra'] as $channel)
-                                    <option value="{{ $channel }}" {{ $data->channel == $channel ? 'selected' : '' }}>{{ $channel }}</option>
+                                    <option value="{{ $channel }}" {{ $selectedChannel == $channel ? 'selected' : '' }}>{{ $channel }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group marketplace-block">
+                        <div class="form-group marketplace-block" style="display:{{ $selectedChannel == 'online' ? 'block':'none' }}">
                             <label>Marketplace</label>
                             <select name="marketplace" id="marketplace" class="form-control select2">
                                 @foreach ($marketplaces as $marketplace)
@@ -56,8 +59,16 @@
                         </div>
                         <div class="form-group mitra-block">
                             <label for="name">Nama customer</label>
-                            <input type="text" id="name" name="name" class="form-control"
-                                   value="{{ $data->name ?? old('name') }}">
+                            @if ($selectedChannel == 'mitra')
+                                <select name="name" id="name" class="form-control select2">
+                                    @foreach ($mitra as $key)
+                                        <option value="{{ $key->id_mitra }}" {{ $key->id_mitra == $data->name ? 'selected':'' }}>{{ $key->nama }}</option>
+                                    @endforeach
+                                </select>
+                            @else
+                                <input type="text" id="name" name="name" class="form-control"
+                                    value="{{ $data->name ?? old('name') }}">
+                            @endif
                         </div>
                         <div class="form-group">
                             <label>Produk</label>
@@ -98,6 +109,11 @@
                                 <option value="1" {{ $data->biaya_lain_lain == 1 ? 'selected':'' }}>Ya</option>
                                 <option value="0" {{ $data->biaya_lain_lain == 0 ? 'selected':'' }}>Tidak</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="harga">Harga</label>
+                            <input type="text" id="harga" name="harga" class="form-control money"
+                                value="{{ $data->total_paid ?? old('harga') }}">
                         </div>
                         <div class="form-group">
                             <label for="status">Status</label>

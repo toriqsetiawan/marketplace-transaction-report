@@ -55,6 +55,11 @@ class Transaction extends Model
         return $this->belongsTo('App\Entities\Product');
     }
 
+    public function setTotalPaidAttribute($value)
+    {
+        $this->attributes['total_paid'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+    }
+
     public function getStatusAttribute($value)
     {
         if ($value == 1) {

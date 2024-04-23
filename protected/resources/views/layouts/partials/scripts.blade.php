@@ -43,16 +43,30 @@
             } else {
                 $('.marketplace-block').hide();
             }
+
+            let uri = updateQueryStringParameter(window.location.href, 'channel', this.value);
+            window.location.href = uri;
         })
+
+        function updateQueryStringParameter(uri, key, value) {
+            var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+            if (uri.match(re)) {
+                return uri.replace(re, '$1' + key + "=" + value + '$2');
+            } else {
+                return uri + separator + key + "=" + value;
+            }
+        }
     });
 
     $(function() {
-        let startDate = '{{ request("start_date") }}';
-        let endDate = '{{ request("end_date") }}';
+        let startDate = '{{ request('start_date') }}';
+        let endDate = '{{ request('end_date') }}';
 
         $('input[name="daterange"]').daterangepicker({
             minYear: 2023,
-            startDate: (startDate != "Invalid date" && startDate != "") ? startDate : moment().startOf('month'),
+            startDate: (startDate != "Invalid date" && startDate != "") ? startDate : moment().startOf(
+                'month'),
             endDate: (endDate != "Invalid date" && endDate != "") ? endDate : moment().endOf('month'),
             locale: {
                 format: 'DD/MM/YYYY'
