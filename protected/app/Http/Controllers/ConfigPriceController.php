@@ -91,7 +91,17 @@ class ConfigPriceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'marketplace' => 'required|in:shopee,tiktok,tokopedia,lazada',
+            'persentase' => 'required',
+        ]);
+
+        $configFee = ConfigFee::findOrFail($id);
+
+        $configFee->persentase = $request->persentase;
+        $configFee->save();
+
+        return redirect()->back()->with("success", "Sukses merubah konfigurasi biaya admin")->withInput();
     }
 
     /**
