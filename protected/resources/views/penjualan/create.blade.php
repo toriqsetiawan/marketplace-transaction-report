@@ -40,7 +40,7 @@
                         <div class="form-group">
                             <label>Channel</label>
                             <select name="channel" id="channel" class="form-control select2">
-                                @foreach (['online', 'offline', 'mitra'] as $channel)
+                                @foreach (['', 'online', 'offline', 'mitra'] as $channel)
                                     <option value="{{ $channel }}" {{ request('channel') == $channel ? 'selected':'' }}>{{ $channel }}</option>
                                 @endforeach
                             </select>
