@@ -45,6 +45,7 @@
             <li class="{{ activateWhenRoute('product*')  }}"><a href="{{ route('product.index') }}"><i class='fa fa-folder'></i> <span>Manajemen Produk</span></a></li>
             <li class="{{ activateWhenRoute('config-fee*')  }}"><a href="{{ route('config-fee.index') }}"><i class='fa fa-dollar'></i> <span>Config fee</span></a></li>
             <li class="{{ activateWhenRoute('penjualan*')  }}"><a href="{{ route('penjualan.index') }}"><i class='fa fa-money'></i> <span>Penjualan</span></a></li>
+            <li class="{{ activateWhenRoute('penjualan-pending*')  }}"><a href="{{ route('penjualan-pending.index') }}"><i class='fa fa-pencil'></i> <span>Penjualan Pending</span></a></li>
             <li class="{{ activateWhenRoute('report-penjualan*')  }}"><a href="{{ route('report-penjualan.index') }}"><i class='fa fa-print'></i> <span>Report Penjualan</span></a></li>
         </ul><!-- /.sidebar-menu -->
     </section>
