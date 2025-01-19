@@ -11,9 +11,9 @@ class CreateVarianTable extends Migration {
 		Schema::create('varian', function(Blueprint $table) {
 			$table->increments('id');
 			$table->integer('taxonomi_id');
-			$table->enum('kode', array('DB', 'KR', 'OT'));
+			$table->enum('kode', ['DB', 'KR', 'OT']);
 			$table->string('nama', 255);
-			$table->enum('type', array('item', 'bon', 'setor'));
+			$table->enum('type', ['item', 'bon', 'setor']);
 			$table->float('harga_satuan');
 			$table->timestamps();
 			$table->softDeletes();

@@ -11,7 +11,7 @@ class CreateReportTable extends Migration {
 		Schema::create('report', function(Blueprint $table) {
 			$table->bigIncrements('id');
 			$table->integer('employee_id');
-			$table->enum('type', array('setor', 'bon'));
+			$table->enum('type', ['setor', 'bon']);
 			$table->integer('kodi');
 			$table->float('total');
 			$table->integer('count');
