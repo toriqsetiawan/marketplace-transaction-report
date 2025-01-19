@@ -43,7 +43,7 @@ class Varian extends Model
      */
     public function taxonomi()
     {
-        return $this->belongsTo('App\Entities\Taxonomi');
+        return $this->belongsTo(\App\Entities\Taxonomi::class);
     }
 
     public function setNamaAttribute($value)

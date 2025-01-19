@@ -13,7 +13,7 @@ class CreateEmployeeTable extends Migration {
 			$table->string('nama', 255);
 			$table->string('alamat', 255);
 			$table->string('phone', 15);
-			$table->enum('golongan', array('mingguan', 'bulanan'));
+			$table->enum('golongan', ['mingguan', 'bulanan']);
 			$table->timestamps();
 			$table->softDeletes();
 		});

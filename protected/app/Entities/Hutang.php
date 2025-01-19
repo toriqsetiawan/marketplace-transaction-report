@@ -27,6 +27,6 @@ class Hutang extends Model
      */
     public function employee()
     {
-        return $this->belongsTo('App\Entities\Employee');
+        return $this->belongsTo(\App\Entities\Employee::class);
     }
 }

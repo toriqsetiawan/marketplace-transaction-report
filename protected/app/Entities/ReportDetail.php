@@ -44,12 +44,12 @@ class ReportDetail extends Model
      */
     public function varian()
     {
-        return $this->belongsTo('App\Entities\Varian');
+        return $this->belongsTo(\App\Entities\Varian::class);
     }
 
     public function report()
     {
-        return $this->belongsTo('App\Entities\Report');
+        return $this->belongsTo(\App\Entities\Report::class);
     }
 
 }

@@ -27,11 +27,11 @@ class ReportHutang extends Model
      */
     public function employee()
     {
-        return $this->belongsTo('App\Entities\Employee');
+        return $this->belongsTo(\App\Entities\Employee::class);
     }
 
     public function hutang()
     {
-        return $this->belongsTo('App\Entities\Hutang');
+        return $this->belongsTo(\App\Entities\Hutang::class);
     }
 }

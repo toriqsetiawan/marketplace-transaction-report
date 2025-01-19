@@ -42,7 +42,7 @@ class EmployeeLog extends Model
      */
     public function employee()
     {
-        return $this->belongsTo('App\Entities\Employee');
+        return $this->belongsTo(\App\Entities\Employee::class);
     }
 
     public function setAmountAttribute($value)

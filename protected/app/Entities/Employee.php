@@ -55,27 +55,27 @@ class Employee extends Model
      */
     public function report()
     {
-        return $this->hasMany('App\Entities\Report')->where('type', 'setor');
+        return $this->hasMany(\App\Entities\Report::class)->where('type', 'setor');
     }
 
     public function bon()
     {
-        return $this->hasOne('App\Entities\Report')->where('type', 'bon');
+        return $this->hasOne(\App\Entities\Report::class)->where('type', 'bon');
     }
 
     public function reportPrint()
     {
-        return $this->hasOne('App\Entities\ReportGlobal');
+        return $this->hasOne(\App\Entities\ReportGlobal::class);
     }
 
     public function log()
     {
-        return $this->hasOne('App\Entities\EmployeeLog');
+        return $this->hasOne(\App\Entities\EmployeeLog::class);
     }
 
     public function lastTransaction()
     {
-        return $this->hasOne('App\Entities\EmployeeLog');
+        return $this->hasOne(\App\Entities\EmployeeLog::class);
     }
 
     public function setNamaAttribute($value)

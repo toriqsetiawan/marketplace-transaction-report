@@ -11,7 +11,7 @@ class CreateEmployeeLogTable extends Migration {
 		Schema::create('employee_log', function(Blueprint $table) {
 			$table->bigIncrements('id');
 			$table->integer('employee_id');
-			$table->enum('type', array('setor', 'bon'));
+			$table->enum('type', ['setor', 'bon']);
 			$table->float('amount');
 			$table->float('correction');
 			$table->timestamps();
