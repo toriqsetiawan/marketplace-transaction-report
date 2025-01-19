@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Product;
-use App\Entities\Supplier;
+use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

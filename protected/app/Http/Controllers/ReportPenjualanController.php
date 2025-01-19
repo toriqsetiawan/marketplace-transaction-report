@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Supplier;
-use App\Entities\Transaction;
+use App\Models\Supplier;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

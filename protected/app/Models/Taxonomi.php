@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
-class ReportGlobal extends Model
+class Taxonomi extends Model
 {
-
     use SoftDeletes;
 
     /**
@@ -15,7 +15,7 @@ class ReportGlobal extends Model
      *
      * @var string
      */
-    protected $table = 'report_global';
+    protected $table = 'taxonomy';
 
     /**
      * Indicates if the model should be timestamped.
@@ -36,14 +36,17 @@ class ReportGlobal extends Model
      *
      * @var array
      */
-    protected $fillable = ['employee_id', 'tunai', 'giro', 'json_setor', 'json_bon', 'json_trx_log'];
+    protected $fillable = ['nama', 'slug'];
 
-    /**
-     * Handling relation tables.
-     *
-     */
-    public function employee()
+    public function scopeSatuan($query)
     {
-        return $this->belongsTo(\App\Entities\Employee::class);
+        return $query->whereType('satuan');
     }
+
+    public function setNamaAttribute($value)
+    {
+        $this->attributes['nama'] = $value;
+        $this->attributes['slug'] = Str::slug($value);
+    }
+
 }

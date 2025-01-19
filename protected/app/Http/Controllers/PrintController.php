@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Employee;
-use App\Entities\EmployeeLog;
-use App\Entities\Report;
-use App\Entities\ReportDetail;
-use App\Entities\ReportGlobal;
+use App\Models\Employee;
+use App\Models\EmployeeLog;
+use App\Models\Report;
+use App\Models\ReportDetail;
+use App\Models\ReportGlobal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;

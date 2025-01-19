@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Mitra;
+use App\Models\Mitra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

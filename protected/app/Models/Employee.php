@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use App\Scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Model;
@@ -55,27 +55,27 @@ class Employee extends Model
      */
     public function report()
     {
-        return $this->hasMany(\App\Entities\Report::class)->where('type', 'setor');
+        return $this->hasMany(Report::class)->where('type', 'setor');
     }
 
     public function bon()
     {
-        return $this->hasOne(\App\Entities\Report::class)->where('type', 'bon');
+        return $this->hasOne(Report::class)->where('type', 'bon');
     }
 
     public function reportPrint()
     {
-        return $this->hasOne(\App\Entities\ReportGlobal::class);
+        return $this->hasOne(ReportGlobal::class);
     }
 
     public function log()
     {
-        return $this->hasOne(\App\Entities\EmployeeLog::class);
+        return $this->hasOne(EmployeeLog::class);
     }
 
     public function lastTransaction()
     {
-        return $this->hasOne(\App\Entities\EmployeeLog::class);
+        return $this->hasOne(EmployeeLog::class);
     }
 
     public function setNamaAttribute($value)

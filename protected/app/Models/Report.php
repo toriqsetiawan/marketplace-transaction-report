@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,12 +27,12 @@ class Report extends Model
      */
     public function detail()
     {
-        return $this->hasMany(\App\Entities\ReportDetail::class);
+        return $this->hasMany(ReportDetail::class);
     }
 
     public function employee()
     {
-        return $this->belongsTo(\App\Entities\Employee::class);
+        return $this->belongsTo(Employee::class);
     }
 
     public function scopeBon($query)

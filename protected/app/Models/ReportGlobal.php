@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ReportDetail extends Model
+class ReportGlobal extends Model
 {
 
-    // use SoftDeletes;
+    use SoftDeletes;
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'report_detail';
+    protected $table = 'report_global';
 
     /**
      * Indicates if the model should be timestamped.
@@ -29,27 +29,21 @@ class ReportDetail extends Model
      *
      * @var array
      */
-    // protected $dates = ['deleted_at'];
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['varian_id', 'report_id', 'quantity', 'price_history', 'date_at', 'sub_total'];
+    protected $fillable = ['employee_id', 'tunai', 'giro', 'json_setor', 'json_bon', 'json_trx_log'];
 
     /**
      * Handling relation tables.
      *
      */
-    public function varian()
+    public function employee()
     {
-        return $this->belongsTo(\App\Entities\Varian::class);
+        return $this->belongsTo(Employee::class);
     }
-
-    public function report()
-    {
-        return $this->belongsTo(\App\Entities\Report::class);
-    }
-
 }

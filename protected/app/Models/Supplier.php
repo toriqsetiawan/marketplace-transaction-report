@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Mitra extends Model
+class Supplier extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'mitra';
+    protected $table = 'supplier';
 
     /**
      * Indicates if the model should be timestamped.
@@ -26,11 +26,11 @@ class Mitra extends Model
      * @var array
      */
     protected $fillable = [
-        'id_mitra', 'nama'
+        'nama', 'keterangan'
     ];
 
-    public function transactions()
+    public function products()
     {
-        return $this->hasMany(\App\Entities\Transaction::class, 'name', 'id_mitra');
+        return $this->hasMany(Product::class);
     }
 }
