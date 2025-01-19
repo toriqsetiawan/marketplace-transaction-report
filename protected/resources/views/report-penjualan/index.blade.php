@@ -26,13 +26,17 @@
                 <div class="inner">
                     <h3>Shopee</h3>
                     <h4>Rp.
-                        {{ array_key_exists(1, $data['online']) ? number_format(collect($data['online'][1])->sum() ?? 0) : 0 }}
+                        @if (isset($data['online']))
+                            {{ array_key_exists(1, $data['online']) ? number_format(collect($data['online'][1])->sum() ?? 0) : 0 }}
+                        @else
+                            0
+                        @endif
                     </h4>
                 </div>
                 <div class="icon">
                     <i class="ion ion-social-usd"></i>
                 </div>
-                <a href="{{ url('report-penjualan/1?mode=shopee') }}" class="small-box-footer">
+                <a href="{{ url('report-penjualan/1?mode=shopee&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
                     More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -43,13 +47,17 @@
                 <div class="inner">
                     <h3>Tokopedia</h3>
                     <h4>Rp.
-                        {{ array_key_exists(3, $data['online']) ? number_format(collect($data['online'][3])->sum() ?? 0) : 0 }}
+                        @if (isset($data['online']))
+                            {{ array_key_exists(3, $data['online']) ? number_format(collect($data['online'][3])->sum() ?? 0) : 0 }}
+                        @else
+                            0
+                        @endif
                     </h4>
                 </div>
                 <div class="icon">
                     <i class="ion ion-social-bitcoin"></i>
                 </div>
-                <a href="{{ url('report-penjualan/1?mode=tokopedia') }}" class="small-box-footer">
+                <a href="{{ url('report-penjualan/1?mode=tokopedia&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
                     More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -60,13 +68,17 @@
                 <div class="inner">
                     <h3>Lazada</h3>
                     <h4>Rp.
-                        {{ array_key_exists(4, $data['online']) ? number_format(collect($data['online'][4])->sum() ?? 0) : 0 }}
+                        @if (isset($data['online']))
+                            {{ array_key_exists(4, $data['online']) ? number_format(collect($data['online'][4])->sum() ?? 0) : 0 }}
+                        @else
+                            0
+                        @endif
                     </h4>
                 </div>
                 <div class="icon">
                     <i class="ion ion-social-euro"></i>
                 </div>
-                <a href="{{ url('report-penjualan/1?mode=lazada') }}" class="small-box-footer">
+                <a href="{{ url('report-penjualan/1?mode=lazada&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
                     More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -77,13 +89,17 @@
                 <div class="inner">
                     <h3>Tiktok</h3>
                     <h4>Rp.
-                        {{ array_key_exists(2, $data['online']) ? number_format(collect($data['online'][2])->sum() ?? 0) : 0 }}
+                        @if (isset($data['online']))
+                            {{ array_key_exists(2, $data['online']) ? number_format(collect($data['online'][2])->sum() ?? 0) : 0 }}
+                        @else
+                            0
+                        @endif
                     </h4>
                 </div>
                 <div class="icon">
                     <i class="ion ion-social-yen text-muted"></i>
                 </div>
-                <a href="{{ url('report-penjualan/1?mode=tiktok') }}" class="small-box-footer">
+                <a href="{{ url('report-penjualan/1?mode=tiktok&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
                     More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -110,7 +126,7 @@
                 <div class="icon">
                     <i class="ion ion-social-whatsapp"></i>
                 </div>
-                <a href="{{ url('report-penjualan/1?mode=mitra') }}" class="small-box-footer">
+                <a href="{{ url('report-penjualan/1?mode=mitra&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
                     More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -127,7 +143,7 @@
                 <div class="icon">
                     <i class="ion ion-person-stalker"></i>
                 </div>
-                <a href="{{ url('report-penjualan/1?mode=offline') }}" class="small-box-footer">
+                <a href="{{ url('report-penjualan/1?mode=offline&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
                     More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -150,6 +166,36 @@
                         @endphp
                         {{ number_format($keuntungan) }}
                     </h4>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-social-usd"></i>
+                </div>
+                <a href="{{ url('report-penjualan/1?start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
+                    More info <i class="fa fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>Omset</h3>
+                    <h4> Rp.{{ number_format($hpp + $keuntungan) }}</h4>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-social-usd"></i>
+                </div>
+                <a href="?" class="small-box-footer">
+                    More info <i class="fa fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>Hpp</h3>
+                    <h4> Rp.{{ number_format($hpp) }}</h4>
                 </div>
                 <div class="icon">
                     <i class="ion ion-social-usd"></i>

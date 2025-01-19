@@ -20,25 +20,40 @@ class PenjualanPendingController extends Controller
     public function index(Request $request)
     {
         $start = $request->start_date
-            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfMonth()->format('Y-m-d H:i:s')
-            : now()->startOfMonth();
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfDay()->format('Y-m-d H:i:s')
+            : null;
         $end = $request->end_date
-            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->endOfMonth()->format('Y-m-d H:i:s')
-            : now()->endOfMonth();
+            ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
+            : null;
 
         $data = Transaction::with(['configFee', 'product', 'mitra'])
             ->where('status', 1);
 
+        if ($start) {
+            $data->where('created_at', '>=', $start);
+        }
+
+        if ($end) {
+            $data->where('created_at', '<=', $end);
+        }
+
         if ($request->has('search')) {
-            $data->where('name', 'like', '%' . $request->search . '%');
+            if ($request->mitra) {
+                $data->where('name', $request->mitra);
+            } else {
+                $data->where('name', 'like', '%' . $request->search . '%');
+            }
             $data->orWhere('marketplace', $request->search);
         }
 
         $data = $data->orderBy('created_at', 'desc')
             ->paginate(20);
 
+        $listMitra = Mitra::all();
 
-        return view('penjualan-pending.index')->with('data', $data);
+        return view('penjualan-pending.index')
+            ->with('data', $data)
+            ->with('listMitra', $listMitra);
     }
 
     /**
@@ -142,6 +157,13 @@ class PenjualanPendingController extends Controller
         $transaction->total_paid = $request->harga ?? ($hargaJual - $pajak);
         $transaction->status = $request->status;
         $transaction->keterangan = $request->keterangan ?? '';
+
+        if ($request->date_at) {
+            $transaction->timestamps = false;
+            $transaction->created_at = Carbon::parse($request->date_at)->format('Y-m-d H:i:s');
+            $transaction->updated_at = now();
+        }
+
         $transaction->save();
 
         return redirect()->back()

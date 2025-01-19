@@ -31,8 +31,16 @@
                         <input type="text" name="daterange" class="form-control" value="" style="width: 17rem; margin: 1rem 0"/>
                     </div>
                     <div class="box-tools">
-                        <form action="?" method="get">
-                            <div class="input-group" style="width: 200px;">
+                        <form action="?start_date={{ request('start_date') }}&end_date={{ request('end_date') }}" method="get" style="align-items: center; display: inline-flex; gap: 10px;width:35rem">
+                            @if ($data->count() > 0)
+                                <select name="mitra" id="mitra" class="form-control">
+                                    <option value="">Semua Mitra</option>
+                                    @foreach ($listMitra as $mitra)
+                                        <option value="{{ $mitra->id_mitra }}" {{ request('mitra') == $mitra->id_mitra ? 'selected' : '' }}>{{ $mitra->nama }}</option>
+                                    @endforeach
+                                </select>
+                            @endif
+                            <div class="input-group" style="width: 35rem;">
                                 <input type="text" name="search" class="form-control input-sm pull-right"
                                     placeholder="Search" value="{{ request('search') }}">
                                 <div class="input-group-btn">

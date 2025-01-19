@@ -55,6 +55,10 @@
                             <th>Ukuran</th>
                             <th>Warna/Motif</th>
                             <th>Jumlah</th>
+                            <th>Harga beli</th>
+                            <th>Biaya Admin</th>
+                            <th>Total</th>
+                            <th>Margin</th>
                             <th>Status</th>
                             <th>Tanggal</th>
                             {{-- <th>Action</th> --}}
@@ -79,6 +83,18 @@
                                 <td>{{ $key->ukuran }}</td>
                                 <td>{{ $key->motif }}</td>
                                 <td>{{ $key->jumlah }}</td>
+                                <td>
+                                    <p class="text-right">{{ number_format($key->harga_beli) }}</p>
+                                    @if ($key->biaya_tambahan)
+                                        <p class="text-right">Pack {{ number_format($key->biaya_tambahan) }}</p>
+                                    @endif
+                                    @if ($key->biaya_lain_lain)
+                                        <p class="text-right">Insole {{ number_format($key->biaya_lain_lain) }}</p>
+                                    @endif
+                                </td>
+                                <td class="text-right">{{ number_format($key->pajak) }}</td>
+                                <td class="text-right">{{ $key->channel == 'online' ? number_format($key->total_paid) : number_format($key->total_paid * $key->jumlah) }}</td>
+                                <td class="text-right">{{ $key->channel == 'online' ? number_format($key->total_paid - (($key->harga_beli + $key->biaya_lain_lain + $key->biaya_tambahan) * $key->jumlah) - $key->pajak) : number_format(($key->total_paid * $key->jumlah) - (($key->harga_beli + $key->biaya_lain_lain + $key->biaya_tambahan) * $key->jumlah) - $key->pajak) }}</td>
                                 <td>{{ $key->status }}</td>
                                 <td>{{ $key->created_at->format('d-m-Y') }}</td>
                                 {{-- <td>

@@ -20,10 +20,10 @@ class MitraController extends Controller
 
         if ($request->has('search')) {
             $data = Mitra::where('nama', 'like', '%' . $request->search . '%')
-                ->orderBy('nama')
+                ->orderBy('id_mitra')
                 ->paginate(10);
         } else {
-            $data = Mitra::orderBy('nama')->paginate(10);
+            $data = Mitra::orderBy('id_mitra')->paginate(10);
         }
 
         return view('mitra.index')->with('data', $data);
