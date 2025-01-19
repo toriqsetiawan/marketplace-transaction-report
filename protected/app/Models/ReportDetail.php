@@ -1,20 +1,21 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Varian extends Model
+class ReportDetail extends Model
 {
-    use SoftDeletes;
+
+    // use SoftDeletes;
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'varian';
+    protected $table = 'report_detail';
 
     /**
      * Indicates if the model should be timestamped.
@@ -28,31 +29,27 @@ class Varian extends Model
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    // protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['nama', 'taxonomi_id', 'harga_satuan'];
+    protected $fillable = ['varian_id', 'report_id', 'quantity', 'price_history', 'date_at', 'sub_total'];
 
     /**
      * Handling relation tables.
      *
      */
-    public function taxonomi()
+    public function varian()
     {
-        return $this->belongsTo(\App\Entities\Taxonomi::class);
+        return $this->belongsTo(Varian::class);
     }
 
-    public function setNamaAttribute($value)
+    public function report()
     {
-        $this->attributes['nama'] = ucwords($value);
+        return $this->belongsTo(Report::class);
     }
 
-    public function setHargaSatuanAttribute($value)
-    {
-        $this->attributes['harga_satuan'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
-    }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Employee;
-use App\Entities\Taxonomi;
-use App\Entities\Varian;
+use App\Models\Employee;
+use App\Models\Taxonomi;
+use App\Models\Varian;
 
 /**
  * Class HomeController

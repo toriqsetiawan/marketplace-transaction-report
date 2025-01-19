@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Taxonomi;
-use App\Entities\Varian;
+use App\Models\Taxonomi;
+use App\Models\Varian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

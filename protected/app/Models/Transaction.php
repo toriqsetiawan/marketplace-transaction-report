@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -42,17 +42,17 @@ class Transaction extends Model
 
     public function mitra()
     {
-        return $this->belongsTo(\App\Entities\Mitra::class, 'name', 'id_mitra');
+        return $this->belongsTo(Mitra::class, 'name', 'id_mitra');
     }
 
     public function configFee()
     {
-        return $this->belongsTo(\App\Entities\ConfigFee::class, 'marketplace', 'id');
+        return $this->belongsTo(ConfigFee::class, 'marketplace', 'id');
     }
 
     public function product()
     {
-        return $this->belongsTo(\App\Entities\Product::class);
+        return $this->belongsTo(Product::class);
     }
 
     public function setTotalPaidAttribute($value)

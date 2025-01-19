@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
-class Taxonomi extends Model
+class Varian extends Model
 {
     use SoftDeletes;
 
@@ -15,7 +14,7 @@ class Taxonomi extends Model
      *
      * @var string
      */
-    protected $table = 'taxonomy';
+    protected $table = 'varian';
 
     /**
      * Indicates if the model should be timestamped.
@@ -36,17 +35,24 @@ class Taxonomi extends Model
      *
      * @var array
      */
-    protected $fillable = ['nama', 'slug'];
+    protected $fillable = ['nama', 'taxonomi_id', 'harga_satuan'];
 
-    public function scopeSatuan($query)
+    /**
+     * Handling relation tables.
+     *
+     */
+    public function taxonomi()
     {
-        return $query->whereType('satuan');
+        return $this->belongsTo(Taxonomi::class);
     }
 
     public function setNamaAttribute($value)
     {
-        $this->attributes['nama'] = $value;
-        $this->attributes['slug'] = Str::slug($value);
+        $this->attributes['nama'] = ucwords($value);
     }
 
+    public function setHargaSatuanAttribute($value)
+    {
+        $this->attributes['harga_satuan'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+    }
 }

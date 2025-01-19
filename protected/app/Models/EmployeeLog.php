@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -42,7 +42,7 @@ class EmployeeLog extends Model
      */
     public function employee()
     {
-        return $this->belongsTo(\App\Entities\Employee::class);
+        return $this->belongsTo(Employee::class);
     }
 
     public function setAmountAttribute($value)

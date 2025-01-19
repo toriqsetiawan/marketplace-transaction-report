@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\ConfigFee;
+use App\Models\ConfigFee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

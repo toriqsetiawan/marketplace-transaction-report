@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\ConfigFee;
-use App\Entities\Mitra;
-use App\Entities\Product;
-use App\Entities\Transaction;
+use App\Models\ConfigFee;
+use App\Models\Mitra;
+use App\Models\Product;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

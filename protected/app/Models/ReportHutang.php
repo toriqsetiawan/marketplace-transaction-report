@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,11 +27,11 @@ class ReportHutang extends Model
      */
     public function employee()
     {
-        return $this->belongsTo(\App\Entities\Employee::class);
+        return $this->belongsTo(Employee::class);
     }
 
     public function hutang()
     {
-        return $this->belongsTo(\App\Entities\Hutang::class);
+        return $this->belongsTo(Hutang::class);
     }
 }

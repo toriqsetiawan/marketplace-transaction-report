@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Mitra;
-use App\Entities\Supplier;
+use App\Models\Mitra;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
