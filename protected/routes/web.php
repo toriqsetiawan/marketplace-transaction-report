@@ -14,9 +14,10 @@ use App\Http\Controllers\ReportPenjualanController;
 use App\Http\Controllers\MitraController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
+use Illuminate\Support\Facades\Auth;
 
 // Authentication routes
-Route::auth(['register' => false]);
+Auth::routes(['register' => false]);
 
 // Redirect '/' to 'login'
 Route::get('/', function () {
