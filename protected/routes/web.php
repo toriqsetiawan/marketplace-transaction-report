@@ -1,95 +1,64 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\TaxonomiController;
+use App\Http\Controllers\VarianController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PrintController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ConfigPriceController;
+use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\PenjualanPendingController;
+use App\Http\Controllers\ReportPenjualanController;
+use App\Http\Controllers\MitraController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TransactionController;
+
+// Authentication routes
 Route::auth(['register' => false]);
 
-// Route::group(['domain' => env('WEB_DOMAIN', 'sonyjaya.toriqbagus.com')], function () {
+// Redirect '/' to 'login'
 Route::get('/', function () {
     return redirect('login');
 });
 
-Route::get('home', 'HomeController@index');
+// Home route
+Route::get('home', [HomeController::class, 'index']);
 
+// Authenticated routes
 Route::group(['middleware' => 'auth'], function () {
-    Route::resource('taxonomi', 'TaxonomiController');
-    Route::resource('varian', 'VarianController');
-    Route::resource('employee', 'EmployeeController');
-    Route::resource('print', 'PrintController');
-    Route::resource('product', 'ProductController');
-    Route::resource('config-fee', 'ConfigPriceController');
-    Route::resource('penjualan', 'PenjualanController');
-    Route::resource('penjualan-pending', 'PenjualanPendingController');
-    Route::resource('report-penjualan', 'ReportPenjualanController');
-    Route::resource('mitra', 'MitraController');
-    Route::resource('supplier', 'SupplierController');
-    Route::post('transaction/recovery', [
-        'as' => 'transaction.recovery',
-        'uses' => 'PrintController@recovery',
-    ]);
-    Route::post('weekly-report', [
-        'as' => 'weekly-report.print',
-        'uses' => 'PrintController@weeklyReport',
-    ]);
-    Route::get('transaction', [
-        'as' => 'transaction.index',
-        'uses' => 'TransactionController@index',
-    ]);
-    Route::get('transaction/setor', [
-        'as' => 'transaction.setor',
-        'uses' => 'TransactionController@setor',
-    ]);
-    Route::get('transaction/bon', [
-        'as' => 'transaction.bon',
-        'uses' => 'TransactionController@bon',
-    ]);
-    Route::get('transaction/detail', [
-        'as' => 'transaction.detail',
-        'uses' => 'TransactionController@show',
-    ]);
-    Route::post('transaction/rekap', [
-        'as' => 'transaction.rekap',
-        'uses' => 'TransactionController@rekap',
-    ]);
-    Route::get('transaction/setor/edit', [
-        'as' => 'transaction.setor.edit',
-        'uses' => 'TransactionController@editSetor',
-    ]);
-    Route::get('transaction/bon/edit', [
-        'as' => 'transaction.bon.edit',
-        'uses' => 'TransactionController@editBon',
-    ]);
-    Route::post('transaction/setor/create', [
-        'as' => 'transaction.setor.create',
-        'uses' => 'TransactionController@createSetor',
-    ]);
-    Route::post('transaction/bon/create', [
-        'as' => 'transaction.bon.create',
-        'uses' => 'TransactionController@createBon',
-    ]);
-    Route::post('transaction/setor/update', [
-        'as' => 'transaction.setor.update',
-        'uses' => 'TransactionController@updateSetor',
-    ]);
-    Route::post('transaction/bon/update', [
-        'as' => 'transaction.bon.update',
-        'uses' => 'TransactionController@updateBon',
-    ]);
-    Route::post('transaction/bon/delete', [
-        'as' => 'transaction.bon.delete',
-        'uses' => 'TransactionController@destroy',
-    ]);
-    Route::post('transaction/setor/delete', [
-        'as' => 'transaction.setor.delete',
-        'uses' => 'TransactionController@destroy',
-    ]);
+    // Resource routes
+    Route::resource('taxonomi', TaxonomiController::class);
+    Route::resource('varian', VarianController::class);
+    Route::resource('employee', EmployeeController::class);
+    Route::resource('print', PrintController::class);
+    Route::resource('product', ProductController::class);
+    Route::resource('config-fee', ConfigPriceController::class);
+    Route::resource('penjualan', PenjualanController::class);
+    Route::resource('penjualan-pending', PenjualanPendingController::class);
+    Route::resource('report-penjualan', ReportPenjualanController::class);
+    Route::resource('mitra', MitraController::class);
+    Route::resource('supplier', SupplierController::class);
+
+    // Custom routes
+    Route::post('transaction/recovery', [PrintController::class, 'recovery'])->name('transaction.recovery');
+    Route::post('weekly-report', [PrintController::class, 'weeklyReport'])->name('weekly-report.print');
+
+    Route::get('transaction', [TransactionController::class, 'index'])->name('transaction.index');
+    Route::get('transaction/setor', [TransactionController::class, 'setor'])->name('transaction.setor');
+    Route::get('transaction/bon', [TransactionController::class, 'bon'])->name('transaction.bon');
+    Route::get('transaction/detail', [TransactionController::class, 'show'])->name('transaction.detail');
+
+    Route::post('transaction/rekap', [TransactionController::class, 'rekap'])->name('transaction.rekap');
+    Route::get('transaction/setor/edit', [TransactionController::class, 'editSetor'])->name('transaction.setor.edit');
+    Route::get('transaction/bon/edit', [TransactionController::class, 'editBon'])->name('transaction.bon.edit');
+
+    Route::post('transaction/setor/create', [TransactionController::class, 'createSetor'])->name('transaction.setor.create');
+    Route::post('transaction/bon/create', [TransactionController::class, 'createBon'])->name('transaction.bon.create');
+    Route::post('transaction/setor/update', [TransactionController::class, 'updateSetor'])->name('transaction.setor.update');
+    Route::post('transaction/bon/update', [TransactionController::class, 'updateBon'])->name('transaction.bon.update');
+
+    Route::post('transaction/bon/delete', [TransactionController::class, 'destroy'])->name('transaction.bon.delete');
+    Route::post('transaction/setor/delete', [TransactionController::class, 'destroy'])->name('transaction.setor.delete');
 });
-// });
