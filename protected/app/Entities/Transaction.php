@@ -42,17 +42,17 @@ class Transaction extends Model
 
     public function mitra()
     {
-        return $this->belongsTo('App\Entities\Mitra', 'name', 'id_mitra');
+        return $this->belongsTo(\App\Entities\Mitra::class, 'name', 'id_mitra');
     }
 
     public function configFee()
     {
-        return $this->belongsTo('App\Entities\ConfigFee', 'marketplace', 'id');
+        return $this->belongsTo(\App\Entities\ConfigFee::class, 'marketplace', 'id');
     }
 
     public function product()
     {
-        return $this->belongsTo('App\Entities\Product');
+        return $this->belongsTo(\App\Entities\Product::class);
     }
 
     public function setTotalPaidAttribute($value)

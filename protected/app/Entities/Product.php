@@ -45,7 +45,7 @@ class Product extends Model
      */
     public function supplier()
     {
-        return $this->belongsTo('App\Entities\Supplier');
+        return $this->belongsTo(\App\Entities\Supplier::class);
     }
 
     public function setNamaAttribute($value)

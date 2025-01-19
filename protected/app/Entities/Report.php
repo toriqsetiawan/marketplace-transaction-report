@@ -27,12 +27,12 @@ class Report extends Model
      */
     public function detail()
     {
-        return $this->hasMany('App\Entities\ReportDetail');
+        return $this->hasMany(\App\Entities\ReportDetail::class);
     }
 
     public function employee()
     {
-        return $this->belongsTo('App\Entities\Employee');
+        return $this->belongsTo(\App\Entities\Employee::class);
     }
 
     public function scopeBon($query)

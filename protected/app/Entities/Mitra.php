@@ -31,6 +31,6 @@ class Mitra extends Model
 
     public function transactions()
     {
-        return $this->hasMany('App\Entities\Transaction', 'name', 'id_mitra');
+        return $this->hasMany(\App\Entities\Transaction::class, 'name', 'id_mitra');
     }
 }
