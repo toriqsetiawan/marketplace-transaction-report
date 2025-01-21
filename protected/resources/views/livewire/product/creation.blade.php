@@ -19,10 +19,109 @@
             </div>
         @endif
     </div>
-    <form role="form" method="post" action="storeProduct" x-data="{
+    <div x-data="{
         isActiveVariant: @entangle('isActiveVariant'),
+
         activateVariant() {
             this.isActiveVariant = true;
+        },
+
+        variations: [
+            { name: 'Warna', options: [''] },
+            { name: 'Ukuran', options: [''] },
+        ],
+
+        tableRows: @entangle('tableRows'),
+
+        init() {
+            this.updateTableRows();
+        },
+
+        addVariation() {
+            if (this.variations.length < 2) {
+                this.variations.push({ name: '', options: [''] });
+                this.updateTableRows();
+            } else {
+                alert('Tidak dapat menambahkan lebih dari 2 variasi');
+            }
+        },
+
+        removeVariation(index) {
+            this.variations.splice(index, 1);
+            this.updateTableRows();
+        },
+
+        addOption(vIndex) {
+            this.variations[vIndex].options.push('');
+            this.updateTableRows();
+        },
+
+        updateOption() {
+            this.updateTableRows();
+        },
+
+        removeOption(vIndex, optionIndex) {
+            this.variations[vIndex].options.splice(optionIndex, 1);
+            this.updateTableRows();
+        },
+
+        updateVariationName(index, newName) {
+            const oldName = this.variations[index].name;
+
+            // Update the variation name
+            this.variations[index].name = newName;
+
+            // Update table rows with the new name
+            const updatedRows = this.tableRows.map((row) => {
+                const newRow = { ...row };
+                if (oldName) {
+                    newRow[newName.toLowerCase()] = newRow[oldName.toLowerCase()] || '';
+                    delete newRow[oldName.toLowerCase()];
+                }
+                return newRow;
+            });
+
+            this.tableRows = updatedRows;
+
+            // Regenerate table rows to ensure they align with the updated columns
+            this.updateTableRows();
+        },
+
+        updateTableRows() {
+            if (this.variations.length === 0) {
+                this.tableRows = [];
+                return;
+            }
+
+            const optionsList = this.variations.map((variation) => variation.options);
+
+            const combinations = this.cartesianProduct(...optionsList);
+
+            this.tableRows = combinations.map((combination) => {
+                const row = { harga: '', stok: '', kode: '' };
+                this.variations.forEach((variation, index) => {
+                    row[variation.name.toLowerCase()] = combination[index];
+                });
+                return row;
+            });
+        },
+
+        cartesianProduct(...arrays) {
+            return arrays.reduce((a, b) =>
+                a.flatMap((x) => b.map((y) => [...x, y])), [
+                    []
+                ]);
+        },
+
+        saveProduct() {
+            for (const row of this.tableRows) {
+                if (!row.harga) {
+                    alert('Semua kolom harga harus diisi!');
+                    return false;  // If any field is empty, prevent form submission
+                }
+            }
+
+            this.$wire.saveProduct();
         }
     }">
         <div class="col-md-7">
@@ -61,166 +160,81 @@
                             x-show="!isActiveVariant" x-cloak>Aktifkan Variasi</button>
                     </div>
                     <div x-show="isActiveVariant" x-cloak>
-                        <div x-data="{
-                            variations: [
-                                { name: 'Warna', options: ['Merah', 'Kuning'] },
-                                { name: 'Ukuran', options: ['39', '40'] },
-                            ],
-                            tableRows: [],
-
-                            init() {
-                                this.updateTableRows();
-                            },
-
-                            addVariation() {
-                                this.variations.push({ name: '', options: [''] });
-                                this.updateTableRows();
-                            },
-
-                            removeVariation(index) {
-                                this.variations.splice(index, 1);
-                                this.updateTableRows();
-                            },
-
-                            addOption(vIndex) {
-                                this.variations[vIndex].options.push('');
-                                this.updateTableRows();
-                            },
-
-                            updateOption() {
-                                this.updateTableRows();
-                            },
-
-                            removeOption(vIndex, optionIndex) {
-                                this.variations[vIndex].options.splice(optionIndex, 1);
-                                this.updateTableRows();
-                            },
-
-                            updateVariationName(index, newName) {
-                                const oldName = this.variations[index].name;
-
-                                // Update the variation name
-                                this.variations[index].name = newName;
-
-                                // Update table rows with the new name
-                                const updatedRows = this.tableRows.map((row) => {
-                                    const newRow = { ...row };
-                                    if (oldName) {
-                                        newRow[newName.toLowerCase()] = newRow[oldName.toLowerCase()] || '';
-                                        delete newRow[oldName.toLowerCase()];
-                                    }
-                                    return newRow;
-                                });
-
-                                this.tableRows = updatedRows;
-
-                                // Regenerate table rows to ensure they align with the updated columns
-                                this.updateTableRows();
-                            },
-
-                            updateTableRows() {
-                                if (this.variations.length === 0) {
-                                    this.tableRows = [];
-                                    return;
-                                }
-
-                                const optionsList = this.variations.map((variation) => variation.options);
-
-                                const combinations = this.cartesianProduct(...optionsList);
-
-                                this.tableRows = combinations.map((combination) => {
-                                    const row = { harga: '', stok: 0, kode: '' };
-                                    this.variations.forEach((variation, index) => {
-                                        row[variation.name.toLowerCase()] = combination[index];
-                                    });
-                                    return row;
-                                });
-                            },
-
-                            cartesianProduct(...arrays) {
-                                return arrays.reduce((a, b) =>
-                                    a.flatMap((x) => b.map((y) => [...x, y])), [
-                                        []
-                                    ]);
-                            },
-                        }" class="bg-gray-light">
-                            <div class="panel-body">
-                                <template x-for="(variation, vIndex) in variations" :key="vIndex">
-                                    <div class="form-group"
-                                        style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px;">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Variasi<span x-text="vIndex + 1"></span></label>
-                                                <input type="text" class="form-control"
-                                                    placeholder="Ketik atau pilih" maxlength="14"
-                                                    x-model="variation.name"
-                                                    @input="updateVariationName(vIndex, $event.target.value)">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label>Opsi</label>
-                                                <template x-for="(option, oIndex) in variation.options"
-                                                    :key="oIndex">
-                                                    <div class="input-group" style="margin-bottom: 5px;">
-                                                        <input type="text" class="form-control"
-                                                            placeholder="Cth. Merah, dll" maxlength="20"
-                                                            x-model="variation.options[oIndex]"
-                                                            @input="updateOption">
-                                                        <span class="input-group-btn">
-                                                            <button class="btn btn-danger btn-sm"
-                                                                @click.prevent="removeOption(vIndex, oIndex)">
-                                                                <i class="glyphicon glyphicon-trash"></i>
-                                                            </button>
-                                                        </span>
-                                                    </div>
-                                                </template>
-                                                <button class="btn btn-success btn-sm"
-                                                    @click.prevent="addOption(vIndex)">
-                                                    <i class="glyphicon glyphicon-plus"></i> Tambah Opsi
-                                                </button>
-                                            </div>
+                        <div class="">
+                            <template x-for="(variation, vIndex) in variations" :key="vIndex">
+                                <div class="form-group"
+                                    style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Variasi <span x-text="vIndex + 1"></span></label>
+                                            <input type="text" class="form-control"
+                                                placeholder="Ketik atau pilih" maxlength="14"
+                                                x-model="variation.name"
+                                                @input="updateVariationName(vIndex, $event.target.value)">
                                         </div>
-                                        <div class="text-right" style="margin-top: 10px;">
-                                            <button class="btn btn-danger btn-sm"
-                                                @click.prevent="removeVariation(vIndex)">
-                                                <i class="glyphicon glyphicon-trash"></i> Hapus Variasi
+                                        <div class="col-md-6">
+                                            <label>Opsi</label>
+                                            <template x-for="(option, oIndex) in variation.options"
+                                                :key="oIndex">
+                                                <div class="input-group" style="margin-bottom: 5px;">
+                                                    <input type="text" class="form-control"
+                                                        placeholder="Cth. Merah, dll" maxlength="20"
+                                                        x-model="variation.options[oIndex]" @input="updateOption">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-danger btn-sm"
+                                                            @click.prevent="removeOption(vIndex, oIndex)">
+                                                            <i class="glyphicon glyphicon-trash"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </template>
+                                            <button class="btn btn-success btn-sm"
+                                                @click.prevent="addOption(vIndex)">
+                                                <i class="glyphicon glyphicon-plus"></i> Tambah Opsi
                                             </button>
                                         </div>
                                     </div>
-                                </template>
-                                <button class="btn btn-default btn-block" @click.prevent="addVariation">
-                                    <i class="glyphicon glyphicon-plus"></i> Tambah Variasi
-                                </button>
-                            </div>
+                                    <div class="text-right" style="margin-top: 10px;">
+                                        <button class="btn btn-danger btn-sm"
+                                            @click.prevent="removeVariation(vIndex)">
+                                            <i class="glyphicon glyphicon-trash"></i> Hapus Variasi
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+                            <button class="btn btn-default btn-block" @click.prevent="addVariation">
+                                <i class="glyphicon glyphicon-plus"></i> Tambah Variasi
+                            </button>
                             <!-- Generated Table -->
                             <div class="table-responsive" style="margin-top: 20px;" x-show="variations.length > 0">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <template x-for="variation in variations" :key="variation.name">
-                                                <th x-text="variation.name"></th>
+                                                <th x-text="variation.name" style="width: 10rem"></th>
                                             </template>
-                                            <th>Harga</th>
+                                            <th>Harga Mitra</th>
                                             <th>Stok</th>
-                                            <th>Kode Variasi</th>
+                                            <th>SKU / Kode Variasi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <template x-for="(row, idx) in tableRows" :key="idx">
                                             <tr>
                                                 <template x-for="variation in variations" :key="variation.name">
-                                                    <td x-text="row[variation.name.toLowerCase()]"></td>
+                                                    <td x-text="row[variation.name.toLowerCase()].toUpperCase()"></td>
                                                 </template>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        placeholder="Rp Mohon masukkan" x-model="row.harga">
+                                                        placeholder="Masukkan harga" x-model="row.harga">
                                                 </td>
                                                 <td>
-                                                    <input type="number" class="form-control" placeholder="0"
+                                                    <input type="number" class="form-control" placeholder="Masukkan stok"
                                                         x-model="row.stok">
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        placeholder="Mohon masukkan" x-model="row.kode">
+                                                        placeholder="Masukkan kode" x-model="row.kode">
                                                 </td>
                                             </tr>
                                         </template>
@@ -229,11 +243,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary pull-right">Simpan</button>
-                    </div>
                 </div>
             </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary pull-right"
+                    @click.prevent="saveProduct">Simpan</button>
+            </div>
         </div>
-    </form>
+    </div>
 </div>

@@ -11,16 +11,19 @@ class Creation extends Component
     public $productName;
     public $hargaBeli;
     public $hargaJual;
-    public $price;
-    public $variants = [];
     public $isActiveVariant = false;
 
-    public $variations = [];
+    public $tableRows = [];
 
     public function render()
     {
         $suppliers = Supplier::all();
 
         return view('livewire.product.creation', compact('suppliers'));
+    }
+
+    public function saveProduct()
+    {
+        dd($this->supplier, $this->productName, $this->hargaBeli, $this->hargaJual, $this->tableRows);
     }
 }
