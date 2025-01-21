@@ -9,16 +9,21 @@
 @stop
 
 @section('main-content')
+    <style>
+        table td.attribute > span:first-child::after {
+            content: ' - ';
+        }
+    </style>
     <div class="row">
         <div class="col-xs-12">
-            @if(session()->has('success'))
+            @if (session()->has('success'))
                 <div class="alert alert-success alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                     <h4><i class="icon fa fa-check"></i> Message!</h4>
                     {{ session('success') }}.
                 </div>
             @endif
-            @if(session()->has('error'))
+            @if (session()->has('error'))
                 <div class="alert alert-danger alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                     <h4><i class="icon fa fa-check"></i> Message!</h4>
@@ -34,58 +39,72 @@
                         <form action="?" method="get">
                             <div class="input-group" style="width: 200px;">
                                 <input type="text" name="search" class="form-control input-sm pull-right"
-                                       placeholder="Search" value="{{ request('search') }}">
+                                    placeholder="Search" value="{{ request('search') }}">
                                 <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-default"><i
+                                            class="fa fa-search"></i></button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
-                        <table class="table table-hover">
+                <div class="box-body table-responsive">
+                    <table class="table">
+                        <thead>
                             <tr>
                                 <th class="text-center">Action</th>
-                                <th>Supplier</th>
-                                <th>SKU</th>
-                                <th>Nama</th>
-                                <th>Ukuran</th>
-                                <th>Mitra</th>
-                                <th>Offline</th>
-                                <th>Online</th>
-                                <th>Packing</th>
-                                <th>Updated</th>
+                                <th>Product</th>
+                                <th>Harga Beli</th>
+                                <th>Harga Jual</th>
+                                <th>Stock</th>
                             </tr>
-                            @forelse($data as $key)
+                        </thead>
+                        <tbody>
+                            @forelse($data as $product)
+                                <!-- Parent Row -->
                                 <tr>
-                                    <td class="text-center">
+                                    <td rowspan="{{ $product->variants->count() + 1 }}" class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
-                                                data-href="{{ route('product.destroy', $key->id) }}">
+                                            data-href="{{ route('product.destroy', $product->id) }}">
                                             <i class="fa fa-trash"></i>
                                         </button>
-                                        <a href="{{ route('product.edit', $key->id) }}" class="btn btn-xs btn-info">
+                                        <a href="{{ route('product.edit', $product->id) }}" class="btn btn-xs btn-info">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
-                                    <td>{{ $key->supplier ? $key->supplier->nama : '-' }}</td>
-                                    <td>{{ $key->sku }}</td>
-                                    <td>{{ $key->nama }}</td>
-                                    <td>{{ $key->ukuran }}</td>
-                                    <td>{{ number_format($key->harga_mitra, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_offline, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_online, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_tambahan, 0, ',', '.') }}</td>
-                                    <td>{{ $key->updated_at }}</td>
+                                    <td>
+                                        <p>Supplier: <i>{{ $product->supplier ? $product->supplier->nama : '-' }}</i></p>
+                                        <p class="text-bold" style="margin: 0">{{ $product->nama }}</p>
+                                    </td>
+                                    <td>{{ !$product->variants->count() ? $product->harga_beli : '-' }}</td>
+                                    <td>{{ !$product->variants->count() ? $product->harga_jual : '-' }}</td>
+                                    <td>-</td>
                                 </tr>
+                                @forelse ($product->variants as $variant)
+                                    <!-- Sub Rows -->
+                                    <tr>
+                                        <td class="attribute">
+                                            @foreach ($variant->attributeValues as $attribute)
+                                                <span class="text-medium">{{ $attribute->value }}</span>
+                                            @endforeach
+                                        </td>
+                                        <td>{{ number_format($variant->product->harga_beli) }}</td>
+                                        <td>{{ number_format($variant->price) }}</td>
+                                        <td>{{ $variant->stock }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            -
+                                        </td>
+                                    </tr>
+                                @endforelse
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">
-                                        Tidak ada data yang ditampilkan
-                                    </td>
+                                    <td colspan="4">Tidak ada data yang di tampilkan</td>
                                 </tr>
                             @endforelse
-                        </table>
+                        </tbody>
                     </table>
                 </div><!-- /.box-body -->
                 <div class="box-footer text-right">
@@ -108,7 +127,7 @@
                         {{ method_field('DELETE') }}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                        aria-hidden="true">×</span></button>
+                                    aria-hidden="true">×</span></button>
                             <h4 class="modal-title">Delete Data</h4>
                         </div>
                         <div class="modal-body">

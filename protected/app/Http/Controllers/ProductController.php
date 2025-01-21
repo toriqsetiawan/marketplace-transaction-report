@@ -16,16 +16,23 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        // $product = Product::with('variants.attributeValues.attributeValue')->find(1);
+
+        // foreach ($product->variants as $variant) {
+        //     echo "Variant Price: " . $variant->price . "\n";
+
+        //     foreach ($variant->attributeValues as $attributeValue) {
+        //         echo $attributeValue->attributeValue->value . "\n"; // E.g., "Black", "39"
+        //     }
+        // }
+
+        $data = Product::with(['supplier', 'variants.attributeValues.attribute']);
+
         if ($request->has('search')) {
-            $data = Product::with('supplier')
-                ->where('nama', 'like', '%' . $request->search . '%')
-                ->orderBy('nama')
-                ->paginate(20);
-        } else {
-            $data = Product::with('supplier')
-                ->orderBy('nama')
-                ->paginate(20);
+            $data->where('nama', 'like', '%' . $request->search . '%');
         }
+
+        $data = $data->orderBy('id', 'desc')->paginate(20);
 
         $supplier = Supplier::all();
 
@@ -40,20 +47,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $ukuran = [
-            '26-30',
-            '28-32',
-            '29-33',
-            '31-35',
-            '33-37',
-            '36-40',
-            '39-43'
-        ];
-
-        $supplier = Supplier::all();
-
-        return view('product.create')->with('ukuran', $ukuran)
-            ->with('supplier', $supplier);
+        return view('product.create');
     }
 
     /**
