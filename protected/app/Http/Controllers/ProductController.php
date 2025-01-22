@@ -16,16 +16,6 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        // $product = Product::with('variants.attributeValues.attributeValue')->find(1);
-
-        // foreach ($product->variants as $variant) {
-        //     echo "Variant Price: " . $variant->price . "\n";
-
-        //     foreach ($variant->attributeValues as $attributeValue) {
-        //         echo $attributeValue->attributeValue->value . "\n"; // E.g., "Black", "39"
-        //     }
-        // }
-
         $data = Product::with(['supplier', 'variants.attributeValues.attribute']);
 
         if ($request->has('search')) {
@@ -58,25 +48,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'supplier_id' => 'required|exists:supplier,id',
-            'sku' => 'required|string|max:255',
-            'nama' => 'required|string|max:255',
-            'ukuran' => 'required',
-            'harga_beli' => 'required',
-            'harga_tambahan' => 'required',
-            'harga_online' => 'required',
-            'harga_offline' => 'required',
-            'harga_mitra' => 'required',
-        ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        Product::create($request->all());
-
-        return redirect()->back()->with("success", "Sukses menambah produk")->withInput();
     }
 
     /**
@@ -99,21 +71,8 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::find($id);
-        $ukuran = [
-            '26-30',
-            '28-32',
-            '29-33',
-            '31-35',
-            '33-37',
-            '36-40',
-            '39-43'
-        ];
 
-        $supplier = Supplier::all();
-
-        return view('product.update')->with('data', $product)
-            ->with('ukuran', $ukuran)
-            ->with('supplier', $supplier);
+        return view('product.update')->with('data', $product);
     }
 
     /**
@@ -125,34 +84,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'supplier_id' => 'required|exists:supplier,id',
-            'sku' => 'required|string|max:255',
-            'nama' => 'required|string|max:255',
-            'ukuran' => 'required',
-            'harga_beli' => 'required',
-            'harga_tambahan' => 'required',
-            'harga_online' => 'required',
-            'harga_offline' => 'required',
-            'harga_mitra' => 'required',
-        ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $product = Product::find($id);
-        $product->supplier_id = $request->supplier_id;
-        $product->nama = $request->nama;
-        $product->ukuran = $request->ukuran;
-        $product->harga_beli = $request->harga_beli;
-        $product->harga_tambahan = $request->harga_tambahan;
-        $product->harga_online = $request->harga_online;
-        $product->harga_offline = $request->harga_offline;
-        $product->harga_mitra = $request->harga_mitra;
-        $product->save();
-
-        return redirect()->back()->with("success", "Sukses merubah data")->withInput();
     }
 
     /**

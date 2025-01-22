@@ -9,7 +9,7 @@ class ProductVariant extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'price', 'stock'];
+    protected $fillable = ['product_id', 'price', 'stock', 'sku'];
 
     // Relationship to Product
     public function product()
@@ -20,5 +20,10 @@ class ProductVariant extends Model
     public function attributeValues()
     {
         return $this->belongsToMany(AttributeValue::class, 'variant_attribute_values', 'variant_id', 'attribute_value_id');
+    }
+
+    public function getPriceAttribute($value)
+    {
+        return round($value);
     }
 }

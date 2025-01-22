@@ -9,5 +9,5 @@
 @endsection
 
 @section('main-content')
-    @livewire('product.creation')
+    @livewire('product.create')
 @endsection

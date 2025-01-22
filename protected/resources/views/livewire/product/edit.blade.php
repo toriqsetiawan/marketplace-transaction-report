@@ -21,20 +21,15 @@
     </div>
     <div x-data="{
         isActiveVariant: @entangle('isActiveVariant'),
+        variations: @entangle('variations'),
+        tableRows: @entangle('tableRows'),
 
         activateVariant() {
             this.isActiveVariant = true;
         },
 
-        variations: [
-            { name: 'Warna', options: [''] },
-            { name: 'Ukuran', options: [''] },
-        ],
-
-        tableRows: @entangle('tableRows'),
-
         init() {
-            this.updateTableRows();
+            {{-- this.updateTableRows(); --}}
         },
 
         addVariation() {
@@ -117,14 +112,14 @@
             for (const row of this.tableRows) {
                 if (!row.harga) {
                     alert('Semua kolom harga harus diisi!');
-                    return false;  // If any field is empty, prevent form submission
+                    return false; // If any field is empty, prevent form submission
                 }
             }
 
             this.$wire.saveProduct();
         }
     }">
-        <div class="col-md-7">
+        <div class="col-md-8">
             <!-- general form elements disabled -->
             <div class="box box-warning">
                 <div class="box-body">
@@ -141,13 +136,25 @@
                         <label for="nama">Nama produk</label>
                         <input type="text" class="form-control" wire:model="productName">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" x-data>
                         <label for="harga">Harga beli</label>
-                        <input type="text" class="form-control money" wire:model="hargaBeli">
+                        <input type="text" class="form-control money"
+                        x-init="$nextTick(() => {
+                            setTimeout(() => {
+                                $($el).mask('000.000.000.000', {reverse: true});
+                            }, 1000)
+                        })"
+                        wire:model="hargaBeli">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" x-data>
                         <label for="harga">Harga jual</label>
-                        <input type="text" class="form-control money" wire:model="hargaJual">
+                        <input type="text" class="form-control money"
+                        x-init="$nextTick(() => {
+                            setTimeout(() => {
+                                $($el).mask('000.000.000.000', {reverse: true});
+                            }, 1000)
+                        })"
+                        wire:model="hargaJual">
                     </div>
                 </div>
             </div>
@@ -167,9 +174,8 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label>Variasi <span x-text="vIndex + 1"></span></label>
-                                            <input type="text" class="form-control"
-                                                placeholder="Ketik atau pilih" maxlength="14"
-                                                x-model="variation.name"
+                                            <input type="text" class="form-control" placeholder="Ketik atau pilih"
+                                                maxlength="14" x-model="variation.name"
                                                 @input="updateVariationName(vIndex, $event.target.value)">
                                         </div>
                                         <div class="col-md-6">
@@ -188,15 +194,13 @@
                                                     </span>
                                                 </div>
                                             </template>
-                                            <button class="btn btn-success btn-sm"
-                                                @click.prevent="addOption(vIndex)">
+                                            <button class="btn btn-success btn-sm" @click.prevent="addOption(vIndex)">
                                                 <i class="glyphicon glyphicon-plus"></i> Tambah Opsi
                                             </button>
                                         </div>
                                     </div>
                                     <div class="text-right" style="margin-top: 10px;">
-                                        <button class="btn btn-danger btn-sm"
-                                            @click.prevent="removeVariation(vIndex)">
+                                        <button class="btn btn-danger btn-sm" @click.prevent="removeVariation(vIndex)">
                                             <i class="glyphicon glyphicon-trash"></i> Hapus Variasi
                                         </button>
                                     </div>
@@ -206,12 +210,50 @@
                                 <i class="glyphicon glyphicon-plus"></i> Tambah Variasi
                             </button>
                             <!-- Generated Table -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div style="margin-top: 1rem">
+                                        <div style="display: inline-flex;align-items: center;"
+                                            x-data="{
+                                                allHarga: null,
+                                                applyHarga() {
+                                                    this.tableRows.forEach((row) => {
+                                                        row.harga = this.allHarga
+                                                    })
+                                                }
+                                            }"
+                                        >
+                                            <label for="sku" style="margin-right: 1rem">Harga</label>
+                                            <input type="number" class="form-control" x-model="allHarga">
+                                            <button class="btn btn-primary" @click="applyHarga">Terapkan</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div style="margin-top: 1rem">
+                                        <div style="display: inline-flex;align-items: center;"
+                                            x-data="{
+                                                allSku: null,
+                                                applySku() {
+                                                    this.tableRows.forEach((row) => {
+                                                        row.kode = this.allSku
+                                                    })
+                                                }
+                                            }"
+                                        >
+                                            <label for="sku" style="margin-right: 1rem">SKU</label>
+                                            <input type="text" class="form-control" x-model="allSku">
+                                            <button class="btn btn-primary" @click="applySku">Terapkan</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="table-responsive" style="margin-top: 20px;" x-show="variations.length > 0">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <template x-for="variation in variations" :key="variation.name">
-                                                <th x-text="variation.name" style="width: 10rem"></th>
+                                                <th x-text="variation.name"></th>
                                             </template>
                                             <th>Harga Mitra</th>
                                             <th>Stok</th>
@@ -229,8 +271,8 @@
                                                         placeholder="Masukkan harga" x-model="row.harga">
                                                 </td>
                                                 <td>
-                                                    <input type="number" class="form-control" placeholder="Masukkan stok"
-                                                        x-model="row.stok">
+                                                    <input type="number" class="form-control"
+                                                        placeholder="Masukkan stok" x-model="row.stok">
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"

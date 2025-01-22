@@ -68,4 +68,14 @@ class Product extends Model
     {
         $this->attributes['harga_jual'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
+
+    public function getHargaBeliAttribute($value)
+    {
+        return round($value);
+    }
+
+    public function getHargaJualAttribute($value)
+    {
+        return round($value);
+    }
 }

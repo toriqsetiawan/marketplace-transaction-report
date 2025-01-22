@@ -18,6 +18,7 @@ class CreateProductVariantsTable extends Migration
             $table->foreignId('product_id')->constrained()->cascadeOnDelete(); // Relates to `products`
             $table->decimal('price', 10, 2);
             $table->integer('stock')->default(0);
+            $table->string('sku');
             $table->timestamps();
         });
     }
