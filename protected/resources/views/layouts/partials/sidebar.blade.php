@@ -33,6 +33,7 @@
         <ul class="sidebar-menu">
             <li class="header">{{ trans('adminlte_lang::message.header') }}</li>
             <!-- Optionally, you can add icons to the links -->
+            @if(!env('ONLY_ONLINE_SHOP'))
             <li class="{{ url('home') == request()->url() ? 'active':'' }}"><a href="{{ url('home') }}"><i class='fa fa-home'></i> <span>Home</span></a></li>
             <li class="{{ activateWhenRoute('taxonomi*')  }}"><a href="{{ route('taxonomi.index') }}"><i class='fa fa-th'></i> <span>Manajemen Satuan</span></a></li>
             <li class="{{ activateWhenRoute('varian*')  }}"><a href="{{ route('varian.index') }}"><i class='fa fa-truck'></i> <span>Manajemen Barang</span></a></li>
@@ -40,6 +41,7 @@
             <li class="{{ activateWhenRoute('transaction*')  }}"><a href="{{ route('transaction.index') }}"><i class='fa fa-book'></i> <span>Manajemen Transaksi</span></a></li>
             <li class="{{ activateWhenRoute('print*')  }}"><a href="{{ route('print.index') }}"><i class='fa fa-print'></i> <span>Cetak Laporan</span></a></li>
             <hr>
+            @endif
             <li class="{{ activateWhenRoute('supplier*')  }}"><a href="{{ route('supplier.index') }}"><i class='fa fa-industry'></i> <span>Manajemen Supplier</span></a></li>
             <li class="{{ activateWhenRoute('mitra*')  }}"><a href="{{ route('mitra.index') }}"><i class='fa fa-users'></i> <span>Manajemen Mitra</span></a></li>
             <li class="{{ activateWhenRoute('product*')  }}"><a href="{{ route('product.index') }}"><i class='fa fa-folder'></i> <span>Manajemen Produk</span></a></li>

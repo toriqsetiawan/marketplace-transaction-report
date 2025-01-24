@@ -88,17 +88,56 @@
                 return;
             }
 
+            // Generate the Cartesian product of all options
             const optionsList = this.variations.map((variation) => variation.options);
-
             const combinations = this.cartesianProduct(...optionsList);
 
-            this.tableRows = combinations.map((combination) => {
-                const row = { harga: '', stok: '', kode: '' };
-                this.variations.forEach((variation, index) => {
-                    row[variation.name.toLowerCase()] = combination[index];
+            // Map the combinations to table rows while preserving existing values
+            const updatedRows = combinations.map((combination, vIndex) => {
+                // Build a key based on the combination
+                const key = combination.join('|').toLowerCase();
+
+                // Find a matching row in the current tableRows
+                const existingRow = this.tableRows.find((row) => {
+                    return this.variations.every((variation, index) => {
+                        return row[variation.name.toLowerCase()] === combination[index];
+                    });
                 });
-                return row;
+
+                // If a matching row exists, retain its values, otherwise create a new row
+                let harga = '';
+                let stok = '';
+                let kode = '';
+
+                if (this.tableRows[vIndex]?.harga) {
+                    harga = this.tableRows[vIndex].harga;
+                }
+
+                if (this.tableRows[vIndex]?.stok) {
+                    stok = this.tableRows[vIndex].stok;
+                }
+
+                if (this.tableRows[vIndex]?.kode) {
+                    kode = this.tableRows[vIndex].kode;
+                }
+
+                console.log(harga, stok, kode);
+
+                return existingRow
+                    ? { ...existingRow }
+                    : {
+                        harga: harga,
+                        stok: stok,
+                        kode: kode,
+                        ...this.variations.reduce((acc, variation, index) => {
+                            acc[variation.name.toLowerCase()] = combination[index];
+                            return acc;
+                        }, {})
+                    };
             });
+
+            // Update the tableRows with the newly generated rows
+            this.tableRows = updatedRows;
         },
 
         cartesianProduct(...arrays) {
