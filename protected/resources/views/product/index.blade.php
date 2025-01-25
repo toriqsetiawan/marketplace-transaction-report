@@ -76,9 +76,9 @@
                                         <p>Supplier: <i>{{ $product->supplier ? $product->supplier->nama : '-' }}</i></p>
                                         <p class="text-bold" style="margin: 0">{{ $product->nama }}</p>
                                     </td>
-                                    <td>{{ !$product->variants->count() ? $product->harga_beli : '-' }}</td>
-                                    <td>{{ !$product->variants->count() ? $product->harga_jual : '-' }}</td>
-                                    <td>-</td>
+                                    <td style="vertical-align: middle">{{ !$product->variants->count() ? $product->harga_beli : '-' }}</td>
+                                    <td style="vertical-align: middle">{{ !$product->variants->count() ? $product->harga_jual : '-' }}</td>
+                                    <td style="vertical-align: middle"><span class="text-bold">{{ $product->variants->sum('stock') }}</span></td>
                                 </tr>
                                 @forelse ($product->variants as $variant)
                                     <!-- Sub Rows -->
@@ -101,7 +101,7 @@
                                 @endforelse
                             @empty
                                 <tr>
-                                    <td colspan="4">Tidak ada data yang di tampilkan</td>
+                                    <td class="text-center" colspan="5">Tidak ada data yang di tampilkan</td>
                                 </tr>
                             @endforelse
                         </tbody>
