@@ -108,19 +108,19 @@
             <!-- small box -->
             <div class="small-box bg-blue">
                 <div class="inner">
-                    <h3>Mitra</h3>
+                    <h3>User</h3>
                     <h4>Rp.
                         @php
-                            $totalMitra = 0;
+                            $totalUser = 0;
                         @endphp
-                        @if (array_key_exists('mitra', $data))
-                            @foreach ($data['mitra'] as $item)
+                        @if (array_key_exists('user', $data))
+                            @foreach ($data['user'] as $item)
                                 @php
-                                    $totalMitra += collect($item)->sum();
+                                    $totalUser += collect($item)->sum();
                                 @endphp
                             @endforeach
                         @endif
-                        {{ number_format($totalMitra) }}
+                        {{ number_format($totalUser) }}
                     </h4>
                 </div>
                 <div class="icon">
@@ -157,7 +157,7 @@
                         @php
                             $keuntungan = 0;
                             foreach ($data as $item => $value) {
-                                if (in_array($item, ['online', 'offline', 'mitra'])) {
+                                if (in_array($item, ['online', 'offline', 'user'])) {
                                     foreach ($value as $key) {
                                         $keuntungan += collect($key)->sum();
                                     }

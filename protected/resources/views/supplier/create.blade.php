@@ -37,8 +37,8 @@
                 <div class="box box-warning">
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="nama">Nama</label>
-                            <input type="text" id="nama" name="nama" class="form-control" value="{{ old('nama') }}">
+                            <label for="name">Nama</label>
+                            <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}">
                         </div>
                         <div class="form-group">
                             <label for="keterangan">Keterangan</label>

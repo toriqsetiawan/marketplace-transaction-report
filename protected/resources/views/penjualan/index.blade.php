@@ -66,7 +66,7 @@
                                 <tr>
                                     <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
                                     </td>
-                                    <td>{{ $key->channel == 'mitra' ? $key->mitra->nama : $key->name }}</td>
+                                    <td>{{ $key->channel == 'user' ? $key->mitra->nama : $key->name }}</td>
                                     <td>{{ $key->channel }}</td>
                                     <td>{{ $key->channel == 'online' ? $key->configFee->marketplace : '-' }}</td>
                                     <td>{{ $key->product->nama }}</td>

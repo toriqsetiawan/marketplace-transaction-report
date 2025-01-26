@@ -1,24 +1,24 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Konfigurasi biaya admin
+    Manajemen User
 @stop
 
 @section('contentheader_title')
-    Konfigurasi biaya admin
+    Manajemen User
 @stop
 
 @section('main-content')
     <div class="row">
         <div class="col-xs-12">
-            @if(session()->has('success'))
+            @if (session()->has('success'))
                 <div class="alert alert-success alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                     <h4><i class="icon fa fa-check"></i> Message!</h4>
                     {{ session('success') }}.
                 </div>
             @endif
-            @if(session()->has('error'))
+            @if (session()->has('error'))
                 <div class="alert alert-danger alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                     <h4><i class="icon fa fa-check"></i> Message!</h4>
@@ -27,16 +27,17 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('config-fee.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Config
+                    <a href="{{ route('user.create') }}" class="btn btn-primary">
+                        <i class="fa fa-plus-circle"></i> User
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
                             <div class="input-group" style="width: 200px;">
                                 <input type="text" name="search" class="form-control input-sm pull-right"
-                                       placeholder="Search" value="{{ request('search') }}">
+                                    placeholder="Search" value="{{ request('search') }}">
                                 <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-default"><i
+                                            class="fa fa-search"></i></button>
                                 </div>
                             </div>
                         </form>
@@ -47,23 +48,30 @@
                         <table class="table table-hover">
                             <tr>
                                 <th class="text-center">Action</th>
-                                <th>Marketplace</th>
-                                <th>Persentase</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Email</th>
+                                <th>Created</th>
                                 <th>Updated</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-danger btn-xs btn-delete"
-                                                data-href="{{ route('config-fee.destroy', $key->id) }}">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                        <a href="{{ route('config-fee.edit', $key->id) }}" class="btn btn-xs btn-info">
+                                        @if ($key->role_id != 1)
+                                            <button type="button" class="btn btn-danger btn-xs btn-delete"
+                                                data-href="{{ route('user.destroy', $key->id) }}">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        @endif
+
+                                        <a href="{{ route('user.edit', $key->id) }}" class="btn btn-xs btn-info">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
-                                    <td>{{ $key->marketplace }}</td>
-                                    <td>{{ ($key->persentase * 100) }}%</td>
+                                    <td>{{ $key->name }}</td>
+                                    <td>{{ $key->role->name }}</td>
+                                    <td>{{ $key->email }}</td>
+                                    <td>{{ $key->created_at }}</td>
                                     <td>{{ $key->updated_at }}</td>
                                 </tr>
                             @empty
@@ -96,7 +104,7 @@
                         {{ method_field('DELETE') }}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                        aria-hidden="true">×</span></button>
+                                    aria-hidden="true">×</span></button>
                             <h4 class="modal-title">Delete Data</h4>
                         </div>
                         <div class="modal-body">

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Ubah Mitra
+    Tambah User
 @endsection
 
 @section('contentheader_title')
-    Ubah Mitra
+    Tambah User
 @endsection
 
 @section('main-content')
@@ -30,20 +30,36 @@
                 </div>
             @endif
         </div>
-        <form role="form" method="post" action="{{ route('mitra.update', $data->id) }}">
+        <form role="form" method="post" action="{{ route('user.store') }}">
             {!! csrf_field() !!}
-            {!! method_field('put') !!}
             <div class="col-md-6">
                 <!-- general form elements disabled -->
                 <div class="box box-warning">
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="id_mitra">Id Mitra</label>
-                            <input type="text" id="id_mitra" name="id_mitra" class="form-control" value="{{ $data->id_mitra ?? old('id_mitra') }}">
+                            <label for="role">Role</label>
+                            <select name="role" id="role" class="form-control">
+                                <option hidden>Pilih role</option>
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="nama">Nama</label>
-                            <input type="text" id="nama" name="nama" class="form-control" value="{{ $data->nama ?? old('nama') }}">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" email="email" class="form-control" value="{{ old('email') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="password_confirmation">Confirm Password</label>
+                            <input type="password" id="password_confirmation" name="password_confirmation" class="form-control">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary pull-right">Simpan</button>

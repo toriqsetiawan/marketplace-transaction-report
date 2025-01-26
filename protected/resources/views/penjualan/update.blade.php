@@ -44,7 +44,7 @@
                         <div class="form-group">
                             <label>Channel</label>
                             <select name="channel" id="channel" class="form-control select2">
-                                @foreach (['online', 'offline', 'mitra'] as $channel)
+                                @foreach (['online', 'offline', 'user'] as $channel)
                                     <option value="{{ $channel }}" {{ $selectedChannel == $channel ? 'selected' : '' }}>{{ $channel }}</option>
                                 @endforeach
                             </select>
@@ -59,9 +59,9 @@
                         </div>
                         <div class="form-group mitra-block">
                             <label for="name">Nama customer</label>
-                            @if ($selectedChannel == 'mitra')
+                            @if ($selectedChannel == 'user')
                                 <select name="name" id="name" class="form-control select2">
-                                    @foreach ($mitra as $key)
+                                    @foreach ($user as $key)
                                         <option value="{{ $key->id_mitra }}" {{ $key->id_mitra == $data->name ? 'selected':'' }}>{{ $key->nama }}</option>
                                     @endforeach
                                 </select>

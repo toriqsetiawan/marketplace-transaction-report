@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConfigFee;
-use App\Models\Mitra;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -26,7 +26,7 @@ class PenjualanPendingController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : null;
 
-        $data = Transaction::with(['configFee', 'product', 'mitra'])
+        $data = Transaction::with(['configFee', 'product', 'user'])
             ->where('status', 1);
 
         if ($start) {
@@ -49,11 +49,11 @@ class PenjualanPendingController extends Controller
         $data = $data->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        $listMitra = Mitra::all();
+        $listUser = User::all();
 
         return view('penjualan-pending.index')
             ->with('data', $data)
-            ->with('listMitra', $listMitra);
+            ->with('listUser', $listUser);
     }
 
     /**
@@ -107,9 +107,9 @@ class PenjualanPendingController extends Controller
         $data = Transaction::findOrFail($id);
         $products = Product::all();
         $marketplaces = ConfigFee::all();
-        $mitra = Mitra::all();
+        $user = User::all();
 
-        return view('penjualan-pending.update', compact('data', 'products', 'marketplaces', 'mitra'));
+        return view('penjualan-pending.update', compact('data', 'products', 'marketplaces', 'user'));
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConfigFee;
-use App\Models\Mitra;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -27,7 +27,7 @@ class PenjualanController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $data = Transaction::with(['configFee', 'product', 'mitra'])
+        $data = Transaction::with(['configFee', 'product', 'user'])
             ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end);
 
@@ -52,9 +52,9 @@ class PenjualanController extends Controller
     {
         $products = Product::all();
         $marketplaces = ConfigFee::all();
-        $mitra = Mitra::all();
+        $user = User::all();
 
-        return view('penjualan.create', compact('products', 'marketplaces', 'mitra'));
+        return view('penjualan.create', compact('products', 'marketplaces', 'user'));
     }
 
     /**
@@ -164,9 +164,9 @@ class PenjualanController extends Controller
         $data = Transaction::findOrFail($id);
         $products = Product::all();
         $marketplaces = ConfigFee::all();
-        $mitra = Mitra::all();
+        $user = User::all();
 
-        return view('penjualan.update', compact('data', 'products', 'marketplaces', 'mitra'));
+        return view('penjualan.update', compact('data', 'products', 'marketplaces', 'user'));
     }
 
     /**

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mitra;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class MitraController extends Controller
+class UserController extends Controller
 {
 
     /**
@@ -16,17 +17,14 @@ class MitraController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Mitra::orderBy('nama')->paginate(10);
+        $data = User::orderBy('name')->paginate(10);
 
         if ($request->has('search')) {
-            $data = Mitra::where('nama', 'like', '%' . $request->search . '%')
-                ->orderBy('id_mitra')
+            $data = User::where('name', 'like', '%' . $request->search . '%')
                 ->paginate(10);
-        } else {
-            $data = Mitra::orderBy('id_mitra')->paginate(10);
         }
 
-        return view('mitra.index')->with('data', $data);
+        return view('user.index', compact('data'));
     }
 
     /**
@@ -36,7 +34,9 @@ class MitraController extends Controller
      */
     public function create()
     {
-        return view('mitra.create');
+        $roles = Role::all();
+
+        return view('user.create', compact('roles'));
     }
 
     /**
@@ -48,14 +48,17 @@ class MitraController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'id_mitra' => 'required|unique:mitra,id_mitra',
+            'role_id' => 'required|exists:role,id',
+            'email' => 'required|email',
+            'password' => 'required',
+            'password_confirmation' => 'required|same:password',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        Mitra::create($request->all());
+        User::create($request->all());
 
         return redirect()->back()->with("success", "Sukses menambah data")->withInput();
     }
@@ -78,10 +81,10 @@ class MitraController extends Controller
      */
     public function edit($id)
     {
-        $mitra = Mitra::findOrFail($id);
+        $roles = Role::all();
+        $user = User::findOrFail($id);
 
-        return view('mitra.update')
-            ->with('data', $mitra);
+        return view('user.update', compact('user', 'roles'));
     }
 
     /**
@@ -94,17 +97,29 @@ class MitraController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'id_mitra' => 'required',
+            'role_id' => 'required|exists:role,id',
+            'email' => 'required|email',
         ]);
+
+        if ($request->password) {
+            $validator = Validator::make($request->all(), [
+                'password' => 'required',
+                'password_confirmation' => 'required|same:password',
+            ]);
+        }
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $mitra = Mitra::findOrFail($id);
-        $mitra->nama = $request->nama;
-        $mitra->id_mitra = $request->id_mitra;
-        $mitra->save();
+        $user = User::findOrFail($id);
+        $user->name = $request->name;
+        $user->role_id = $request->role_id;
+        $user->email = $request->email;
+        if ($request->password) {
+            $user->password = bcrypt($request->password);
+        }
+        $user->save();
 
         return redirect()->back()->with("success", "Sukses merubah data")->withInput();
     }
@@ -117,8 +132,8 @@ class MitraController extends Controller
      */
     public function destroy($id)
     {
-        $mitra = Mitra::findOrFail($id);
-        $mitra->delete();
+        $user = User::findOrFail($id);
+        $user->delete();
 
         return redirect()->back()->with("success", "Sukses menghapus data")->withInput();
     }

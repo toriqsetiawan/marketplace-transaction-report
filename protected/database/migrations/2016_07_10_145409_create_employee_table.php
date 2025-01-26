@@ -14,6 +14,7 @@ class CreateEmployeeTable extends Migration {
 			$table->string('alamat', 255);
 			$table->string('phone', 15);
 			$table->enum('golongan', ['mingguan', 'bulanan']);
+            $table->boolean('is_active')->default(1);
 			$table->timestamps();
 			$table->softDeletes();
 		});

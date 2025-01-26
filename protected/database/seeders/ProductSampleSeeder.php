@@ -40,6 +40,8 @@ class ProductSampleSeeder extends Seeder
         $variant1 = ProductVariant::create([
             'product_id' => $product->id,
             'price' => 100000,
+            'sku' => '12345',
+            'stock' => 10
         ]);
         $variant1->attributeValues()->attach([
             $blackValue->id, // Black
@@ -49,6 +51,8 @@ class ProductSampleSeeder extends Seeder
         $variant2 = ProductVariant::create([
             'product_id' => $product->id,
             'price' => 120000,
+            'sku' => '12345',
+            'stock' => 10
         ]);
         $variant2->attributeValues()->attach([
             $blackValue->id, // Black
@@ -58,6 +62,8 @@ class ProductSampleSeeder extends Seeder
         $variant3 = ProductVariant::create([
             'product_id' => $product->id,
             'price' => 110000,
+            'sku' => '12345',
+            'stock' => 10
         ]);
         $variant3->attributeValues()->attach([
             $blueValue->id, // Blue

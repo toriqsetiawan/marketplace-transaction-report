@@ -42,7 +42,7 @@ class Transaction extends Model
 
     public function mitra()
     {
-        return $this->belongsTo(Mitra::class, 'name', 'id_mitra');
+        return $this->belongsTo(User::class, 'name', 'id_mitra');
     }
 
     public function configFee()

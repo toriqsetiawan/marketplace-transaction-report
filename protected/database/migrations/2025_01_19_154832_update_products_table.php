@@ -15,7 +15,7 @@ class UpdateProductsTable extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->dropColumn(['sku', 'ukuran', 'harga_tambahan', 'harga_online', 'harga_offline', 'harga_mitra']);
-            $table->decimal('harga_jual', 10, 2)->nullable();
+            $table->decimal('harga_jual', 10, 2)->after('harga_beli')->nullable();
         });
     }
 

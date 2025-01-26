@@ -282,7 +282,7 @@
                                             <template x-for="variation in variations" :key="variation.name">
                                                 <th x-text="variation.name"></th>
                                             </template>
-                                            <th>Harga Mitra</th>
+                                            <th>Harga User</th>
                                             <th>Stok</th>
                                             <th>SKU / Kode Variasi</th>
                                         </tr>

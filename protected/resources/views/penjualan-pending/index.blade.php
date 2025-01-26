@@ -34,9 +34,9 @@
                         <form action="?start_date={{ request('start_date') }}&end_date={{ request('end_date') }}" method="get" style="align-items: center; display: inline-flex; gap: 10px;width:35rem">
                             @if ($data->count() > 0)
                                 <select name="mitra" id="mitra" class="form-control">
-                                    <option value="">Semua Mitra</option>
-                                    @foreach ($listMitra as $mitra)
-                                        <option value="{{ $mitra->id_mitra }}" {{ request('mitra') == $mitra->id_mitra ? 'selected' : '' }}>{{ $mitra->nama }}</option>
+                                    <option value="">Semua User</option>
+                                    @foreach ($listUser as $user)
+                                        <option value="{{ $user->id_mitra }}" {{ request('user') == $user->id_mitra ? 'selected' : '' }}>{{ $user->nama }}</option>
                                     @endforeach
                                 </select>
                             @endif
@@ -71,7 +71,7 @@
                                 <tr>
                                     <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
                                     </td>
-                                    <td>{{ $key->channel == 'mitra' ? $key->mitra->nama : $key->name }}</td>
+                                    <td>{{ $key->channel == 'user' ? $key->mitra->nama : $key->name }}</td>
                                     <td>{{ $key->channel }}</td>
                                     <td>{{ $key->channel == 'online' ? $key->configFee->marketplace : '-' }}</td>
                                     <td>{{ $key->product->nama }}</td>

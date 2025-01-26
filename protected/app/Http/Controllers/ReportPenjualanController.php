@@ -18,7 +18,7 @@ class ReportPenjualanController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $transactions = Transaction::with(['configFee', 'mitra', 'product.supplier'])
+        $transactions = Transaction::with(['configFee', 'user', 'product.supplier'])
             ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end)
             ->where('status', 2)
@@ -35,10 +35,10 @@ class ReportPenjualanController extends Controller
             }
         }
 
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'mitra')->groupBy('name') as $trxMitra) {
-            foreach ($trxMitra as $mitra) {
-                $data[$mitra->channel][$mitra->mitra->nama][] = ($mitra->total_paid - $mitra->biaya_tambahan - $mitra->biaya_lain_lain - $mitra->harga_beli) * $mitra->jumlah;
-                $hpp += (($mitra->biaya_tambahan + $mitra->biaya_lain_lain + $mitra->harga_beli) * $mitra->jumlah);
+        foreach ($transactions->filter(fn ($q) => $q->channel == 'user')->groupBy('name') as $trxUser) {
+            foreach ($trxUser as $user) {
+                $data[$user->channel][$user->mitra->nama][] = ($user->total_paid - $user->biaya_tambahan - $user->biaya_lain_lain - $user->harga_beli) * $user->jumlah;
+                $hpp += (($user->biaya_tambahan + $user->biaya_lain_lain + $user->harga_beli) * $user->jumlah);
             }
         }
 
@@ -75,7 +75,7 @@ class ReportPenjualanController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $transactions = Transaction::with(['product.supplier', 'configFee', 'mitra']);
+        $transactions = Transaction::with(['product.supplier', 'configFee', 'user']);
 
         // todo filter
         $transactions->where('created_at', '>=', $start);
@@ -96,8 +96,8 @@ class ReportPenjualanController extends Controller
             case 'lazada':
                 $transactions->where('marketplace', 4);
                 break;
-            case 'mitra':
-                $transactions->where('channel', 'mitra');
+            case 'user':
+                $transactions->where('channel', 'user');
                 break;
             case 'offline':
                 $transactions->where('channel', 'offline');

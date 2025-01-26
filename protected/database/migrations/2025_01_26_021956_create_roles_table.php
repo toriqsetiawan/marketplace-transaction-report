@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateConfigFeeTable extends Migration
+class CreateRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateConfigFeeTable extends Migration
      */
     public function up()
     {
-        Schema::create('config_fee', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('marketplace');
-            $table->float('persentase', 8, 4);
-            $table->json('data')->nullable();
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique(); // Role name (e.g., administrator, reseller, customer)
+            $table->string('description')->nullable(); // Optional description
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +28,6 @@ class CreateConfigFeeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('config_fee');
+        Schema::dropIfExists('roles');
     }
 }
