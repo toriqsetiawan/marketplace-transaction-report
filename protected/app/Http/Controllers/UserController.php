@@ -17,14 +17,20 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $roles = Role::all();
         $data = User::orderBy('name')->paginate(10);
 
         if ($request->has('search')) {
-            $data = User::where('name', 'like', '%' . $request->search . '%')
-                ->paginate(10);
+            $data = User::where('name', 'like', '%' . $request->search . '%');
+
+            if ($request->role) {
+                $data = $data->where('role_id', $request->role);
+            }
+
+            $data = $data->paginate(10);
         }
 
-        return view('user.index', compact('data'));
+        return view('user.index', compact('data', 'roles'));
     }
 
     /**

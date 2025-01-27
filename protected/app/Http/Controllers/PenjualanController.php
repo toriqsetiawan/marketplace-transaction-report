@@ -27,18 +27,12 @@ class PenjualanController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $data = Transaction::with(['configFee', 'product', 'user'])
+        $data = Transaction::with(['user', 'items'])
             ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end);
 
-        if ($request->has('search')) {
-            $data->where('name', 'like', '%' . $request->search . '%');
-            $data->orWhere('marketplace', $request->search);
-        }
-
         $data = $data->orderBy('id', 'desc')
             ->paginate(20);
-
 
         return view('penjualan.index')->with('data', $data);
     }
@@ -50,11 +44,7 @@ class PenjualanController extends Controller
      */
     public function create(Request $request)
     {
-        $products = Product::all();
-        $marketplaces = ConfigFee::all();
-        $user = User::all();
-
-        return view('penjualan.create', compact('products', 'marketplaces', 'user'));
+        return view('penjualan.create');
     }
 
     /**
@@ -149,9 +139,7 @@ class PenjualanController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function show($id)
-    {
-    }
+    public function show($id) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -241,4 +229,47 @@ class PenjualanController extends Controller
 
         return redirect()->back()->with("success", "Sukses menghapus data")->withInput();
     }
+
+    // public function processReturn($transactionId)
+    // {
+    //     $transaction = Transaction::findOrFail($this->transactionId);
+    //     $totalRefund = 0;
+
+    //     $productReturn = ProductReturn::create([
+    //         'transaction_id' => $transaction->id,
+    //         'return_date' => now(),
+    //         'status' => 'pending',
+    //     ]);
+
+    //     foreach ($this->returns as $itemId => $returnData) {
+    //         $transactionItem = TransactionItem::findOrFail($itemId);
+    //         $returnQuantity = $returnData['quantity'];
+
+    //         if ($returnQuantity > 0 && $returnQuantity <= $transactionItem->quantity) {
+    //             $refundAmount = $returnQuantity * $transactionItem->price;
+    //             $totalRefund += $refundAmount;
+
+    //             ProductReturnItem::create([
+    //                 'product_return_id' => $productReturn->id,
+    //                 'transaction_item_id' => $transactionItem->id,
+    //                 'quantity' => $returnQuantity,
+    //                 'refund_amount' => $refundAmount,
+    //             ]);
+
+    //             // Adjust stock
+    //             $transactionItem->productVariant->increment('stock', $returnQuantity);
+
+    //             // Update transaction item
+    //             $transactionItem->quantity -= $returnQuantity;
+    //             $transactionItem->save();
+    //         }
+    //     }
+
+    //     $productReturn->update([
+    //         'total_refund' => $totalRefund,
+    //         'status' => 'processed',
+    //     ]);
+
+    //     session()->flash('message', 'Return processed successfully.');
+    // }
 }

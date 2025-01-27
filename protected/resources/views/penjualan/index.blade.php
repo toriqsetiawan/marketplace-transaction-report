@@ -27,24 +27,13 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <a href="{{ route('penjualan.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Tambah
-                    </a>
-                    <div class="d-block my-3">
-                        <input type="text" name="daterange" class="form-control" value="" style="width: 17rem; margin: 1rem 0"/>
-                    </div>
+                    <input type="text" name="daterange" class="form-control" value="" style="width: 17rem; margin: 1rem 0"/>
                     <div class="box-tools">
-                        <form action="?" method="get">
-                            <div class="input-group" style="width: 200px;">
-                                <input type="text" name="search" class="form-control input-sm pull-right"
-                                    placeholder="Search" value="{{ request('search') }}">
-                                <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-default"><i
-                                            class="fa fa-search"></i></button>
-                                </div>
-                            </div>
-                        </form>
+                        <a href="{{ route('penjualan.create') }}" class="btn btn-primary" style="margin: 1rem 0">
+                            <i class="fa fa-plus-circle"></i> Tambah
+                        </a>
                     </div>
+
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                     <table class="table table-hover">

@@ -21,6 +21,7 @@ class CreatePurchasesTable extends Migration
             $table->date('purchase_date'); // Date of the purchase
             $table->decimal('total_cost', 15, 2); // Total cost of the purchase
             $table->enum('status', ['pending', 'completed', 'cancelled']); // Purchase status
+            $table->string('note')->nullable();
             $table->timestamps();
 
             // Foreign key constraints

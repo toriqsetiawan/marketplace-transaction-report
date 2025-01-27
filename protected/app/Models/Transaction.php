@@ -36,40 +36,26 @@ class Transaction extends Model
      * @var array
      */
     protected $fillable = [
-        'product_id', 'channel', 'name', 'marketplace', 'jumlah', 'ukuran', 'motif', 'harga_beli', 'harga_jual',
-        'biaya_tambahan', 'biaya_lain_lain', 'pajak', 'total_paid', 'status', 'keterangan'
+        'transaction_code', 'note', 'status', 'user_id', 'type', 'total_price', 'packing_cost'
     ];
 
-    public function mitra()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'name', 'id_mitra');
+        return $this->belongsTo(User::class);
     }
 
-    public function configFee()
+    public function setTotalPriceAttribute($value)
     {
-        return $this->belongsTo(ConfigFee::class, 'marketplace', 'id');
+        $this->attributes['total_price'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
-    public function product()
+    public function setPackingCostAttribute($value)
     {
-        return $this->belongsTo(Product::class);
+        $this->attributes['packing_cost'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
-    public function setTotalPaidAttribute($value)
+    public function items()
     {
-        $this->attributes['total_paid'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
-    }
-
-    public function getStatusAttribute($value)
-    {
-        if ($value == 1) {
-            return 'Pending';
-        } elseif ($value == 2) {
-            return 'Lunas';
-        } elseif ($value == 3) {
-            return 'Retur';
-        } else {
-            return '-';
-        }
+        return $this->hasMany(TransactionItem::class);
     }
 }

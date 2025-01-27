@@ -31,8 +31,14 @@
                         <i class="fa fa-plus-circle"></i> User
                     </a>
                     <div class="box-tools">
-                        <form action="?" method="get">
-                            <div class="input-group" style="width: 200px;">
+                        <form action="?" method="get" style="align-items: center; display: inline-flex; gap: 10px;width:35rem">
+                        <select name="role" id="role" class="form-control">
+                            <option value="">Semua Role</option>
+                            @foreach ($roles as $role)
+                                <option value="{{ $role->id }}" {{ request('role') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
+                            @endforeach
+                        </select>
+                            <div class="input-group" style="width: 35rem;">
                                 <input type="text" name="search" class="form-control input-sm pull-right"
                                     placeholder="Search" value="{{ request('search') }}">
                                 <div class="input-group-btn">

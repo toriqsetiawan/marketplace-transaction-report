@@ -165,7 +165,7 @@
                         <select class="form-control" wire:model="supplier">
                             <option hidden>Pilih supplier</option>
                             @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->nama }}</option>
+                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                             @endforeach
                         </select>
                     </div>

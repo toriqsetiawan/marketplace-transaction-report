@@ -71,6 +71,12 @@ class UsersTableSeeder extends Seeder
             ],
             [
                 'role_id'    => 4,
+                'name'    => 'Lazada Hafiz Sport',
+                'email'    => 'hafizsport.lazada@gmail.com',
+                'password'    => bcrypt('Customer.123')
+            ],
+            [
+                'role_id'    => 4,
                 'name'    => 'Tiktok Art Footwear',
                 'email'    => 'artffootwear.tiktok@gmail.com',
                 'password'    => bcrypt('Customer.123')
@@ -97,6 +103,12 @@ class UsersTableSeeder extends Seeder
                 'role_id'    => 4,
                 'name'    => 'Shopee Tosant',
                 'email'    => 'tosant.shopee@gmail.com',
+                'password'    => bcrypt('Customer.123')
+            ],
+            [
+                'role_id'    => 4,
+                'name'    => 'Offline',
+                'email'    => 'offline@gmail.com',
                 'password'    => bcrypt('Customer.123')
             ]
         ];

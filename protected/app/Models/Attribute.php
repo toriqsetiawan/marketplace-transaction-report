@@ -11,6 +11,11 @@ class Attribute extends Model
 
     protected $fillable = ['name'];
 
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strtoupper($value);
+    }
+
     // Relationship to AttributeValues
     public function values()
     {

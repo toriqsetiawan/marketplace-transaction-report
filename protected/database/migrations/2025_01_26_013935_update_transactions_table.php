@@ -21,11 +21,13 @@ class UpdateTransactionsTable extends Migration
             ]);
 
             // new structure
-            $table->unsignedBigInteger('user_id'); // The user who made the transaction
+            $table->string('note')->after('id')->nullable();
+            $table->decimal('packing_cost', 10, 2)->after('id')->default(0); // Packing cost for the transaction
+            $table->decimal('total_price', 10, 2)->after('id'); // Total price for the transaction
+            $table->string('type')->default('offline')->after('id'); // 'online' or 'offline'
+            $table->string('transaction_code')->after('id')->unique(); // Unique code for the transaction
+            $table->unsignedBigInteger('user_id')->after('id'); // The user who made the transaction
             $table->string('status')->default('pending')->change(); // pending/paid/cancel/return
-            $table->string('type')->default('offline'); // 'online' or 'offline'
-            $table->decimal('total_price', 10, 2); // Total price for the transaction
-            $table->decimal('packing_cost', 10, 2)->default(0); // Packing cost for the transaction
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
