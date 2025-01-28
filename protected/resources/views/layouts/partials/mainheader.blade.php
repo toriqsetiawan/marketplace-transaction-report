@@ -13,7 +13,7 @@
     <nav class="navbar navbar-static-top" role="navigation">
         <!-- Sidebar toggle button-->
         <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-            <span class="sr-only">{{ trans('adminlte_lang::message.togglenav') }}</span>
+            <span class="sr-only">@lang('message.togglenav')</span>
         </a>
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
@@ -26,7 +26,7 @@
                         <span class="label label-success">4</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="header">{{ trans('adminlte_lang::message.tabmessages') }}</li>
+                        <li class="header">@lang('message.tabmessages')</li>
                         <li>
                             <!-- inner menu: contains the messages -->
                             <ul class="menu">
@@ -38,11 +38,11 @@
                                         </div>
                                         <!-- Message title and timestamp -->
                                         <h4>
-                                            {{ trans('adminlte_lang::message.supteam') }}
+                                            @lang('message.supteam')
                                             <small><i class="fa fa-clock-o"></i> 5 mins</small>
                                         </h4>
                                         <!-- The message -->
-                                        <p>{{ trans('adminlte_lang::message.awesometheme') }}</p>
+                                        <p>@lang('message.awesometheme')</p>
                                     </a>
                                 </li><!-- end message -->
                             </ul><!-- /.menu -->
@@ -59,18 +59,18 @@
                         <span class="label label-warning">10</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="header">{{ trans('adminlte_lang::message.notifications') }}</li>
+                        <li class="header">@lang('message.notifications')</li>
                         <li>
                             <!-- Inner Menu: contains the notifications -->
                             <ul class="menu">
                                 <li><!-- start notification -->
                                     <a href="#">
-                                        <i class="fa fa-users text-aqua"></i> {{ trans('adminlte_lang::message.newmembers') }}
+                                        <i class="fa fa-users text-aqua"></i> @lang('message.newmembers')
                                     </a>
                                 </li><!-- end notification -->
                             </ul>
                         </li>
-                        <li class="footer"><a href="#">{{ trans('adminlte_lang::message.viewall') }}</a></li>
+                        <li class="footer"><a href="#">@lang('message.viewall')</a></li>
                     </ul>
                 </li>
                 <!-- Tasks Menu -->
@@ -81,7 +81,7 @@
                         <span class="label label-danger">9</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="header">{{ trans('adminlte_lang::message.tasks') }}</li>
+                        <li class="header">@lang('message.tasks')</li>
                         <li>
                             <!-- Inner menu: contains the tasks -->
                             <ul class="menu">
@@ -89,14 +89,14 @@
                                     <a href="#">
                                         <!-- Task title and progress text -->
                                         <h3>
-                                            {{ trans('adminlte_lang::message.tasks') }}
+                                            @lang('message.tasks')
                                             <small class="pull-right">20%</small>
                                         </h3>
                                         <!-- The progress bar -->
                                         <div class="progress xs">
                                             <!-- Change the css width attribute to simulate progress -->
                                             <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                                                <span class="sr-only">20% {{ trans('adminlte_lang::message.complete') }}</span>
+                                                <span class="sr-only">20% @lang('message.complete')</span>
                                             </div>
                                         </div>
                                     </a>
@@ -104,13 +104,13 @@
                             </ul>
                         </li>
                         <li class="footer">
-                            <a href="#">{{ trans('adminlte_lang::message.alltasks') }}</a>
+                            <a href="#">@lang('message.alltasks')</a>
                         </li>
                     </ul>
                 </li>
                 @if (Auth::guest())
-                    <li><a href="{{ url('/register') }}">{{ trans('adminlte_lang::message.register') }}</a></li>
-                    <li><a href="{{ url('/login') }}">{{ trans('adminlte_lang::message.login') }}</a></li>
+                    <li><a href="{{ url('/register') }}">@lang('message.register')</a></li>
+                    <li><a href="{{ url('/login') }}">@lang('message.login')</a></li>
                 @else
                     <!-- User Account Menu -->
                     <li class="dropdown user user-menu">
@@ -127,30 +127,30 @@
                                 <img src="{{asset('/img/user2-160x160.jpg')}}" class="img-circle" alt="User Image" />
                                 <p>
                                     {{ Auth::user()->name }}
-                                    <small>{{ trans('adminlte_lang::message.login') }} {{ date('d M Y H:i', strtotime(Auth::user()->last_login)) }}</small>
+                                    <small>@lang('message.login') {{ date('d M Y H:i', strtotime(Auth::user()->last_login)) }}</small>
                                 </p>
                             </li>
                             <!-- Menu Body -->
                             <li class="user-body">
                                 <div class="col-xs-4 text-center">
-                                    <a href="#">{{ trans('adminlte_lang::message.followers') }}</a>
+                                    <a href="#">@lang('message.followers')</a>
                                 </div>
                                 <div class="col-xs-4 text-center">
-                                    <a href="#">{{ trans('adminlte_lang::message.sales') }}</a>
+                                    <a href="#">@lang('message.sales')</a>
                                 </div>
                                 <div class="col-xs-4 text-center">
-                                    <a href="#">{{ trans('adminlte_lang::message.friends') }}</a>
+                                    <a href="#">@lang('message.friends')</a>
                                 </div>
                             </li>
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="#" class="btn btn-default btn-flat">{{ trans('adminlte_lang::message.profile') }}</a>
+                                    <a href="#" class="btn btn-default btn-flat">@lang('message.profile')</a>
                                 </div>
                                 <div class="pull-right">
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="btn btn-default btn-flat">{{ trans('adminlte_lang::message.signout') }}</button>
+                                        <button type="submit" class="btn btn-default btn-flat">@lang('message.signout')</button>
                                     </form>
                                 </div>
                             </li>
