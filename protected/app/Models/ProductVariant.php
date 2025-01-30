@@ -22,8 +22,4 @@ class ProductVariant extends Model
         return $this->belongsToMany(AttributeValue::class, 'variant_attribute_values', 'variant_id', 'attribute_value_id');
     }
 
-    public function getPriceAttribute($value)
-    {
-        return round($value);
-    }
 }

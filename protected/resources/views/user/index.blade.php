@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Manajemen User
+    User Management
 @stop
 
 @section('contentheader_title')
-    Manajemen User
+    User Management
 @stop
 
 @section('main-content')

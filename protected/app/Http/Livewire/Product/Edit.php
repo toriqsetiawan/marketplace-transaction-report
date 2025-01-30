@@ -110,12 +110,17 @@ class Edit extends Component
 
         try {
             // 1. Update or Create the Product
-            $product = Product::findOrFail($this->productId); // Assuming $this->productId is passed for updates
+            $product = Product::with(['variants.attributeValues'])->findOrFail($this->productId); // Assuming $this->productId is passed for updates
             $product->supplier_id = $this->supplier;
             $product->nama = $this->productName;
             $product->harga_beli = $this->hargaBeli;
             $product->harga_jual = $this->hargaJual;
             $product->save();
+
+            // Delete existing attributeValues
+            foreach ($product->variants as $variant) {
+                $variant->attributeValues()->delete();
+            }
 
             // 2. Handle Attributes and Attribute Values
             $attributeMap = [];
@@ -142,8 +147,7 @@ class Edit extends Component
             }
 
             // 3. Delete existing variants
-            ProductVariant::where('product_id', $product->id)
-                ->delete();
+            $product->variants()->delete();
 
             // 4. Create Variants for the Product
             foreach ($this->tableRows as $row) {

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Ubah User
+    Edit User
 @endsection
 
 @section('contentheader_title')
-    Ubah User
+    Edit User
 @endsection
 
 @section('main-content')

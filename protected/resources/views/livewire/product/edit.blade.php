@@ -7,6 +7,13 @@
                 Data anda telah tersimpan.
             </div>
         @endif
+        @if (session()->has('error'))
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4><i class="icon fa fa-check"></i> Message!</h4>
+                {{ session('error') }}
+            </div>
+        @endif
         @if (count($errors) > 0)
             <div class="alert alert-danger alert-dismissable">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
@@ -184,7 +191,7 @@
                         wire:model="hargaBeli">
                     </div>
                     <div class="form-group" x-data>
-                        <label for="harga">Harga jual</label>
+                        <label for="harga">Harga mitra</label>
                         <input type="text" class="form-control money"
                         x-init="$nextTick(() => {
                             setTimeout(() => {

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Tambah Supplier
+    Add Supplier
 @endsection
 
 @section('contentheader_title')
-    Tambah Supplier
+    Add Supplier
 @endsection
 
 @section('main-content')

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Ubah Supplier
+    Edit Supplier
 @endsection
 
 @section('contentheader_title')
-    Ubah Supplier
+    Edit Supplier
 @endsection
 
 @section('main-content')

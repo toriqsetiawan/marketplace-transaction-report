@@ -180,7 +180,7 @@
                         <input type="text" class="form-control money" wire:model="hargaBeli">
                     </div>
                     <div class="form-group">
-                        <label for="harga">Harga jual</label>
+                        <label for="harga">Harga mitra</label>
                         <input type="text" class="form-control money" wire:model="hargaJual">
                     </div>
                 </div>

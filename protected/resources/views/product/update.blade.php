@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Ubah Produk
+    Edit Product
 @endsection
 
 @section('contentheader_title')
-    Ubah Produk
+    Edit Product
 @endsection
 
 @section('main-content')

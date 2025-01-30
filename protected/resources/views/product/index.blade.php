@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Manajemen Produk
+    Product Management
 @stop
 
 @section('contentheader_title')
-    Manajemen Produk
+    Product Management
 @stop
 
 @section('main-content')
     <style>
-        table td.attribute > span:first-child::after {
+        table td.attribute>span:first-child::after {
             content: ' - ';
         }
     </style>
@@ -33,7 +33,7 @@
             <div class="box">
                 <div class="box-header">
                     <a href="{{ route('product.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Barang
+                        <i class="fa fa-plus-circle"></i> Product
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
@@ -49,21 +49,21 @@
                     </div>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive">
-                    <table class="table">
+                    <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th class="text-center">Action</th>
                                 <th>Product</th>
-                                <th>Harga Beli</th>
-                                <th>Harga Jual</th>
-                                <th>Stock</th>
+                                <th style="text-align: right">Harga Beli</th>
+                                <th style="text-align: right">Harga Jual</th>
+                                <th style="text-align: right">Stock</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($data as $product)
                                 <!-- Parent Row -->
                                 <tr>
-                                    <td rowspan="{{ $product->variants->count() + 1 }}" class="text-center">
+                                    <td rowspan="3{{-- $product->variants->count() + 1 --}}" class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
                                             data-href="{{ route('product.destroy', $product->id) }}">
                                             <i class="fa fa-trash"></i>
@@ -73,24 +73,27 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <p>Supplier: <i>{{ $product->supplier ? $product->supplier->nama : '-' }}</i></p>
-                                        <p class="text-bold" style="margin: 0">{{ $product->nama }}</p>
+                                        <p class="text-bold text-uppercase" style="margin: 0">{{ $product->nama }}</p>
+                                        <p>Supplier: <i>{{ $product->supplier ? $product->supplier->name : '-' }}</i></p>
                                     </td>
-                                    <td style="vertical-align: middle">{{ !$product->variants->count() ? $product->harga_beli : '-' }}</td>
-                                    <td style="vertical-align: middle">{{ !$product->variants->count() ? $product->harga_jual : '-' }}</td>
-                                    <td style="vertical-align: middle"><span class="text-bold">{{ $product->variants->sum('stock') }}</span></td>
+                                    <td style="vertical-align: middle; text-align:right">
+                                        {{ !$product->variants->count() ? $product->harga_beli : '-' }}</td>
+                                    <td style="vertical-align: middle; text-align:right">
+                                        {{ !$product->variants->count() ? $product->harga_jual : '-' }}</td>
+                                    <td style="vertical-align: middle; text-align:right"><span
+                                            class="text-bold">{{ number_format($product->variants->sum('stock')) }}</span>
+                                    </td>
                                 </tr>
-                                @forelse ($product->variants as $variant)
+                                @forelse ($product->variants->take(2) as $variant)
                                     <!-- Sub Rows -->
                                     <tr>
                                         <td class="attribute">
-                                            @foreach ($variant->attributeValues as $attribute)
-                                                <span class="text-medium">{{ $attribute->value }}</span>
-                                            @endforeach
+                                            {{ $variant->attributeValues->pluck('value')->implode(' / ') }}
                                         </td>
-                                        <td>{{ number_format($variant->product->harga_beli) }}</td>
-                                        <td>{{ number_format($variant->price) }}</td>
-                                        <td>{{ $variant->stock }}</td>
+                                        <td style="text-align:right">Rp. {{ number_format($variant->product->harga_beli) }}
+                                        </td>
+                                        <td style="text-align:right">Rp. {{ number_format($variant->price) }}</td>
+                                        <td style="text-align:right">{{ number_format($variant->stock) }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -99,6 +102,11 @@
                                         </td>
                                     </tr>
                                 @endforelse
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <a href="{{ route('product.edit', $product->id) }}" class="btn btn-link"><i>load more...</i></a>
+                                    </td>
+                                </tr>
                             @empty
                                 <tr>
                                     <td class="text-center" colspan="5">Tidak ada data yang di tampilkan</td>

@@ -1,77 +1,28 @@
-{{-- <div>
-    <div class="row">
-        <!-- Product Search Section -->
-        <div class="col-md-6">
-            <h4>Product Search</h4>
-            <input type="text" class="form-control" placeholder="Search product or scan barcode..."
-                wire:model.debounce.300ms="searchTerm" />
-
-            <div class="list-group" style="max-height: 300px; overflow-y: auto;">
-                @foreach ($filteredProducts as $product)
-                    <a href="javascript:void(0)" class="list-group-item"
-                        wire:click="addToCart({{ $product['id'] }})">
-                        <p>Supplier: <i>{{ $product['supplier']['name'] }}</i></p>
-                        <strong>{{ $product['nama'] }}</strong>
-                        <br />
-                        <small>Price: Rp {{ number_format($product['harga_jual']) }}</small>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-
-        <!-- Cart Section -->
-        <div class="col-md-6">
-            <h4>Cart</h4>
-            <ul class="list-group" style="max-height: 300px; overflow-y: auto;">
-                @foreach ($cart as $index => $item)
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <strong>{{ $item['nama'] }}</strong>
-                                <div>
-                                    <select class="form-control"
-                                        wire:model="cart.{{ $index }}.selectedVariant"
-                                        wire:change="updateCartItem({{ $index }}, 'selectedVariant', $event.target.value)">
-                                        @foreach ($item['variants'] as $variant)
-                                            <option value="{{ $variant['id'] }}">
-                                                {{ $variant['label'] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-xs-2">
-                                <input type="number" class="form-control"
-                                    wire:model.debounce.500ms="cart.{{ $index }}.quantity"
-                                    wire:change="updateCartItem({{ $index }}, 'quantity', $event.target.value)" min="1" />
-                            </div>
-                            <div class="col-xs-2">
-                                <input type="number" class="form-control"
-                                    wire:model.debounce.500ms="cart.{{ $index }}.price"
-                                    wire:change="updateCartItem({{ $index }}, 'price', $event.target.value)" step="100" />
-                            </div>
-                            <div class="col-xs-2">
-                                <button class="btn btn-danger btn-xs" wire:click="removeFromCart({{ $index }})">Remove</button>
-                            </div>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-            <div class="text-right">
-                <strong>Total: Rp {{ $cartTotal }}</strong>
-            </div>
-        </div>
-    </div>
-</div> --}}
-
-<div class="container" x-data="{
+<div class="container box" x-data="{
     searchTerm: '',
-    products: [], // This should be loaded dynamically via an API call
+    products: [],
     filteredProducts: [],
-    cart: [],
+    cart: @entangle('cart'),
+    transactionCode: @entangle('transactionCode'),
+    transactionNote: @entangle('transactionNote'),
+    customerList: @entangle('customerList'),
+    selectedCustomer: @entangle('selectedCustomer'),
+    transactionStatus: @entangle('transactionStatus'),
+    transactionDate: @entangle('transactionDate'),
 
     searchProduct() {
+        if (!this.selectedCustomer) {
+            alert('Tolong pilih customer terlebih dahulu.');
+            this.searchTerm = '';
+            return;
+        }
+
         const term = this.searchTerm.toLowerCase();
+
+        if (!term) {
+            this.filteredProducts = [];
+            return;
+        }
 
         // Simulate a fetch call to search products
         this.filteredProducts = $wire.searchProduct(term)
@@ -83,52 +34,90 @@
             })
     },
 
-    addToCart(product) {
-        // Check if the product already exists in the cart
-        const existingItem = this.cart.find(item => item.id === product.id);
+    addToCart(product, selectedVariantId = null) {
+        const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
+
+        let selectedVariant = hasVariants ?
+            product.variants.find(v => v.id == selectedVariantId) || product.variants[0] :
+            null;
+
+        // Extract dynamic attributes
+        let variantAttributes = hasVariants ?
+            selectedVariant.attributes || {} : {};
+
+        // Check if item exists in cart based on product and selected variant
+        const existingItem = this.cart.find(item =>
+            item.id === product.id && item.selectedVariant === (selectedVariant?.id || null)
+        );
 
         if (!existingItem) {
-            // Handle variants gracefully
-            const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
-
-            console.log(product.variants);
-
-            const cartItem = {
+            this.cart.push({
                 id: product.id,
                 nama: product.nama,
-                price: product.harga_jual,
+                price: selectedVariant ? selectedVariant.price : product.harga_jual,
                 quantity: 1,
-                variants: hasVariants ?
-                    product.variants.map(variant => ({
-                        id: variant.id,
-                        label: `${variant.color ?? 'No Color'} / ${variant.size ?? 'No Size'}`,
-                        price: variant.price ?? product.harga_jual, // Fallback to product price if variant price is missing
-                        stock: variant.stock ?? 0, // Default stock to 0 if missing
-                    })) :
-                    [], // If no variants, keep it as an empty array
-                selectedVariant: hasVariants ? product.variants[0]?.id : null, // Select the first variant by default
-            };
-
-            this.cart.push(cartItem);
+                selectedVariant: selectedVariant ? selectedVariant.id : null,
+                variantAttributes: variantAttributes, // Store all variant attributes dynamically
+                variants: hasVariants ? product.variants.map(v => ({
+                    id: v.id,
+                    attributes: v.attributes, // Store dynamic attributes
+                    price: v.price,
+                    stock: v.stock
+                })) : []
+            });
         } else {
-            // If the product already exists, just increment the quantity
             existingItem.quantity++;
         }
+
+        this.searchTerm = '';
+        this.filteredProducts = [];
     },
 
     removeFromCart(index) {
         this.cart.splice(index, 1);
     },
 
-    updateCartItem(index) {
-        const item = this.cart[index];
-        // You can add logic here for recalculations if needed
+    updateCartItem(index, field, value) {
+        let item = this.cart[index];
+
+        if (field === 'selectedVariant') {
+            let variant = item.variants.find(v => v.id == value);
+            if (variant) {
+                item.selectedVariant = variant.id;
+                item.price = variant.price;
+            }
+        } else if (field === 'quantity') {
+            item.quantity = Math.max(1, value); // Ensure at least 1 quantity
+        }
     },
 
     calculateTotal() {
-        return this.cart.reduce((total, item) =>
-            total + (item.price * item.quantity), 0
-        );
+        return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    },
+
+    formatPrice(price) {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR'
+        }).format(price);
+    },
+
+    saveCart() {
+        // Save cart data to the server
+        $wire.saveCart()
+            .then((result) => {
+                if (result) {
+                    // Handle success, e.g., show a success message
+                    alert('Cart saved successfully!');
+                    window.location.href = '/penjualan';
+                } else {
+                    // Handle error, e.g., show an error message
+                    alert(result);
+                }
+            })
+            .catch((error) => {
+                console.error('Error saving cart:', error);
+            });
     }
 }">
     <div class="row">
@@ -141,62 +130,167 @@
             <div class="list-group" style="max-height: 300px; overflow-y: auto;" wire:ignore>
                 <template x-for="product in filteredProducts" :key="product.id">
                     <a href="javascript:void(0)" class="list-group-item" x-on:click="addToCart(product)">
-                        <p>Supplier: <i x-text="product.supplier.name"></i></p>
-                        <strong x-text="product.nama"></strong>
-                        <br />
-                        <small>Price: Rp <span x-text="product.harga_jual"></span></small>
+                        <p class="text-bold text-uppercase" x-text="product.nama"></p>
+                        <p style="margin: 0">Supplier: <i x-text="product.supplier.name"></i></p>
+                        <p>Harga mitra: <span x-text="formatPrice(product.harga_jual)"></span></p>
                     </a>
                 </template>
             </div>
         </div>
     </div>
-    <div class="row">
-        <!-- Cart Section -->
+
+    <div class="row" wire:ignore>
         <div class="col-md-12">
             <h4>Cart</h4>
-            <ul class="list-group" style="max-height: 300px; overflow-y: auto;">
-                <template x-for="(item, index) in cart" :key="index">
-                    <li class="list-group-item">
-                        <div class="row">
-                            <!-- Product Name and Variant Selection -->
-                            <div class="col-xs-6">
-                                <strong x-text="item.nama"></strong>
-                                <div>
-                                    <select class="form-control" x-model="item.selectedVariant"
-                                        x-on:change="updateCartItem(index)">
-                                        <template x-for="variant in item.variants" :key="variant.id">
-                                            <option :value="variant.id" x-text="variant.label"></option>
-                                        </template>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Quantity Input -->
-                            <div class="col-xs-2">
-                                <input type="number" class="form-control" x-model.number="item.quantity"
-                                    x-on:input="updateCartItem(index)" min="1" placeholder="Qty" />
-                            </div>
-
-                            <!-- Price Input -->
-                            <div class="col-xs-2">
-                                <input type="number" class="form-control" x-model.number="item.price"
-                                    x-on:input="updateCartItem(index)" step="100" placeholder="Price" />
-                            </div>
-
-                            <!-- Remove Button -->
-                            <div class="col-xs-2 text-right">
-                                <button class="btn btn-danger btn-xs" x-on:click="removeFromCart(index)">
-                                    Remove
-                                </button>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group" x-data="{
+                                init() {
+                                    setTimeout(() => {
+                                        this.select2Customer = $(this.$refs.customer).select2();
+                                        this.select2Customer.on('select2:select', (event) => {
+                                            this.selectedCustomer = event.params.data.id;
+                                        });
+                                        this.select2Customer.on('select2:unselect', (event) => {
+                                            this.selectedCustomer = null
+                                        });
+                                        this.$watch('selectedCustomer', (value) => {
+                                            this.select2Customer.select2().val(this.selectedCustomer).trigger('change')
+                                        });
+                                    }, 1000)
+                                }
+                            }">
+                                <label for="transactionCode">Customer</label>
+                                <select name="customer" id="customer" x-model="selectedCustomer" class="form-control"
+                                    x-ref="customer">
+                                    <option value="" hidden>Select Customer</option>
+                                    <template x-for="customer in customerList" :key="customer.id">
+                                        <option :value="customer.id" x-text="customer.name"></option>
+                                    </template>
+                                </select>
                             </div>
                         </div>
-                    </li>
-                </template>
-            </ul>
+                        <div class="col-md-6">
+                            <div class="form-group" x-data="{
+                                init() {
+                                    setTimeout(() => {
+                                        this.select2Status = $(this.$refs.status).select2();
+                                        this.select2Status.on('select2:select', (event) => {
+                                            this.transactionStatus = event.params.data.id;
+                                        });
+                                        this.select2Status.on('select2:unselect', (event) => {
+                                            this.transactionStatus = null
+                                        });
+                                        this.$watch('transactionStatus', (value) => {
+                                            this.select2Status.select2().val(this.transactionStatus).trigger('change')
+                                        });
+                                    }, 1000)
+                                }
+                            }">
+                                <label for="transactionStatus">Status</label>
+                                <select name="status" id="status" x-model="transactionStatus" class="form-control"
+                                    x-ref="status">
+                                    <option value="pending">Pending</option>
+                                    <option value="paid">Paid</option>
+                                    <option value="cancel">Cancel</option>
+                                    <option value="return">Return</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="transactionDate">Date</label>
+                                <input type="date" name="transactionDate" id="transactionDate" class="form-control"
+                                    x-model="transactionDate">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="transactionCode">Nomor Resi</label>
+                                <input type="text" name="transactionCode" id="transactionCode" class="form-control"
+                                    x-model="transactionCode">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="transactionNote">Note (No Transaction, etc)</label>
+                        <textarea name="transactionNote" id="transactionNote" class="form-control" rows="5" x-model="transactionNote"></textarea>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Variant</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="(item, index) in cart" :key="index">
+                        <tr>
+                            <!-- Product Name -->
+                            <td x-text="item.nama"></td>
+
+                            <!-- Variant Selector -->
+                            <td>
+                                <template x-if="item.variants.length">
+                                    <select class="form-control" x-model="item.selectedVariant"
+                                        x-on:change="updateCartItem(index, 'selectedVariant', $event.target.value)">
+                                        <template x-for="variant in item.variants" :key="variant.id">
+                                            <option :value="variant.id"
+                                                x-text="Object.values(variant.attributes).join(' / ')"></option>
+                                        </template>
+                                    </select>
+                                </template>
+                                <template x-if="!item.variants.length">
+                                    <span>-</span>
+                                </template>
+                            </td>
+
+                            <!-- Quantity Input -->
+                            <td>
+                                <input type="number" class="form-control" x-model.number="item.quantity"
+                                    x-on:input="updateCartItem(index, 'quantity', $event.target.value)"
+                                    min="1" />
+                            </td>
+
+                            <!-- Price Input -->
+                            <td>
+                                <input type="number" class="form-control" x-model.number="item.price"
+                                    x-on:input="updateCartItem(index, 'price', $event.target.value)" step="100" />
+                            </td>
+
+                            <!-- Subtotal -->
+                            <td>Rp <span x-text="(item.price * item.quantity).toLocaleString()"></span></td>
+
+                            <!-- Remove Button -->
+                            <td>
+                                <button class="btn btn-danger btn-xs" x-on:click="removeFromCart(index)">Remove</button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
 
             <!-- Cart Total -->
-            <div class="text-right mt-3">
-                <strong>Total: Rp <span x-text="calculateTotal()"></span></strong>
+            <div class="text-right">
+                <strong>Total: Rp <span x-text="calculateTotal().toLocaleString()"></span></strong>
+            </div>
+
+            <!-- Submit / Save / Buy Now Buttons -->
+            <div class="mt-3 text-right" style="margin: 2rem 0">
+                <a href="{{ route('penjualan.index') }}" class="btn btn-default" style="margin-right: 1rem">Cancel</a>
+                <button class="btn btn-primary" x-on:click="saveCart()">Save</button>
             </div>
         </div>
     </div>

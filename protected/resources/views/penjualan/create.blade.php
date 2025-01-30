@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Tambah Penjualan
+    Add Transaction
 @endsection
 
 @section('contentheader_title')
-    Tambah Penjualan
+    Add Transaction
 @endsection
 
 @section('main-content')

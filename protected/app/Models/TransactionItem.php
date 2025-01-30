@@ -10,7 +10,7 @@ class TransactionItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'transaction_id', 'varian_id', 'quantity', 'price'
+        'transaction_id', 'variant_id', 'quantity', 'price'
     ];
 
     public function setPriceAttribute($value)
@@ -23,8 +23,8 @@ class TransactionItem extends Model
         return $this->belongsTo(Transaction::class);
     }
 
-    public function varian()
+    public function variant()
     {
-        return $this->belongsTo(ProductVariant::class, 'varian_id');
+        return $this->belongsTo(ProductVariant::class);
     }
 }

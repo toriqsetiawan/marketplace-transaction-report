@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Input Penjualan
+    POS (Point of sales)
 @stop
 
 @section('contentheader_title')
-    Input Penjualan
+    POS (Point of sales)
 @stop
 
 @section('main-content')
@@ -30,7 +30,7 @@
                     <input type="text" name="daterange" class="form-control" value="" style="width: 17rem; margin: 1rem 0"/>
                     <div class="box-tools">
                         <a href="{{ route('penjualan.create') }}" class="btn btn-primary" style="margin: 1rem 0">
-                            <i class="fa fa-plus-circle"></i> Tambah
+                            <i class="fa fa-plus-circle"></i> Create
                         </a>
                     </div>
 
@@ -40,29 +40,46 @@
                         <table class="table table-hover">
                             <tr>
                                 <th>No</th>
-                                <th>Nama</th>
-                                <th>Channel</th>
-                                <th>Marketplace</th>
-                                <th>Produk</th>
-                                <th>Ukuran</th>
-                                <th>Warna/Motif</th>
-                                <th>Jumlah</th>
+                                <th>Code</th>
+                                <th>Customer</th>
+                                <th>Product / Variant / Quantity / Sub Total</th>
+                                <th>Total</th>
                                 <th>Status</th>
-                                <th>Tanggal</th>
+                                <th>Date</th>
                                 <th>Action</th>
                             </tr>
                             @forelse($data as $key)
                                 <tr>
                                     <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
                                     </td>
-                                    <td>{{ $key->channel == 'user' ? $key->mitra->nama : $key->name }}</td>
-                                    <td>{{ $key->channel }}</td>
-                                    <td>{{ $key->channel == 'online' ? $key->configFee->marketplace : '-' }}</td>
-                                    <td>{{ $key->product->nama }}</td>
-                                    <td>{{ $key->ukuran }}</td>
-                                    <td>{{ $key->motif }}</td>
-                                    <td>{{ $key->jumlah }}</td>
-                                    <td>{{ $key->status }}</td>
+                                    <td>{{ $key->transaction_code }}</td>
+                                    <td>{{ $key->user->name }}</td>
+                                    <td>
+                                        <table style="width: 100%;">
+                                            @foreach ($key->items as $item)
+                                                <tr>
+                                                    <td>{{ $item->variant?->product?->nama }}</td>
+                                                    <td>
+                                                        {{ $item->variant?->product?->variants()->where('id', $item->variant_id)->first()->attributeValues()->implode('value', '/') }}
+                                                    </td>
+                                                    <td>{{ $item->quantity }}</td>
+                                                    <td class="text-right">{{ number_format($item->price) }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                    </td>
+                                    <td>{{ number_format($key->total_price) }}</td>
+                                    <td>
+                                        @if ($key->status == 'pending')
+                                            <span class="label label-warning text-uppercase">{{ $key->status }}</span>
+                                        @elseif ($key->status == 'paid')
+                                            <span class="label label-success text-uppercase">{{ $key->status }}</span>
+                                        @elseif ($key->status == 'cancel')
+                                            <span class="label label-default text-uppercase">{{ $key->status }}</span>
+                                        @else
+                                            <span class="label label-danger text-uppercase">{{ $key->status }}</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $key->created_at->format('d-m-Y') }}</td>
                                     <td>
                                         <a href="{{ route('penjualan.edit', $key->id) }}" class="btn btn-xs btn-info"
