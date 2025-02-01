@@ -11,8 +11,8 @@ class PurchaseItem extends Model
 
     protected $fillable = [
         'purchase_id',
-        'varian_id',
-        'qty',
+        'variant_id',
+        'quantity',
         'price',
     ];
 
@@ -21,9 +21,9 @@ class PurchaseItem extends Model
         $this->attributes['price'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
-    public function varian()
+    public function variant()
     {
-        return $this->belongsTo(ProductVariant::class, 'varian_id');
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 
     public function purchase()

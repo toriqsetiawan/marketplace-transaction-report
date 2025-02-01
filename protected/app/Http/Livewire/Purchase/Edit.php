@@ -1,64 +1,48 @@
 <?php
 
-namespace App\Http\Livewire\Transaction;
+namespace App\Http\Livewire\Purchase;
 
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\Transaction;
-use App\Models\User;
+use App\Models\Purchase;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Edit extends Component
 {
-    public $transactionId;
+    public $purchaseId;
     public $products = [];
-    public $customerList = [];
     public $searchTerm = '';
     public $cart = [];
-    public $transactionCode = '';
-    public $transactionNote = '';
-    public $transactionStatus = 'pending';
-    public $selectedCustomer = '';
-    public $transactionDate = '';
+    public $purchaseNote = '';
+    public $purchaseStatus = 'pending';
+    public $purchaseDate = '';
 
-    public function mount($transactionId)
+    public function mount($purchaseId)
     {
-        $this->customerList = User::whereHas('role', fn($q) => $q->whereIn('name', ['customer', 'reseller']))
-            ->orderBy('name')
-            ->get()
-            ->toArray();
+        $this->purchaseId = $purchaseId;
 
-        $this->transactionId = $transactionId;
+        $purchase = Purchase::with(['items.variant.product', 'user'])
+            ->findOrFail($purchaseId);
 
-        $transaction = Transaction::with(['items.variant.product', 'user'])
-            ->findOrFail($transactionId);
+        $this->purchaseNote = $purchase->note;
+        $this->purchaseStatus = $purchase->status;
+        $this->purchaseDate = $purchase->purchase_date->format('Y-m-d');
 
-        $this->transactionCode = $transaction->transaction_code;
-        $this->transactionNote = $transaction->note;
-        $this->transactionStatus = $transaction->status;
-        $this->selectedCustomer = $transaction->user_id;
-        $this->transactionDate = $transaction->created_at->format('Y-m-d');
-
-        $customer = User::with(['role'])->findOrFail($transaction->user_id);
-
-        foreach ($transaction->items as $item) {
+        foreach ($purchase->items as $item) {
             $this->cart[] = [
                 'id' => $item->variant->product_id,
                 'nama' => $item->variant->product->nama,
                 'price' => $item->price,
                 'quantity' => $item->quantity,
-                'variants' => $item->variant->product->variants->map(function ($variant) use ($customer) {
-                    $price = $customer->role->name === 'reseller' ? $variant->product->harga_jual : $variant->price;
-                    $price = $price == 0 ? $variant->price : $price;
-
+                'variants' => $item->variant->product->variants->map(function ($variant) {
                     return [
                         'id' => $variant->id,
                         'attributes' => $variant->attributeValues->mapWithKeys(function ($attr) {
                             return [$attr->attribute->name => $attr->value];
                         })->toArray(),
-                        'price' => $price,
+                        'price' => $variant->product->harga_beli,
                         'stock' => $variant->stock,
                         'sku' => $variant->sku,
                     ];
@@ -68,30 +52,6 @@ class Edit extends Component
                 })->toArray(),
                 'selectedVariant' => $item->variant_id,
             ];
-        }
-    }
-
-    public function updatedSelectedCustomer($value)
-    {
-        // todo update cart using customer role
-        $role = User::find($value)->role->name;
-
-        if ($role && count($this->cart)) {
-            foreach ($this->cart as $index => $cart) {
-                $price = $cart['price'];
-
-                if ($role === 'reseller') {
-                    $price = Product::whereHas('variants', fn($q) => $q->where('id', $cart['selectedVariant']))
-                        ->value('harga_jual');
-
-                    $price = $price == 0 ? $cart['price'] : $price;
-                } else {
-                    $price = ProductVariant::find($cart['selectedVariant'])->price ?? $price;
-                }
-
-                // Update the cart price correctly
-                $this->cart[$index]['price'] = $price;
-            }
         }
     }
 
@@ -113,7 +73,7 @@ class Edit extends Component
                 $this->cart[] = [
                     'id' => $product['id'],
                     'nama' => $product['nama'],
-                    'price' => $product['harga_jual'],
+                    'price' => $product['harga_beli'],
                     'quantity' => 1,
                     'variants' => $product['variants'],
                     'selectedVariant' => $product['variants']->first()['id'] ?? null,
@@ -155,36 +115,32 @@ class Edit extends Component
 
     public function render()
     {
-        return view('livewire.transaction.edit');
+        return view('livewire.purchase.edit');
     }
 
     public function searchProduct($searchTerm)
     {
         $product = Product::with(['supplier', 'variants.attributeValues.attribute'])
+            ->whereHas('supplier', fn($q) => $q->where('id', $this->selectedSupplier))
             ->where('nama', 'like', '%' . $searchTerm . '%')
             ->get();
 
-        $customer = User::with(['role'])->findOrFail($this->selectedCustomer);
-
-        return $product->map(function ($product) use ($customer) {
+        return $product->map(function ($product) {
             return [
                 'id' => $product->id,
                 'nama' => $product->nama,
-                'harga_jual' => $product->harga_jual,
+                'harga_beli' => $product->harga_beli,
                 'supplier' => [
                     'id' => $product->supplier['id'],
                     'name' => $product->supplier['name'],
                 ],
-                'variants' => $product->variants->map(function ($variant) use ($customer, $product) {
-                    $price = $customer->role->name === 'reseller' ? $product->harga_jual : $variant->price;
-                    $price = $price == 0 ? $variant->price : $price;
-
+                'variants' => $product->variants->map(function ($variant) use ($product) {
                     return [
                         'id' => $variant->id,
                         'attributes' => $variant->attributeValues->mapWithKeys(function ($attr) {
                             return [$attr->attribute->name => $attr->value];
                         })->toArray(),
-                        'price' => $price,
+                        'price' => $product->harga_beli,
                         'stock' => $variant->stock,
                         'sku' => $variant->sku,
                     ];
@@ -193,51 +149,36 @@ class Edit extends Component
         })->toArray();
     }
 
-    public function getTransactionType()
-    {
-        $customer = User::find($this->selectedCustomer);
-        if (strtolower($customer->name) == 'offline') {
-            return 'offline';
-        }
-
-        return 'online';
-    }
-
     public function saveCart()
     {
         DB::beginTransaction();
 
         try {
-            $transactionDate = $this->transactionDate ? Carbon::parse($this->transactionDate) : now();
+            $purchaseDate = $this->purchaseDate ? Carbon::parse($this->purchaseDate) : now();
 
-            $transaction = Transaction::find($this->transactionId);
+            $purchase = Purchase::find($this->purchaseId);
 
-            if ($transaction) {
+            if ($purchase) {
                 // Step 1: Restore previous stock before updating
-                foreach ($transaction->items as $item) {
+                foreach ($purchase->items as $item) {
                     $variant = ProductVariant::find($item->variant_id);
                     if ($variant) {
-                        $variant->stock += $item->quantity; // Restore stock
+                        $variant->stock -= $item->quantity; // Decrease stock
                         $variant->save();
                     }
                 }
-                // Step 2: Update transaction
-                $transaction->timestamps = false; // Disable timestamps temporarily
-
-                $transaction->user_id = $this->selectedCustomer;
-                $transaction->note = $this->transactionNote;
-                $transaction->status = $this->transactionStatus; // pending, paid, return, cancel
-                $transaction->type = $this->getTransactionType();
-                $transaction->total_price = $this->calculateTotal();
-                $transaction->created_at = $transactionDate;
-                $transaction->save();
-
-                $transaction->timestamps = true; // Re-enable timestamps
+                // Step 2: Update purchase
+                $purchase->user_id = auth()->id();
+                $purchase->note = $this->purchaseNote;
+                $purchase->status = $this->purchaseStatus; // pending, complete, cancel
+                $purchase->total_price = $this->calculateTotal();
+                $purchase->purchase_date = $purchaseDate;
+                $purchase->save();
 
                 // Step 3: Delete old items and insert updated cart items
-                $transaction->items()->delete();
+                $purchase->items()->delete();
 
-                $transaction->items()->createMany(
+                $purchase->items()->createMany(
                     collect($this->cart)->map(function ($item) {
                         return [
                             'variant_id' => $item['selectedVariant'],
@@ -247,11 +188,11 @@ class Edit extends Component
                     })->toArray()
                 );
 
-                // Step 4: Deduct stock based on updated cart
+                // Step 4: Increase stock based on updated cart
                 foreach ($this->cart as $item) {
                     $variant = ProductVariant::find($item['selectedVariant']);
                     if ($variant) {
-                        $variant->stock -= $item['quantity']; // Deduct new stock
+                        $variant->stock += $item['quantity']; // Increase stock
                         $variant->save();
                     }
                 }

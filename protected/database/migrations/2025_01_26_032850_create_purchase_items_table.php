@@ -16,15 +16,14 @@ class CreatePurchaseItemsTable extends Migration
         Schema::create('purchase_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('purchase_id'); // Reference to purchases
-            $table->unsignedBigInteger('product_variant_id'); // Reference to product variants
+            $table->unsignedBigInteger('variant_id'); // Reference to product variants
             $table->integer('quantity'); // Quantity purchased
-            $table->decimal('unit_price', 15, 2); // Price per unit
-            $table->decimal('subtotal', 15, 2); // Subtotal cost for the item
+            $table->decimal('price', 10, 2); // Price per unit
             $table->timestamps();
 
             // Foreign key constraints
             $table->foreign('purchase_id')->references('id')->on('purchases')->onDelete('cascade');
-            $table->foreign('product_variant_id')->references('id')->on('product_variants')->onDelete('cascade');
+            $table->foreign('variant_id')->references('id')->on('product_variants')->onDelete('cascade');
         });
     }
 

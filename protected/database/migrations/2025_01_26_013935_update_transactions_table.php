@@ -22,7 +22,6 @@ class UpdateTransactionsTable extends Migration
 
             // new structure
             $table->string('note')->after('id')->nullable();
-            $table->decimal('packing_cost', 10, 2)->after('id')->default(0); // Packing cost for the transaction
             $table->decimal('total_price', 10, 2)->after('id'); // Total price for the transaction
             $table->string('type')->default('offline')->after('id'); // 'online' or 'offline'
             $table->string('transaction_code')->after('id')->unique(); // Unique code for the transaction
@@ -42,7 +41,7 @@ class UpdateTransactionsTable extends Migration
     {
         Schema::table('transactions', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
-            $table->dropColumn(['user_id', 'status', 'type', 'total_price', 'packing_cost']);
+            $table->dropColumn(['user_id', 'status', 'type', 'total_price']);
             $table->string('name')->after('channel')->nullable();
             $table->string('marketplace')->after('name')->nullable();
             $table->integer('jumlah')->after('marketplace')->default(0);

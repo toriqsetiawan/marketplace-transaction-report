@@ -12,21 +12,19 @@ class Purchase extends Model
     protected $fillable = [
         'purchase_code',
         'purchase_date',
-        'total_cost',
+        'total_price',
         'status',
-        'supplier_id',
         'user_id',
         'note',
     ];
 
-    public function setTotalCostAttribute($value)
-    {
-        $this->attributes['total_cost'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
-    }
+    protected $casts = [
+        'purchase_date' => 'date',
+    ];
 
-    public function supplier()
+    public function setTotalPriceAttribute($value)
     {
-        return $this->belongsTo(Supplier::class);
+        $this->attributes['total_price'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
     public function user()

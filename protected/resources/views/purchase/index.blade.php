@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    POS (Point of sales)
+    Purchase Order
 @stop
 
 @section('contentheader_title')
-    POS (Point of sales)
+    Purchase Order
 @stop
 
 @section('main-content')
@@ -29,7 +29,7 @@
                 <div class="box-header">
                     <input type="text" name="daterange" class="form-control" value="" style="width: 17rem; margin: 1rem 0"/>
                     <div class="box-tools">
-                        <a href="{{ route('penjualan.create') }}" class="btn btn-primary" style="margin: 1rem 0">
+                        <a href="{{ route('purchase.create') }}" class="btn btn-primary" style="margin: 1rem 0">
                             <i class="fa fa-plus-circle"></i> Create
                         </a>
                     </div>
@@ -41,7 +41,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Code</th>
-                                <th>Customer</th>
+                                <th>User</th>
                                 <th>Product / Variant / Quantity / Sub Total</th>
                                 <th>Total</th>
                                 <th>Status</th>
@@ -52,7 +52,7 @@
                                 <tr>
                                     <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
                                     </td>
-                                    <td>{{ $key->transaction_code }}</td>
+                                    <td>{{ $key->purchase_code }}</td>
                                     <td>{{ $key->user->name }}</td>
                                     <td>
                                         <table style="width: 100%;">
@@ -72,7 +72,7 @@
                                     <td>
                                         @if ($key->status == 'pending')
                                             <span class="label label-warning text-uppercase">{{ $key->status }}</span>
-                                        @elseif ($key->status == 'paid')
+                                        @elseif ($key->status == 'complete')
                                             <span class="label label-success text-uppercase">{{ $key->status }}</span>
                                         @elseif ($key->status == 'cancel')
                                             <span class="label label-default text-uppercase">{{ $key->status }}</span>
@@ -82,12 +82,12 @@
                                     </td>
                                     <td>{{ $key->created_at->format('d-m-Y') }}</td>
                                     <td>
-                                        <a href="{{ route('penjualan.edit', $key->id) }}" class="btn btn-xs btn-info"
+                                        <a href="{{ route('purchase.edit', $key->id) }}" class="btn btn-xs btn-info"
                                             title="Update">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
-                                                data-href="{{ route('penjualan.destroy', $key->id) }}">
+                                                data-href="{{ route('purchase.destroy', $key->id) }}">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>

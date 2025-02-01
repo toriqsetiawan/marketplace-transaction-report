@@ -36,7 +36,7 @@ class Transaction extends Model
      * @var array
      */
     protected $fillable = [
-        'transaction_code', 'note', 'status', 'user_id', 'type', 'total_price', 'packing_cost'
+        'transaction_code', 'note', 'status', 'user_id', 'type', 'total_price'
     ];
 
     public function user()
@@ -47,11 +47,6 @@ class Transaction extends Model
     public function setTotalPriceAttribute($value)
     {
         $this->attributes['total_price'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
-    }
-
-    public function setPackingCostAttribute($value)
-    {
-        $this->attributes['packing_cost'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
     public function items()

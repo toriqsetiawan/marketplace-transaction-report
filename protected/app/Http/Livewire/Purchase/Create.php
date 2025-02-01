@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Livewire\Transaction;
+namespace App\Http\Livewire\Purchase;
 
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\Transaction;
-use App\Models\User;
+use App\Models\Purchase;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -13,48 +12,16 @@ use Livewire\Component;
 class Create extends Component
 {
     public $products = [];
-    public $customerList = [];
     public $searchTerm = '';
     public $cart = [];
-    public $transactionCode = '';
-    public $transactionNote = '';
-    public $transactionStatus = 'pending';
-    public $selectedCustomer = '';
-    public $transactionDate = '';
+    public $purchaseCode = '';
+    public $purchaseNote = '';
+    public $purchaseStatus = 'pending';
+    public $purchaseDate = '';
 
     public function mount()
     {
-        $this->customerList = User::whereHas('role', fn($q) => $q->whereIn('name', ['customer', 'reseller']))
-            ->orderBy('name')
-            ->get()
-            ->toArray();
-
-        $this->transactionDate = date('Y-m-d');
-    }
-
-    public function updatedSelectedCustomer($value)
-    {
-        // todo update cart using customer role
-        $role = User::find($value)->role->name;
-
-        if ($role && count($this->cart)) {
-            foreach ($this->cart as $index => $cart) {
-                $price = $cart['price'];
-
-                if ($role === 'reseller') {
-                    $price = Product::whereHas('variants', fn($q) => $q->where('id', $cart['selectedVariant']))
-                        ->value('harga_jual');
-
-                    $price = $price == 0 ? $cart['price'] : $price;
-
-                } else {
-                    $price = ProductVariant::find($cart['selectedVariant'])->price ?? $price;
-                }
-
-                // Update the cart price correctly
-                $this->cart[$index]['price'] = $price;
-            }
-        }
+        $this->purchaseDate = date('Y-m-d');
     }
 
     public function addToCart($productId)
@@ -75,7 +42,7 @@ class Create extends Component
                 $this->cart[] = [
                     'id' => $product['id'],
                     'nama' => $product['nama'],
-                    'price' => $product['harga_jual'],
+                    'price' => $product['harga_beli'],
                     'quantity' => 1,
                     'variants' => $product['variants'],
                     'selectedVariant' => $product['variants']->first()['id'] ?? null,
@@ -117,7 +84,7 @@ class Create extends Component
 
     public function render()
     {
-        return view('livewire.transaction.create');
+        return view('livewire.purchase.create');
     }
 
     public function searchProduct($searchTerm)
@@ -126,27 +93,22 @@ class Create extends Component
             ->where('nama', 'like', '%' . $searchTerm . '%')
             ->get();
 
-        $customer = User::with(['role'])->findOrFail($this->selectedCustomer);
-
-        return $product->map(function ($product) use ($customer) {
+        return $product->map(function ($product) {
             return [
                 'id' => $product->id,
                 'nama' => $product->nama,
-                'harga_jual' => $product->harga_jual,
+                'harga_beli' => $product->harga_beli,
                 'supplier' => [
                     'id' => $product->supplier['id'],
                     'name' => $product->supplier['name'],
                 ],
-                'variants' => $product->variants->map(function ($variant) use ($customer, $product) {
-                    $price = $customer->role->name === 'reseller' ? $product->harga_jual : $variant->price;
-                    $price = $price == 0 ? $variant->price : $price;
-
+                'variants' => $product->variants->map(function ($variant) use ($product) {
                     return [
                         'id' => $variant->id,
                         'attributes' => $variant->attributeValues->mapWithKeys(function ($attr) {
                             return [$attr->attribute->name => $attr->value];
                         })->toArray(),
-                        'price' => $price,
+                        'price' => $product->harga_beli,
                         'stock' => $variant->stock,
                         'sku' => $variant->sku,
                     ];
@@ -155,23 +117,13 @@ class Create extends Component
         })->toArray();
     }
 
-    public function generateTransactionCode()
+    public function generatePurchaseCode()
     {
-        if ($this->transactionCode) {
-            return $this->transactionCode;
+        if ($this->purchaseCode) {
+            return $this->purchaseCode;
         }
 
-        return 'TRX' . date('dmY') . mt_rand(10000, 99999);
-    }
-
-    public function getTransactionType()
-    {
-        $customer = User::find($this->selectedCustomer);
-        if (strtolower($customer->name) == 'offline') {
-            return 'offline';
-        }
-
-        return 'online';
+        return 'PRC' . date('dmY') . mt_rand(10000, 99999);
     }
 
     public function saveCart()
@@ -179,22 +131,21 @@ class Create extends Component
         try {
             DB::beginTransaction();
 
-            $transactionDate = $this->transactionDate ? Carbon::parse($this->transactionDate) : now();
+            $purchaseDate = $this->purchaseDate ? Carbon::parse($this->purchaseDate) : now();
 
             // Save cart data to the database
-            $transaction = Transaction::create([
-                'user_id' => $this->selectedCustomer,
-                'transaction_code' => $this->generateTransactionCode(),
-                'note' => $this->transactionNote,
-                'status' => $this->transactionStatus, // pending, paid, return, cancel
-                'type' => $this->getTransactionType(),
+            $purchase = Purchase::create([
+                'user_id' => auth()->id(),
+                'purchase_code' => $this->generatePurchaseCode(),
+                'purchase_date' => $purchaseDate,
                 'total_price' => $this->calculateTotal(),
-                'created_at' => $transactionDate,
+                'status' => $this->purchaseStatus, // pending, completed, canceled
+                'note' => $this->purchaseNote,
             ]);
 
             // Save cart items to the database
             foreach ($this->cart as $item) {
-                $transaction->items()->create([
+                $purchase->items()->create([
                     'variant_id' => $item['selectedVariant'],
                     'quantity' => $item['quantity'],
                     'price' => (float) $item['price'],
@@ -202,7 +153,7 @@ class Create extends Component
 
                 // Update variant stock
                 $variant = ProductVariant::find($item['selectedVariant']);
-                $variant->stock -= $item['quantity'];
+                $variant->stock += $item['quantity']; // Increase stock
                 $variant->save();
             }
 
