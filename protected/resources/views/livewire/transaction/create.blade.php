@@ -259,14 +259,14 @@
 
                             <!-- Quantity Input -->
                             <td>
-                                <input type="number" class="form-control" x-model.number="item.quantity"
+                                <input type="number" class="form-control" x-model.debounce.500ms="item.quantity"
                                     x-on:input="updateCartItem(index, 'quantity', $event.target.value)"
                                     min="1" />
                             </td>
 
                             <!-- Price Input -->
                             <td>
-                                <input type="number" class="form-control" x-model.number="item.price"
+                                <input type="number" class="form-control" x-model.debounce.500ms="item.price"
                                     x-on:input="updateCartItem(index, 'price', $event.target.value)" step="100" />
                             </td>
 
