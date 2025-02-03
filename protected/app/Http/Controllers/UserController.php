@@ -53,8 +53,8 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|string|max:255',
-            'role_id' => 'required|exists:role,id',
+            'name' => 'required|string|max:255',
+            'role' => 'required|exists:roles,id',
             'email' => 'required|email',
             'password' => 'required',
             'password_confirmation' => 'required|same:password',
@@ -63,6 +63,10 @@ class UserController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
+        $request->merge([
+            'role_id' => $request->role
+        ]);
 
         User::create($request->all());
 
@@ -102,8 +106,8 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|string|max:255',
-            'role_id' => 'required|exists:role,id',
+            'name' => 'required|string|max:255',
+            'role' => 'required|exists:roles,id',
             'email' => 'required|email',
         ]);
 
@@ -120,7 +124,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
         $user->name = $request->name;
-        $user->role_id = $request->role_id;
+        $user->role_id = $request->role;
         $user->email = $request->email;
         if ($request->password) {
             $user->password = bcrypt($request->password);

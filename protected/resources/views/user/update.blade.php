@@ -52,7 +52,7 @@
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" email="email" class="form-control" value="{{ $user->email ?? old('email') }}">
+                            <input type="email" id="email" name="email" class="form-control" value="{{ $user->email ?? old('email') }}">
                         </div>
                         <div class="box-header with-border">
                             <div class="alert alert-info alert-dismissable">

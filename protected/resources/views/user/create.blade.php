@@ -41,7 +41,7 @@
                             <select name="role" id="role" class="form-control">
                                 <option hidden>Pilih role</option>
                                 @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    <option value="{{ $role->id }}" {{ old('role') ? 'selected' : '' }}>{{ $role->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -51,7 +51,7 @@
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" email="email" class="form-control" value="{{ old('email') }}">
+                            <input type="email" id="email" name="email" class="form-control" value="{{ old('email') }}">
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>

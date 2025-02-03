@@ -219,8 +219,8 @@
                                         <div class="col-md-6">
                                             <label>Variasi <span x-text="vIndex + 1"></span></label>
                                             <input type="text" class="form-control" placeholder="Ketik atau pilih"
-                                                maxlength="14" x-model="variation.name"
-                                                @input.debounce.500ms="updateVariationName(vIndex, $event.target.value)">
+                                                maxlength="14" x-model.lazy="variation.name"
+                                                @change="updateVariationName(vIndex, $event.target.value)">
                                         </div>
                                         <div class="col-md-6">
                                             <label>Opsi</label>
@@ -229,7 +229,7 @@
                                                 <div class="input-group" style="margin-bottom: 5px;">
                                                     <input type="text" class="form-control"
                                                         placeholder="Cth. Merah, dll" maxlength="20"
-                                                        x-model="variation.options[oIndex]" @input.debounce.500ms="updateOption">
+                                                        x-model.lazy="variation.options[oIndex]" @change="updateOption">
                                                     <span class="input-group-btn">
                                                         <button class="btn btn-danger btn-sm"
                                                             @click.prevent="removeOption(vIndex, oIndex)">
@@ -312,15 +312,15 @@
                                                 </template>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        placeholder="Masukkan harga" x-model.debounce.500ms="row.harga">
+                                                        placeholder="Masukkan harga" x-model.lazy="row.harga">
                                                 </td>
                                                 <td>
                                                     <input type="number" class="form-control"
-                                                        placeholder="Masukkan stok" x-model.debounce.500ms="row.stok">
+                                                        placeholder="Masukkan stok" x-model.lazy="row.stok">
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        placeholder="Masukkan kode" x-model.debounce.500ms="row.kode">
+                                                        placeholder="Masukkan kode" x-model.lazy="row.kode">
                                                 </td>
                                             </tr>
                                         </template>

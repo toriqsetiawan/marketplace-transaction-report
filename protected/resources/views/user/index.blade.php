@@ -75,7 +75,7 @@
                                         </a>
                                     </td>
                                     <td>{{ $key->name }}</td>
-                                    <td>{{ $key->role->name }}</td>
+                                    <td>{{ $key->role?->name }}</td>
                                     <td>{{ $key->email }}</td>
                                     <td>{{ $key->created_at }}</td>
                                     <td>{{ $key->updated_at }}</td>
