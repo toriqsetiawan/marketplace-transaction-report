@@ -47,11 +47,11 @@ class Edit extends Component
 
         foreach ($transaction->items as $item) {
             $this->cart[] = [
-                'id' => $item->variant->product_id,
-                'nama' => $item->variant->product->nama,
+                'id' => $item->variant?->product_id,
+                'nama' => $item->variant?->product->nama,
                 'price' => $item->price,
                 'quantity' => $item->quantity,
-                'variants' => $item->variant->product->variants->map(function ($variant) use ($customer) {
+                'variants' => $item->variant?->product->variants->map(function ($variant) use ($customer) {
                     $price = $customer->role->name === 'reseller' ? $variant->product->harga_jual : $variant->price;
                     $price = $price == 0 ? $variant->price : $price;
 
@@ -65,7 +65,7 @@ class Edit extends Component
                         'sku' => $variant->sku,
                     ];
                 })->toArray(),
-                'variantAttributes' => $item->variant->attributeValues->mapWithKeys(function ($attr) {
+                'variantAttributes' => $item->variant?->attributeValues->mapWithKeys(function ($attr) {
                     return [$attr->attribute->name => $attr->value];
                 })->toArray(),
                 'selectedVariant' => $item->variant_id,
