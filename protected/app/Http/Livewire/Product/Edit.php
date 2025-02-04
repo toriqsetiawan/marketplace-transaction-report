@@ -119,24 +119,34 @@ class Edit extends Component
             $product->save();
 
             // Delete existing attributeValues
-            foreach ($product->variants as $variant) {
-                $variant->attributeValues()->delete();
-            }
+            // foreach ($product->variants as $variant) {
+            //     $variant->attributeValues()->delete();
+            // }
 
             // Handle Attributes and Attribute Values
             $attributeMap = [];
             foreach ($this->variations as $variation) {
                 // Find or create the attribute
-                $attribute = Attribute::firstOrCreate([
-                    'name' => strtoupper($variation['name'])
-                ]);
+                $attribute = Attribute::where('name', strtoupper($variation['name']))->first();
+                if (!$attribute) {
+                    $attribute = Attribute::create([
+                        'name' => strtoupper($variation['name'])
+                    ]);
+                }
 
                 // Sync attribute values
                 foreach ($variation['options'] as $option) {
-                    $attributeValue = AttributeValue::firstOrCreate([
+                    $attributeValue = AttributeValue::where([
                         'attribute_id' => $attribute->id,
                         'value' => strtoupper($option)
-                    ]);
+                    ])->first();
+
+                    if (!$attributeValue) {
+                        $attributeValue = AttributeValue::create([
+                            'attribute_id' => $attribute->id,
+                            'value' => strtoupper($option)
+                        ]);
+                    }
 
                     // Map attribute and value for quick reference
                     $attributeMap[strtoupper($variation['name'])][strtoupper($option)] = $attributeValue->id;
