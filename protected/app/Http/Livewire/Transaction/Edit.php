@@ -22,6 +22,7 @@ class Edit extends Component
     public $transactionStatus = 'pending';
     public $selectedCustomer = '';
     public $transactionDate = '';
+    public $transactionDateOld = '';
 
     public function mount($transactionId)
     {
@@ -40,6 +41,7 @@ class Edit extends Component
         $this->transactionStatus = $transaction->status;
         $this->selectedCustomer = $transaction->user_id;
         $this->transactionDate = $transaction->created_at->format('Y-m-d');
+        $this->transactionDateOld = $transaction->created_at->format('Y-m-d');
 
         $customer = User::with(['role'])->findOrFail($transaction->user_id);
 
@@ -229,7 +231,11 @@ class Edit extends Component
                 $transaction->status = $this->transactionStatus; // pending, paid, return, cancel
                 $transaction->type = $this->getTransactionType();
                 $transaction->total_price = $this->calculateTotal();
-                $transaction->created_at = $transactionDate;
+
+                if (Carbon::parse($this->transactionDateOld)->diffInDays($transactionDate) > 0) {
+                    $transaction->created_at = $transactionDate;
+                }
+
                 $transaction->save();
 
                 $transaction->timestamps = true; // Re-enable timestamps
