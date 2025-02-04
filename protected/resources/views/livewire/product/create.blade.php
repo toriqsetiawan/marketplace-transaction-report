@@ -298,7 +298,7 @@
                                                         placeholder="Masukkan harga" x-model="row.harga">
                                                 </td>
                                                 <td>
-                                                    <input type="number" class="form-control"
+                                                    <input type="text" class="form-control"
                                                         placeholder="Masukkan stok" x-model="row.stok">
                                                 </td>
                                                 <td>
