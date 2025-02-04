@@ -41,4 +41,5 @@ return [
     'generalset' => 'General Settings',
     'reportpanel' => 'Report Panel',
     'informationsettings' => 'Information Settings',
+    'createdby' => 'Created By',
 ];

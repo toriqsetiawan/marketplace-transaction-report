@@ -196,8 +196,8 @@
                                     x-ref="status">
                                     <option value="pending">Pending</option>
                                     <option value="paid">Paid</option>
-                                    <option value="cancel">Cancel</option>
-                                    <option value="return">Return</option>
+                                    {{-- <option value="cancel">Cancel</option> --}}
+                                    {{-- <option value="return">Return</option> --}}
                                 </select>
                             </div>
                         </div>

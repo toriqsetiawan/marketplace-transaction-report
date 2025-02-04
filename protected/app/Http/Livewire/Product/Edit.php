@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class Edit extends Component
@@ -109,7 +110,7 @@ class Edit extends Component
         DB::beginTransaction();
 
         try {
-            // 1. Update or Create the Product
+            // Update or Create the Product
             $product = Product::with(['variants.attributeValues'])->findOrFail($this->productId); // Assuming $this->productId is passed for updates
             $product->supplier_id = $this->supplier;
             $product->nama = $this->productName;
@@ -122,42 +123,62 @@ class Edit extends Component
                 $variant->attributeValues()->delete();
             }
 
-            // 2. Handle Attributes and Attribute Values
+            // Handle Attributes and Attribute Values
             $attributeMap = [];
             foreach ($this->variations as $variation) {
                 // Find or create the attribute
-                $attribute = Attribute::updateOrCreate(
-                    ['name' => strtoupper($variation['name'])],
-                    ['name' => strtoupper($variation['name'])]
-                );
+                $attribute = Attribute::firstOrCreate([
+                    'name' => strtoupper($variation['name'])
+                ]);
 
                 // Sync attribute values
                 foreach ($variation['options'] as $option) {
-                    $attributeValue = AttributeValue::updateOrCreate(
-                        [
-                            'attribute_id' => $attribute->id,
-                            'value' => strtoupper($option),
-                        ],
-                        ['value' => strtoupper($option)]
-                    );
+                    $attributeValue = AttributeValue::firstOrCreate([
+                        'attribute_id' => $attribute->id,
+                        'value' => strtoupper($option)
+                    ]);
 
                     // Map attribute and value for quick reference
                     $attributeMap[strtoupper($variation['name'])][strtoupper($option)] = $attributeValue->id;
                 }
             }
 
-            // 3. Delete existing variants
-            $product->variants()->delete();
+            // Get Existing Variants
+            $existingVariantIds = $product->variants->pluck('id')->toArray();
+            $submittedVariantIds = [];
 
-            // 4. Create Variants for the Product
+            // Create or Update Variants for the Product
             foreach ($this->tableRows as $row) {
                 // Create the ProductVariant
-                $variant = ProductVariant::create([
+                $variant = ProductVariant::where([
                     'product_id' => $product->id,
-                    'price' => $row['harga'],
-                    'stock' => $row['stok'],
-                    'sku' => $row['kode'], // Assuming 'kode' is the SKU
-                ]);
+                    'sku' => $row['kode'],
+                ])->first();
+
+                if ($variant) {
+                    $variant->update([
+                        'price' => $row['harga'],
+                        'stock' => $row['stok'],
+                    ]);
+                } else {
+                    $variant = ProductVariant::create([
+                        'product_id' => $product->id,
+                        'price' => $row['harga'],
+                        'stock' => $row['stok'],
+                        'sku' => $row['kode'] ?? '',
+                    ]);
+
+                    if (!$row['kode']) {
+                        $fullSku = ProductVariant::where('product_id', $product->id)->first()?->sku;
+                        $parentSku = Str::beforeLast($fullSku, '-'); // Removes the last -xxx part
+                        $row['kode'] = $parentSku;
+                    }
+
+                    $variant->update(['sku' => $row['kode'] . '-' . $variant->id]);
+                }
+
+                // Store variant IDs that should exist
+                $submittedVariantIds[] = $variant->id;
 
                 // Attach AttributeValues to the ProductVariant
                 $attributeValueIds = [];
@@ -178,6 +199,10 @@ class Edit extends Component
                 // Attach all matching AttributeValues to the variant
                 $variant->attributeValues()->attach($attributeValueIds);
             }
+
+            // Delete Variants That Are No Longer Present
+            $variantsToDelete = array_diff($existingVariantIds, $submittedVariantIds);
+            ProductVariant::whereIn('id', $variantsToDelete)->delete();
 
             DB::commit();
             session()->flash('success', 'Produk berhasil diperbarui.');

@@ -21,8 +21,8 @@
     </div>
     <div x-data="{
         isActiveVariant: @entangle('isActiveVariant'),
-        variations: @entangle('variations'),
-        tableRows: @entangle('tableRows'),
+        variations: @js($variations),
+        tableRows: @js($tableRows),
 
         activateVariant() {
             this.isActiveVariant = true;
@@ -121,8 +121,6 @@
                     kode = this.tableRows[vIndex].kode;
                 }
 
-                console.log(harga, stok, kode);
-
                 return existingRow
                     ? { ...existingRow }
                     : {
@@ -155,6 +153,8 @@
                 }
             }
 
+            this.$wire.set('variations', this.variations);
+            this.$wire.set('tableRows', this.tableRows);
             this.$wire.saveProduct();
         }
     }">
@@ -202,8 +202,8 @@
                                         <div class="col-md-6">
                                             <label>Variasi <span x-text="vIndex + 1"></span></label>
                                             <input type="text" class="form-control" placeholder="Ketik atau pilih"
-                                                maxlength="14" x-model.lazy="variation.name"
-                                                @change="updateVariationName(vIndex, $event.target.value)">
+                                                maxlength="14" x-model="variation.name"
+                                                @input="updateVariationName(vIndex, $event.target.value)">
                                         </div>
                                         <div class="col-md-6">
                                             <label>Opsi</label>
@@ -212,7 +212,7 @@
                                                 <div class="input-group" style="margin-bottom: 5px;">
                                                     <input type="text" class="form-control"
                                                         placeholder="Cth. Merah, dll" maxlength="20"
-                                                        x-model.lazy="variation.options[oIndex]" @change="updateOption">
+                                                        x-model="variation.options[oIndex]" @input="updateOption">
                                                     <span class="input-group-btn">
                                                         <button class="btn btn-danger btn-sm"
                                                             @click.prevent="removeOption(vIndex, oIndex)">
@@ -295,15 +295,15 @@
                                                 </template>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        placeholder="Masukkan harga" x-model.lazy="row.harga">
+                                                        placeholder="Masukkan harga" x-model="row.harga">
                                                 </td>
                                                 <td>
                                                     <input type="number" class="form-control"
-                                                        placeholder="Masukkan stok" x-model.lazy="row.stok">
+                                                        placeholder="Masukkan stok" x-model="row.stok">
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        placeholder="Masukkan kode" x-model.lazy="row.kode">
+                                                        placeholder="Masukkan kode" x-model="row.kode">
                                                 </td>
                                             </tr>
                                         </template>

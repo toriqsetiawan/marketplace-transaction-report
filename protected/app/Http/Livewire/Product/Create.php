@@ -51,13 +51,13 @@ class Create extends Component
 
             // 2. Create Attributes
             foreach ($this->variations as $variation) {
-                $attribute = Attribute::create([
+                $attribute = Attribute::firstOrCreate([
                     'name' => strtoupper($variation['name'])
                 ]);
 
                 // 3. Create Attribute Values
                 foreach ($variation['options'] as $option) {
-                    $AttributeValue = AttributeValue::create([
+                    $attributeValue = AttributeValue::firstOrCreate([
                         'attribute_id' => $attribute->id,
                         'value' => strtoupper($option)
                     ]);
@@ -71,8 +71,10 @@ class Create extends Component
                     'product_id' => $product->id,
                     'price' => $row['harga'],
                     'stock' => $row['stok'],
-                    'sku' => $row['kode'], // Assuming 'kode' is the SKU
+                    'sku' => $row['kode'],
                 ]);
+
+                $variant->update(['sku' => $row['kode'] . '-' . $variant->id]);
 
                 // Attach AttributeValues to the ProductVariant
                 $attributeValueIds = [];
