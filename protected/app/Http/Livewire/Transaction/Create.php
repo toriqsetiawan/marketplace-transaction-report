@@ -202,13 +202,25 @@ class Create extends Component
 
                 // Update variant stock
                 $variant = ProductVariant::find($item['selectedVariant']);
+
+                if ($variant->stock - $item['quantity'] < 0) {
+                    DB::rollBack();
+                    return [
+                        'status' => false,
+                        'message' => "Stock for variant {$variant->sku} is not enough.",
+                    ];
+                }
+
                 $variant->stock -= $item['quantity'];
                 $variant->save();
             }
 
             DB::commit();
 
-            return true;
+            return [
+                'status' => true,
+                'message' => 'Cart saved successfully!',
+            ];
         } catch (\Throwable $th) {
             logger()->error($th->getMessage());
             DB::rollBack();

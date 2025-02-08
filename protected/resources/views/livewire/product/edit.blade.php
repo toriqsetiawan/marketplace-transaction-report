@@ -275,7 +275,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                {{-- <div class="col-md-6">
                                     <div style="margin-top: 1rem">
                                         <div style="display: inline-flex;align-items: center;"
                                             x-data="{
@@ -292,7 +292,7 @@
                                             <button class="btn btn-primary" @click="applySku">Terapkan</button>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="table-responsive" style="margin-top: 20px;" x-show="variations.length > 0">
                                 <table class="table table-bordered">

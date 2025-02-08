@@ -227,6 +227,7 @@ class Edit extends Component
                 $transaction->timestamps = false; // Disable timestamps temporarily
 
                 $transaction->user_id = $this->selectedCustomer;
+                $transaction->transaction_code = $this->transactionCode;
                 $transaction->note = $this->transactionNote;
                 $transaction->status = $this->transactionStatus; // pending, paid, return, cancel
                 $transaction->type = $this->getTransactionType();
@@ -257,6 +258,13 @@ class Edit extends Component
                 foreach ($this->cart as $item) {
                     $variant = ProductVariant::find($item['selectedVariant']);
                     if ($variant) {
+                        if ($variant->stock - $item['quantity'] < 0) {
+                            DB::rollBack();
+                            return [
+                                'status' => false,
+                                'message' => "Stock for variant {$variant->sku} is not enough.",
+                            ];
+                        }
                         $variant->stock -= $item['quantity']; // Deduct new stock
                         $variant->save();
                     }
@@ -264,7 +272,10 @@ class Edit extends Component
             }
 
             DB::commit();
-            return true;
+            return [
+                'status' => true,
+                'message' => 'Transaction updated successfully.',
+            ];
         } catch (\Throwable $th) {
             logger()->error($th->getMessage());
             DB::rollBack();

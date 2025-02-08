@@ -49,7 +49,7 @@
                     </div>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th class="text-center">Action</th>
@@ -63,7 +63,7 @@
                             @forelse($data as $product)
                                 <!-- Parent Row -->
                                 <tr>
-                                    <td rowspan="3{{-- $product->variants->count() + 1 --}}" class="text-center">
+                                    <td rowspan="{{ $product->variants->count() + 1 }}" class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
                                             data-href="{{ route('product.destroy', $product->id) }}">
                                             <i class="fa fa-trash"></i>
@@ -84,9 +84,10 @@
                                             class="text-bold">{{ number_format($product->variants->sum('stock')) }}</span>
                                     </td>
                                 </tr>
-                                @forelse ($product->variants->take(2) as $variant)
+
+                                @forelse ($product->variants as $variant)
                                     <!-- Sub Rows -->
-                                    <tr>
+                                    <tr class="{{ $variant->stock <= 0 ? 'bg-danger' : '' }}">
                                         <td class="attribute">
                                             {{ $variant->attributeValues->pluck('value')->implode(' / ') }}
                                         </td>
@@ -102,11 +103,11 @@
                                         </td>
                                     </tr>
                                 @endforelse
-                                <tr>
+                                {{-- <tr>
                                     <td colspan="5" class="text-center">
                                         <a href="{{ route('product.edit', $product->id) }}" class="btn btn-link"><i>load more...</i></a>
                                     </td>
-                                </tr>
+                                </tr> --}}
                             @empty
                                 <tr>
                                     <td class="text-center" colspan="5">Tidak ada data yang di tampilkan</td>

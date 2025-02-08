@@ -2,7 +2,7 @@
     searchTerm: '',
     products: [],
     filteredProducts: [],
-    cart: @entangle('cart'),
+    cart: @js($cart),
     purchaseCode: @entangle('purchaseCode'),
     purchaseNote: @entangle('purchaseNote'),
     purchaseStatus: @entangle('purchaseStatus'),
@@ -81,7 +81,13 @@
                 item.price = variant.price;
             }
         } else if (field === 'quantity') {
-            item.quantity = Math.max(1, value); // Ensure at least 1 quantity
+            let stock = item.variants.find(v => v.id == item.selectedVariant).stock;
+            if (stock < value) {
+                item.quantity = stock;
+                alert('Maximum available stock: ' + stock);
+            } else {
+                item.quantity = Math.max(1, value); // Ensure at least 1 quantity
+            }
         }
     },
 
@@ -97,6 +103,7 @@
     },
 
     saveCart() {
+        this.$wire.set('cart', this.cart);
         // Save cart data to the server
         $wire.saveCart()
             .then((result) => {
@@ -185,6 +192,7 @@
                 <thead>
                     <tr>
                         <th>Product Name</th>
+                        <th>Stock</th>
                         <th>Variant</th>
                         <th>Quantity</th>
                         <th>Price</th>
@@ -197,7 +205,13 @@
                         <tr>
                             <!-- Product Name -->
                             <td x-text="item.nama"></td>
-
+                            <td :class="{ 'bg-danger': item.variants.find(v => v.id == item.selectedVariant).stock < 1 }">
+                                <div style="display: flex;justify-content: space-between;align-items: center;">
+                                    <span x-text="item.variants.find(v => v.id == item.selectedVariant).stock"></span>
+                                    <i class="fa fa-arrow-right"></i>
+                                    <span x-text="parseInt(item.variants.find(v => v.id == item.selectedVariant).stock) + parseInt(item.quantity)" class="label label-success"></span>
+                                </div>
+                            </td>
                             <!-- Variant Selector -->
                             <td>
                                 <template x-if="item.variants.length">
@@ -206,7 +220,8 @@
                                         <option value=""></option>
                                         <template x-for="variant in item.variants" :key="variant.id">
                                             <option :value="variant.id"
-                                                x-text="Object.values(variant.attributes).join(' / ')"></option>
+                                                x-text="Object.values(variant.attributes).join(' / ')"
+                                                :selected="item.selectedVariant == variant.id"></option>
                                         </template>
                                     </select>
                                 </template>
@@ -217,14 +232,14 @@
 
                             <!-- Quantity Input -->
                             <td>
-                                <input type="number" class="form-control" x-model.lazy="item.quantity"
+                                <input type="text" class="form-control" x-model="item.quantity"
                                     x-on:input="updateCartItem(index, 'quantity', $event.target.value)"
                                     min="1" />
                             </td>
 
                             <!-- Price Input -->
                             <td>
-                                <input type="number" class="form-control" x-model.lazy="item.price"
+                                <input type="number" class="form-control" x-model="item.price"
                                     x-on:input="updateCartItem(index, 'price', $event.target.value)" step="100" />
                             </td>
 

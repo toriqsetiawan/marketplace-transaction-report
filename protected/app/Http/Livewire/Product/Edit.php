@@ -118,11 +118,6 @@ class Edit extends Component
             $product->harga_jual = $this->hargaJual;
             $product->save();
 
-            // Delete existing attributeValues
-            // foreach ($product->variants as $variant) {
-            //     $variant->attributeValues()->delete();
-            // }
-
             // Handle Attributes and Attribute Values
             $attributeMap = [];
             foreach ($this->variations as $variation) {
@@ -207,7 +202,7 @@ class Edit extends Component
                 }
 
                 // Attach all matching AttributeValues to the variant
-                $variant->attributeValues()->attach($attributeValueIds);
+                $variant->attributeValues()->syncWithoutDetaching($attributeValueIds);
             }
 
             // Delete Variants That Are No Longer Present
