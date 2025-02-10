@@ -47,6 +47,7 @@
             <li class="{{ activateWhenRoute('product*')  }}"><a href="{{ route('product.index') }}"><i class='fa fa-folder'></i> <span>Product Management</span></a></li>
             <li class="{{ activateWhenRoute('purchase*')  }}"><a href="{{ route('purchase.index') }}"><i class='fa fa-money'></i> <span>Purchase Order</span></a></li>
             <li class="{{ activateWhenRoute('penjualan*')  }}"><a href="{{ route('penjualan.index') }}"><i class='fa fa-money'></i> <span>POS (Point of sales)</span></a></li>
+            <li class="{{ activateWhenRoute('return*')  }}"><a href="{{ route('return.index') }}"><i class='fa fa-money'></i> <span>Return Order</span></a></li>
             <li class="{{ activateWhenRoute('report-penjualan*')  }}"><a href="{{ route('report-penjualan.index') }}"><i class='fa fa-print'></i> <span>Report</span></a></li>
         </ul><!-- /.sidebar-menu -->
     </section>

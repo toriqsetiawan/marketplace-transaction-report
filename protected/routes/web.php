@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportPenjualanController;
+use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
@@ -36,6 +37,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('product', ProductController::class);
     Route::resource('purchase', PurchaseController::class);
     Route::resource('penjualan', PenjualanController::class);
+    Route::resource('return', ReturnController::class);
     Route::resource('report-penjualan', ReportPenjualanController::class);
     Route::resource('user', UserController::class);
     Route::resource('supplier', SupplierController::class);
