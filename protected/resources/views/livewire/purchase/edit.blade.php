@@ -1,4 +1,5 @@
 <div class="container box" x-data="{
+    loading: false,
     searchTerm: '',
     products: [],
     filteredProducts: [],
@@ -79,13 +80,7 @@
                 item.selectedVariant = variant.id;
             }
         } else if (field === 'quantity') {
-            let stock = item.variants.find(v => v.id == item.selectedVariant).stock;
-            if (stock < value) {
-                item.quantity = stock;
-                alert('Maximum available stock: ' + stock);
-            } else {
-                item.quantity = Math.max(1, value); // Ensure at least 1 quantity
-            }
+            item.quantity = Math.max(1, value); // Ensure at least 1 quantity
         }
     },
 
@@ -113,9 +108,11 @@
                     // Handle error, e.g., show an error message
                     alert(result);
                 }
+                this.loading = false
             })
             .catch((error) => {
                 console.error('Error saving cart:', error);
+                this.loading = false
             });
     }
 }">
@@ -257,7 +254,8 @@
             <!-- Submit / Save / Buy Now Buttons -->
             <div class="mt-3 text-right" style="margin: 2rem 0">
                 <a href="{{ route('purchase.index') }}" class="btn btn-default" style="margin-right: 1rem">Cancel</a>
-                <button class="btn btn-primary" x-on:click="saveCart()">Save</button>
+                <button class="btn btn-primary" x-on:click="saveCart()" :disabled="loading"
+                x-text="loading ? 'Loading...' : 'Save'"></button>
             </div>
         </div>
     </div>

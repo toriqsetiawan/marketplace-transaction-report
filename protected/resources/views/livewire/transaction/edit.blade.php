@@ -1,4 +1,5 @@
 <div class="container box" x-data="{
+    loading: false,
     searchTerm: '',
     products: [],
     filteredProducts: [],
@@ -87,10 +88,10 @@
                 item.selectedVariant = variant.id;
             }
         } else if (field === 'quantity') {
-            let stock = item.variants.find(v => v.id == item.selectedVariant).stock;
+            let stock = item.variants.find(v => v.id == item.selectedVariant).stock + item.oldQuantity;
             if (stock < value) {
                 item.quantity = stock;
-                alert('Maximum available stock: ' + stock);
+                alert('Maximum available stock: ' + stock + '. You selected ' + value);
             } else {
                 item.quantity = Math.max(1, value); // Ensure at least 1 quantity
             }
@@ -121,9 +122,11 @@
                 } else {
                     alert(result);
                 }
+                this.loading = false
             })
             .catch((error) => {
                 console.error('Error saving cart:', error);
+                this.loading = false
             });
     }
 }">
@@ -249,9 +252,13 @@
                         <tr>
                             <!-- Product Name -->
                             <td x-text="item.nama"></td>
-                            <td :class="{ 'bg-danger': item.variants.find(v => v.id == item.selectedVariant).stock < 1 }">
+                            <td
+                                :class="{ 'bg-danger': (item.variants.find(v => v.id == item.selectedVariant).stock + item
+                                        .oldQuantity) < 1 }">
                                 <div style="display: flex;justify-content: space-between;align-items: center;">
                                     <span x-text="item.variants.find(v => v.id == item.selectedVariant).stock"></span>
+                                    <i class="fa fa-plus"></i>
+                                    <span x-text="parseInt(item.oldQuantity)" class="label label-default"></span>
                                 </div>
                             </td>
                             <!-- Variant Selector -->
@@ -303,8 +310,10 @@
 
             <!-- Submit / Save / Buy Now Buttons -->
             <div class="mt-3 text-right" style="margin: 2rem 0">
-                <a href="{{ route('penjualan.index') }}" class="btn btn-default" style="margin-right: 1rem">Cancel</a>
-                <button class="btn btn-primary" x-on:click="saveCart()">Save</button>
+                <a href="{{ route('penjualan.index') }}" class="btn btn-default"
+                    style="margin-right: 1rem">Cancel</a>
+                <button class="btn btn-primary" x-on:click="saveCart()" :disabled="loading"
+                    x-text="loading ? 'Loading...' : 'Save'"></button>
             </div>
         </div>
     </div>

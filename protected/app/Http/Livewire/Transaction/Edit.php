@@ -51,6 +51,7 @@ class Edit extends Component
                 'nama' => $item->variant?->product->nama,
                 'price' => $item->price,
                 'quantity' => $item->quantity,
+                'oldQuantity' => $item->quantity,
                 'variants' => $item->variant?->product->variants->map(function ($variant) use ($customer) {
                     $price = $customer->role->name === 'reseller' ? $variant->product->harga_jual : $variant->price;
                     $price = $price == 0 ? $variant->price : $price;
