@@ -80,6 +80,7 @@
 
     updateCartItem(index, field, value) {
         let item = this.cart[index];
+        value = parseInt(value);
 
         if (field === 'selectedVariant') {
             let variant = item.variants.find(v => v.id == value);
@@ -88,7 +89,7 @@
                 item.price = variant.price;
             }
         } else if (field === 'quantity') {
-            let stock = item.variants.find(v => v.id == item.selectedVariant).stock;
+            let stock = parseInt(item.variants.find(v => v.id == item.selectedVariant).stock);
             if (stock < value) {
                 item.quantity = stock;
                 alert('Maximum available stock: ' + stock + '. You selected ' + value);
