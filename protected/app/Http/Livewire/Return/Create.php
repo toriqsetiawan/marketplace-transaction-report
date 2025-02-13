@@ -21,6 +21,7 @@ class Create extends Component
     public $transactionNote = '';
     public $selectedCustomer = '';
     public $transactionDate = '';
+    public $isTransactionCode = false;
 
     public function mount()
     {
@@ -46,7 +47,6 @@ class Create extends Component
                         ->value('harga_jual');
 
                     $price = $price == 0 ? $cart['price'] : $price;
-
                 } else {
                     $price = ProductVariant::find($cart['selectedVariant'])->price ?? $price;
                 }
@@ -126,33 +126,89 @@ class Create extends Component
             ->where('nama', 'like', '%' . $searchTerm . '%')
             ->get();
 
-        $customer = User::with(['role'])->findOrFail($this->selectedCustomer);
+        if ($product->count()) {
+            $customer = User::with(['role'])->findOrFail($this->selectedCustomer);
 
-        return $product->map(function ($product) use ($customer) {
-            return [
-                'id' => $product->id,
-                'nama' => $product->nama,
-                'harga_jual' => $product->harga_jual,
-                'supplier' => [
-                    'id' => $product->supplier['id'],
-                    'name' => $product->supplier['name'],
-                ],
-                'variants' => $product->variants->map(function ($variant) use ($customer, $product) {
-                    $price = $customer->role->name === 'reseller' ? $product->harga_jual : $variant->price;
-                    $price = $price == 0 ? $variant->price : $price;
+            $this->isTransactionCode = false;
 
+            return $product->map(function ($product) use ($customer) {
+                return [
+                    'id' => $product->id,
+                    'nama' => $product->nama,
+                    'harga_jual' => $product->harga_jual,
+                    'supplier' => [
+                        'id' => $product->supplier['id'],
+                        'name' => $product->supplier['name'],
+                    ],
+                    'variants' => $product->variants->map(function ($variant) use ($customer, $product) {
+                        $price = $customer->role->name === 'reseller' ? $product->harga_jual : $variant->price;
+                        $price = $price == 0 ? $variant->price : $price;
+
+                        return [
+                            'id' => $variant->id,
+                            'attributes' => $variant->attributeValues->mapWithKeys(function ($attr) {
+                                return [$attr->attribute->name => $attr->value];
+                            })->toArray(),
+                            'price' => $price,
+                            'stock' => $variant->stock,
+                            'sku' => $variant->sku,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray();
+        } else {
+            $transaction = Transaction::with(['items.variant.product', 'user'])
+                ->where('transaction_code', $searchTerm)
+                ->first();
+
+            if ($transaction) {
+                $this->isTransactionCode = true;
+                $customer = User::with(['role'])->findOrFail($transaction->user_id);
+
+                $items = $transaction->items->map(function ($item) use ($customer) {
                     return [
-                        'id' => $variant->id,
-                        'attributes' => $variant->attributeValues->mapWithKeys(function ($attr) {
+                        'id' => $item->variant?->product_id,
+                        'nama' => $item->variant?->product->nama,
+                        'price' => $item->price,
+                        'quantity' => $item->quantity,
+                        'supplier' => [
+                            'id' => $item->variant->product->supplier['id'],
+                            'name' => $item->variant->product->supplier['name'],
+                        ],
+                        'variants' => $item->variant?->product->variants->map(function ($variant) use ($customer) {
+                            $price = $customer->role->name === 'reseller' ? $variant->product->harga_jual : $variant->price;
+                            $price = $price == 0 ? $variant->price : $price;
+
+                            return [
+                                'id' => $variant->id,
+                                'attributes' => $variant->attributeValues->mapWithKeys(function ($attr) {
+                                    return [$attr->attribute->name => $attr->value];
+                                })->toArray(),
+                                'price' => $price,
+                                'stock' => $variant->stock,
+                                'sku' => $variant->sku,
+                            ];
+                        })->toArray(),
+                        'variantAttributes' => $item->variant?->attributeValues->mapWithKeys(function ($attr) {
                             return [$attr->attribute->name => $attr->value];
                         })->toArray(),
-                        'price' => $price,
-                        'stock' => $variant->stock,
-                        'sku' => $variant->sku,
+                        'selectedVariant' => $item->variant_id,
                     ];
-                })->toArray(),
-            ];
-        })->toArray();
+                })->toArray();
+
+                return [
+                    [
+                        'id' => $transaction->id,
+                        'user' => $transaction->user,
+                        'transaction_code' => $transaction->transaction_code,
+                        'transaction_date' => $transaction->created_at->format('Y-m-d'),
+                        'note' => $transaction->note,
+                        'total_price' => $transaction->total_price,
+                        'items' => $items,
+                    ]
+                ];
+            }
+        }
     }
 
     public function saveCart()

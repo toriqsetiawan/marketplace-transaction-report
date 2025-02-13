@@ -33,39 +33,62 @@
             })
     },
 
-    addToCart(product, selectedVariantId = null) {
-        const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
-
-        let selectedVariant = hasVariants ?
-            product.variants.find(v => v.id == selectedVariantId) || product.variants[0] :
-            null;
-
-        // Extract dynamic attributes
-        let variantAttributes = hasVariants ?
-            selectedVariant.attributes || {} : {};
-
-        // Check if item exists in cart based on product and selected variant
-        const existingItem = this.cart.find(item =>
-            item.id === product.id && item.selectedVariant === (selectedVariant?.id || null)
-        );
-
-        if (!existingItem) {
-            this.cart.push({
-                id: product.id,
-                nama: product.nama,
-                price: selectedVariant ? selectedVariant.price : product.harga_jual,
-                quantity: 1,
-                selectedVariant: selectedVariant ? selectedVariant.id : null,
-                variantAttributes: variantAttributes, // Store all variant attributes dynamically
-                variants: hasVariants ? product.variants.map(v => ({
-                    id: v.id,
-                    attributes: v.attributes, // Store dynamic attributes
-                    price: v.price,
-                    stock: v.stock
-                })) : []
+    addToCart(product, selectedVariantId = null, isTransaction = false) {
+        if (isTransaction) {
+            console.log(product);
+            product.items.forEach((item) => {
+                this.cart.push({
+                    id: item.id,
+                    nama: item.nama,
+                    price: item.price,
+                    quantity: item.quantity,
+                    selectedVariant: selectedVariantId ? selectedVariantId : item.selectedVariant,
+                    variantAttributes: item.variantAttributes,
+                    variants: item.variants.map(v => ({
+                        id: v.id,
+                        attributes: v.attributes, // Store dynamic attributes
+                        price: v.price,
+                        stock: v.stock
+                    }))
+                });
             });
+
+            this.transactionNote = product.note;
+            this.selectedCustomer = product.user.id;
         } else {
-            existingItem.quantity++;
+            const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
+
+            let selectedVariant = hasVariants ?
+                product.variants.find(v => v.id == selectedVariantId) || product.variants[0] :
+                null;
+
+            // Extract dynamic attributes
+            let variantAttributes = hasVariants ?
+                selectedVariant.attributes || {} : {};
+
+            // Check if item exists in cart based on product and selected variant
+            const existingItem = this.cart.find(item =>
+                item.id === product.id && item.selectedVariant === (selectedVariant?.id || null)
+            );
+
+            if (!existingItem) {
+                this.cart.push({
+                    id: product.id,
+                    nama: product.nama,
+                    price: selectedVariant ? selectedVariant.price : product.harga_jual,
+                    quantity: 1,
+                    selectedVariant: selectedVariant ? selectedVariant.id : null,
+                    variantAttributes: variantAttributes, // Store all variant attributes dynamically
+                    variants: hasVariants ? product.variants.map(v => ({
+                        id: v.id,
+                        attributes: v.attributes, // Store dynamic attributes
+                        price: v.price,
+                        stock: v.stock
+                    })) : []
+                });
+            } else {
+                existingItem.quantity++;
+            }
         }
 
         this.searchTerm = '';
@@ -131,11 +154,23 @@
                 x-on:input.debounce.300ms="searchProduct" />
 
             <div class="list-group" style="max-height: 300px; overflow-y: auto;" wire:ignore>
-                <template x-for="product in filteredProducts" :key="product.id">
-                    <a href="javascript:void(0)" class="list-group-item" x-on:click="addToCart(product)">
-                        <p class="text-bold text-uppercase" x-text="product.nama"></p>
-                        <p style="margin: 0">Supplier: <i x-text="product.supplier.name"></i></p>
-                        <p>Harga mitra: <span x-text="formatPrice(product.harga_jual)"></span></p>
+                <template x-for="(product, index) in filteredProducts" :key="index">
+                    <a href="javascript:void(0)" class="list-group-item"
+                        x-on:click="addToCart(product, null, product.transaction_code ? true : false)">
+                        <template x-if="product.transaction_code">
+                            <div>
+                                <p class="text-bold text-uppercase" x-text="product.transaction_code"></p>
+                                <p><span x-text="product.user.name"></span></p>
+                                <p>Total: <span x-text="formatPrice(product.total_price)"></span></p>
+                            </div>
+                        </template>
+                        <template x-if="product.nama">
+                            <div>
+                                <p class="text-bold text-uppercase" x-text="product.nama"></p>
+                                <p style="margin: 0">Supplier: <i x-text="product.supplier?.name || 'Unknown'"></i></p>
+                                <p>Harga mitra: <span x-text="formatPrice(product.harga_jual)"></span></p>
+                            </div>
+                        </template>
                     </a>
                 </template>
             </div>
@@ -207,7 +242,8 @@
                             <!-- Product Name -->
                             <td x-text="item.nama"></td>
                             <td
-                                :class="{ 'bg-danger': item.variants.find(v => v.id == item.selectedVariant).stock < 1 }">
+                                {{-- :class="{ 'bg-danger': item.variants.find(v => v.id == item.selectedVariant).stock < 1 }" --}}
+                                >
                                 <div style="display: flex;justify-content: space-between;align-items: center;">
                                     <span x-text="item.variants.find(v => v.id == item.selectedVariant).stock"></span>
                                     <i class="fa fa-arrow-right"></i>
@@ -267,7 +303,7 @@
             <div class="mt-3 text-right" style="margin: 2rem 0">
                 <a href="{{ route('penjualan.index') }}" class="btn btn-default" style="margin-right: 1rem">Cancel</a>
                 <button class="btn btn-primary" x-on:click="saveCart()" :disabled="loading"
-                x-text="loading ? 'Loading...' : 'Save'"></button>
+                    x-text="loading ? 'Loading...' : 'Save'"></button>
             </div>
         </div>
     </div>
