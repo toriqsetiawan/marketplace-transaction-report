@@ -38,9 +38,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('purchase', PurchaseController::class);
     Route::resource('penjualan', PenjualanController::class);
     Route::resource('return', ReturnController::class);
-    Route::resource('report-penjualan', ReportPenjualanController::class);
     Route::resource('user', UserController::class);
     Route::resource('supplier', SupplierController::class);
+
+    Route::group(['middleware' => 'administrator'], function () {
+        Route::resource('report-penjualan', ReportPenjualanController::class);
+    });
 
     // Custom routes
     Route::post('transaction/recovery', [PrintController::class, 'recovery'])->name('transaction.recovery');

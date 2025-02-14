@@ -1,228 +1,114 @@
 @extends('layouts.app')
 
-@section('contentheader_title')
-    Report Penjualan
-@endsection
-
 @section('htmlheader_title')
-    Report Penjualan
-@endsection
+    Report
+@stop
+
+@section('contentheader_title')
+    Report
+@stop
 
 @section('main-content')
-    <div>
-        <div class="box">
-            <div class="box-header">
-                <div class="d-block my-3">
+    <div class="row">
+        <div class="col-xs-12">
+            @if (session()->has('success'))
+                <div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-check"></i> Message!</h4>
+                    {{ session('success') }}.
+                </div>
+            @endif
+            @if (session()->has('error'))
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-check"></i> Message!</h4>
+                    {{ session('error') }}.
+                </div>
+            @endif
+            <div class="box">
+                <div class="box-header">
                     <input type="text" name="daterange" class="form-control" value=""
                         style="width: 17rem; margin: 1rem 0" />
-                </div>
-            </div>
+                    <div class="box-tools">
+                        {{-- <a href="{{ route('penjualan.create') }}" class="btn btn-primary" style="margin: 1rem 0">
+                            <i class="fa fa-plus-circle"></i> Create
+                        </a> --}}
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>No</th>
+                            <th>Date</th>
+                            <th class="text-right">Total Sell</th>
+                            <th class="text-right">Total Buy</th>
+                            <th class="text-center">Total Quantity</th>
+                            <th class="text-right">Total Profit</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                        @forelse($data as $key)
+                            <tr>
+                                <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
+                                </td>
+                                <td>{{ \Carbon\Carbon::parse($key['date'])->format('d F Y') }}</td>
+                                <td class="text-right">{{ number_format($key['total_price']) }}</td>
+                                <td class="text-right">{{ number_format($key['total_buy_price']) }}</td>
+                                <td class="text-center">{{ number_format($key['total_quantity']) }}</td>
+                                <td class="text-right">{{ number_format($key['total_price'] - $key['total_buy_price']) }}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ route('report-penjualan.show', [
+                                        'report_penjualan' => 1,
+                                        'start_date' => \Carbon\Carbon::parse($key['date'])->format('d/m/Y'),
+                                        'end_date' => \Carbon\Carbon::parse($key['date'])->format('d/m/Y'),
+                                    ]) }}"
+                                        class="btn btn-xs btn-info" title="Detail">
+                                        <i class="fa fa-eye"></i> Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center">
+                                    Tidak ada data yang ditampilkan
+                                </td>
+                            </tr>
+                        @endforelse
+                    </table>
+                </div><!-- /.box-body -->
+                {{-- <div class="box-footer text-right">
+                    <div class="pull-left" style="margin-top: 20px">
+                        <strong>Total data : {!! $data->total() !!}</strong>
+                    </div>
+                    <div class="pull-right">
+                        {!! $data->appends(request()->all())->links() !!}
+                    </div>
+                </div> --}}
+            </div><!-- /.box -->
         </div>
     </div>
-    <div class="row">
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-orange">
-                <div class="inner">
-                    <h3>Shopee</h3>
-                    <h4>Rp.
-                        @if (isset($data['online']))
-                            {{ array_key_exists(1, $data['online']) ? number_format(collect($data['online'][1])->sum() ?? 0) : 0 }}
-                        @else
-                            0
-                        @endif
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-social-usd"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode=shopee&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-green">
-                <div class="inner">
-                    <h3>Tokopedia</h3>
-                    <h4>Rp.
-                        @if (isset($data['online']))
-                            {{ array_key_exists(3, $data['online']) ? number_format(collect($data['online'][3])->sum() ?? 0) : 0 }}
-                        @else
-                            0
-                        @endif
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-social-bitcoin"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode=tokopedia&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-purple">
-                <div class="inner">
-                    <h3>Lazada</h3>
-                    <h4>Rp.
-                        @if (isset($data['online']))
-                            {{ array_key_exists(4, $data['online']) ? number_format(collect($data['online'][4])->sum() ?? 0) : 0 }}
-                        @else
-                            0
-                        @endif
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-social-euro"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode=lazada&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-black">
-                <div class="inner">
-                    <h3>Tiktok</h3>
-                    <h4>Rp.
-                        @if (isset($data['online']))
-                            {{ array_key_exists(2, $data['online']) ? number_format(collect($data['online'][2])->sum() ?? 0) : 0 }}
-                        @else
-                            0
-                        @endif
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-social-yen text-muted"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode=tiktok&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-blue">
-                <div class="inner">
-                    <h3>User</h3>
-                    <h4>Rp.
-                        @php
-                            $totalUser = 0;
-                        @endphp
-                        @if (array_key_exists('user', $data))
-                            @foreach ($data['user'] as $item)
-                                @php
-                                    $totalUser += collect($item)->sum();
-                                @endphp
-                            @endforeach
-                        @endif
-                        {{ number_format($totalUser) }}
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-social-whatsapp"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode=mitra&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-gray">
-                <div class="inner">
-                    <h3>Offline</h3>
-                    <h4>Rp.
-                        {{ array_key_exists('offline', $data) ? number_format(collect($data['offline'])->sum() ?? 0) : 0 }}
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-person-stalker"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode=offline&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-green">
-                <div class="inner">
-                    <h3>Keuntungan</h3>
-                    <h4> Rp.
-                        @php
-                            $keuntungan = 0;
-                            foreach ($data as $item => $value) {
-                                if (in_array($item, ['online', 'offline', 'user'])) {
-                                    foreach ($value as $key) {
-                                        $keuntungan += collect($key)->sum();
-                                    }
-                                }
-                            }
-                        @endphp
-                        {{ number_format($keuntungan) }}
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-social-usd"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-green">
-                <div class="inner">
-                    <h3>Omset</h3>
-                    <h4> Rp.{{ number_format($hpp + $keuntungan) }}</h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-social-usd"></i>
-                </div>
-                <a href="?" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-green">
-                <div class="inner">
-                    <h3>Hpp</h3>
-                    <h4> Rp.{{ number_format($hpp) }}</h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-social-usd"></i>
-                </div>
-                <a href="?" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        @foreach ($supplier as $key)
-        <div class="col-lg-4 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-red">
-                <div class="inner">
-                    <h3>{{ $key->nama }}</h3>
-                    <h4>Total bayar Rp.
-                        {{ array_key_exists($key->nama, $data) ? number_format(collect($data[$key->nama])->sum() ?? 0) : 0 }}
-                    </h4>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-person-stalker"></i>
-                </div>
-                <a href="{{ url('report-penjualan/1?mode='. $key->id.'&start_date='.request('start_date').'&end_date='.request('end_date')) }}" class="small-box-footer">
-                    More info <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        @endforeach
+    <div class="example-modal">
+        <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="" method="post" id="deleteForm">
+                        {{ csrf_field() }}
+                        {{ method_field('DELETE') }}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">×</span></button>
+                            <h4 class="modal-title">Delete Data</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure want to delete this data?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-infp pull-left" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </div>
-@endsection
+@stop

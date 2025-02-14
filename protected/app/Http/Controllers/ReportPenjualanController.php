@@ -18,52 +18,59 @@ class ReportPenjualanController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $transactions = Transaction::with(['configFee', 'user', 'product.supplier'])
-            ->where('created_at', '>=', $start)
-            ->where('created_at', '<=', $end)
-            ->where('status', 2)
+        $transactions = Transaction::with([
+            'items' => function ($q) {
+                $q->with(['variant.product'])
+                    ->where('price', '>', 0);
+                    // ->whereDoesntHave('variant.product', function ($q) {
+                    //     $q->where('sku', 'like', 'packing-%')
+                    //         ->orWhere('sku', 'like', 'insole-%');
+                    // });
+            },
+            'user'
+        ])
+            ->whereBetween('created_at', [$start, $end])
+            ->when($request->status, fn($q) => $q->where('status', 2))
             ->get();
 
-        $data = [];
-
-        $hpp = 0;
-
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'online')->groupBy('channel') as $trxMarketplace) {
-            foreach ($trxMarketplace as $online) {
-                $data[$online->channel][$online->marketplace][] = $online->total_paid;
-                $hpp += (($online->biaya_tambahan + $online->biaya_lain_lain + $online->harga_beli) * $online->jumlah);
-            }
-        }
-
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'user')->groupBy('name') as $trxUser) {
-            foreach ($trxUser as $user) {
-                $data[$user->channel][$user->mitra->nama][] = ($user->total_paid - $user->biaya_tambahan - $user->biaya_lain_lain - $user->harga_beli) * $user->jumlah;
-                $hpp += (($user->biaya_tambahan + $user->biaya_lain_lain + $user->harga_beli) * $user->jumlah);
-            }
-        }
-
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'offline') as $offline) {
-            $data['offline'][] = ($offline->total_paid - $offline->biaya_tambahan - $offline->biaya_lain_lain - $offline->harga_beli) * $offline->jumlah;
-            $hpp += (($offline->biaya_tambahan + $offline->biaya_lain_lain + $offline->harga_beli) * $offline->jumlah);
-        }
-
-        $supplier = Supplier::all();
-
-        foreach ($supplier as $key) {
-            $filteredData = $transactions->filter(function ($q) use ($key) {
-                if ($q->product) {
-                    if ($q->product->supplier) {
-                        return $q->product->supplier->id == $key->id;
-                    }
-                }
-                return null;
+        // Process transactions and calculate totals
+        $transactionDetails = $transactions->map(function ($transaction) {
+            // Filter items
+            $filteredItems = $transaction->items->filter(function ($item) {
+                return !str_starts_with($item->variant->sku ?? '', 'packing-') &&
+                       !str_starts_with($item->variant->sku ?? '', 'insole-');
             });
-            foreach ($filteredData as $trx) {
-                $data[$key->nama][] = $trx->harga_beli * $trx->jumlah;
-            }
-        }
 
-        return view('report-penjualan.index', compact('data', 'supplier', 'hpp'));
+            $totalBuyPrice = $filteredItems->sum(function ($item) {
+                return ($item->variant->product->harga_beli ?? 0) * $item->quantity;
+            });
+
+            $totalQuantity = $filteredItems->sum('quantity');
+
+            return [
+                'date' => $transaction->created_at->format('Y-m-d'),
+                'total_price' => $transaction->total_price,
+                'total_buy_price' => $totalBuyPrice,
+                'total_quantity' => $totalQuantity
+            ];
+        });
+
+        // Group by date and sum totals for each date
+        $groupedTransactions = $transactionDetails->groupBy('date')->map(function ($group) {
+            return [
+                'date' => $group->first()['date'],
+                'total_price' => $group->sum('total_price'),
+                'total_buy_price' => $group->sum('total_buy_price'),
+                'total_quantity' => $group->sum('total_quantity')
+            ];
+        });
+
+        // Optionally convert to array or collection
+        $groupedTransactions = $groupedTransactions->values();
+
+        $data = $groupedTransactions->toArray();
+
+        return view('report-penjualan.index', compact('data'));
     }
 
     public function show(Request $request, $id)
@@ -75,46 +82,21 @@ class ReportPenjualanController extends Controller
             ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $transactions = Transaction::with(['product.supplier', 'configFee', 'user']);
+        $transactions = Transaction::with([
+            'items' => function ($q) {
+                $q->with(['variant.product'])
+                    ->where('price', '>', 0)
+                    ->whereDoesntHave('variant.product', function ($q) {
+                        $q->where('sku', 'like', 'packing-%')
+                            ->orWhere('sku', 'like', 'insole-%');
+                    });
+            },
+            'user'
+        ])
+            ->whereBetween('created_at', [$start, $end])
+            ->when($request->status, fn($q) => $q->where('status', 2))
+            ->get();
 
-        // todo filter
-        $transactions->where('created_at', '>=', $start);
-        $transactions->where('created_at', '<=', $end);
-
-        $ownerName = null;
-
-        switch ($request->mode) {
-            case 'shopee':
-                $transactions->where('marketplace', 1);
-                break;
-            case 'tiktok':
-                $transactions->where('marketplace', 2);
-                break;
-            case 'tokopedia':
-                $transactions->where('marketplace', 3);
-                break;
-            case 'lazada':
-                $transactions->where('marketplace', 4);
-                break;
-            case 'user':
-                $transactions->where('channel', 'user');
-                break;
-            case 'offline':
-                $transactions->where('channel', 'offline');
-                break;
-            default:
-                if ($request->mode) {
-                    $ownerName = Supplier::find($request->mode);
-                    $transactions->whereHas('product', fn ($q) => $q->where('supplier_id', $request->mode));
-                }
-                break;
-        }
-
-        $data = $transactions->orderBy('created_at', 'desc')
-            ->paginate(25);
-
-        $ownerName = $ownerName ? 'Produk dari ' . $ownerName->nama : null;
-
-        return view('report-penjualan.show', compact('data', 'ownerName'));
+        return view('report-penjualan.show', compact('transactions'));
     }
 }

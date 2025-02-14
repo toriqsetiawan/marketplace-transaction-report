@@ -27,7 +27,8 @@
             @endif
             <div class="box">
                 <div class="box-header">
-                    <input type="text" name="daterange" class="form-control" value="" style="width: 17rem; margin: 1rem 0"/>
+                    <input type="text" name="daterange" class="form-control" value=""
+                        style="width: 17rem; margin: 1rem 0" />
                     <div class="box-tools">
                         <a href="{{ route('purchase.create') }}" class="btn btn-primary" style="margin: 1rem 0">
                             <i class="fa fa-plus-circle"></i> Create
@@ -56,16 +57,23 @@
                                     <td>{{ $key->user->name }}</td>
                                     <td>
                                         <table style="width: 100%;">
-                                            @foreach ($key->items as $item)
+                                            @foreach ($key->items->take(3) as $item)
                                                 <tr>
-                                                    <td>{{ $item->variant?->product?->nama }}</td>
-                                                    <td>
+                                                    <td style="width: 50%">{{ $item->variant?->product?->nama }}</td>
+                                                    <td style="width: 32%">
                                                         {{ $item->variant?->product?->variants()->where('id', $item->variant_id)->first()->attributeValues()->implode('value', '/') }}
                                                     </td>
-                                                    <td>{{ $item->quantity }}</td>
-                                                    <td class="text-right">{{ number_format($item->price) }}</td>
+                                                    <td style="width: 5%">{{ $item->quantity }}</td>
+                                                    <td class="text-right" style="width: 13%">
+                                                        {{ number_format($item->price) }}
+                                                    </td>
                                                 </tr>
                                             @endforeach
+                                            @if ($key->items->count() > 3)
+                                                <tr>
+                                                    <td colspan="4" class="text-center"><i>load more...</i></td>
+                                                </tr>
+                                            @endif
                                         </table>
                                     </td>
                                     <td>{{ number_format($key->total_price) }}</td>
@@ -87,7 +95,7 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
-                                                data-href="{{ route('purchase.destroy', $key->id) }}">
+                                            data-href="{{ route('purchase.destroy', $key->id) }}">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
@@ -122,7 +130,7 @@
                         {{ method_field('DELETE') }}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                        aria-hidden="true">×</span></button>
+                                    aria-hidden="true">×</span></button>
                             <h4 class="modal-title">Delete Data</h4>
                         </div>
                         <div class="modal-body">

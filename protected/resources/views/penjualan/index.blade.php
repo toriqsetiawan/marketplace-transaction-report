@@ -62,7 +62,8 @@
                                                     {{ $item->variant?->product?->variants()->where('id', $item->variant_id)->first()->attributeValues()->implode('value', '/') }}
                                                 </td>
                                                 <td style="width: 5%">{{ $item->quantity }}</td>
-                                                <td class="text-right" style="width: 13%">{{ number_format($item->price) }}
+                                                <td class="text-right" style="width: 13%">
+                                                    {{ number_format($item->price) }}
                                                 </td>
                                             </tr>
                                         @endforeach

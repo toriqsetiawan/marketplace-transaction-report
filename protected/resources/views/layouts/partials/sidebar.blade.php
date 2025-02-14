@@ -48,7 +48,9 @@
             <li class="{{ activateWhenRoute('purchase*')  }}"><a href="{{ route('purchase.index') }}"><i class='fa fa-money'></i> <span>Purchase Order</span></a></li>
             <li class="{{ activateWhenRoute('penjualan*')  }}"><a href="{{ route('penjualan.index') }}"><i class='fa fa-money'></i> <span>POS (Point of sales)</span></a></li>
             <li class="{{ activateWhenRoute('return*')  }}"><a href="{{ route('return.index') }}"><i class='fa fa-money'></i> <span>Return Order</span></a></li>
-            <li class="{{ activateWhenRoute('report-penjualan*')  }}"><a href="{{ route('report-penjualan.index') }}"><i class='fa fa-print'></i> <span>Report</span></a></li>
+            @if (auth()->user()->hasRole('administrator'))
+                <li class="{{ activateWhenRoute('report-penjualan*')  }}"><a href="{{ route('report-penjualan.index') }}"><i class='fa fa-print'></i> <span>Report</span></a></li>
+            @endif
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

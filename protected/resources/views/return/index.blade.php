@@ -55,12 +55,14 @@
                                         <table style="width: 100%;">
                                             @foreach ($key->items as $item)
                                                 <tr>
-                                                    <td>{{ $item->variant?->product?->nama }}</td>
-                                                    <td>
+                                                    <td style="width: 50%">{{ $item->variant?->product?->nama }}</td>
+                                                    <td style="width: 32%">
                                                         {{ $item->variant?->product?->variants()->where('id', $item->variant_id)->first()->attributeValues()->implode('value', '/') }}
                                                     </td>
-                                                    <td>{{ $item->quantity }}</td>
-                                                    <td class="text-right">{{ number_format($item->price) }}</td>
+                                                    <td style="width: 5%">{{ $item->quantity }}</td>
+                                                    <td class="text-right" style="width: 13%">
+                                                        {{ number_format($item->price) }}
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </table>
