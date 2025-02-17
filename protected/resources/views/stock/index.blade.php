@@ -37,6 +37,9 @@
                     </div>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive">
+                    @php
+                        $supplierSummary = [];
+                    @endphp
                     <div class="row">
                         @foreach ($data as $product)
                             @php
@@ -57,12 +60,26 @@
                                 // Remove duplicates and sort
                                 $attributeValues = $attributeValues->map(fn($values) => $values->unique()->sort());
 
-                                // Assume the price per piece is from the first variant's price (all variants assumed to have the same price per piece)
                                 $pricePerPcs = $product->harga_beli ?? 0;
 
                                 // Calculate the total price across all stock
                                 $totalStock = $product->variants->sum('stock');
-                                $totalPrice = $totalStock * $pricePerPcs;
+
+                                if (strtoupper($product->nama) == 'PACKING' || strtoupper($product->nama == 'INSOLE')) {
+                                } else {
+                                    $totalPrice = $totalStock * $pricePerPcs;
+
+                                    // Add to supplier summary
+                                    $supplierName = $product->supplier->name ?? 'Unknown Supplier';
+                                    if (!isset($supplierSummary[$supplierName])) {
+                                        $supplierSummary[$supplierName] = [
+                                            'totalProduct' => 0,
+                                            'totalHarga' => 0,
+                                        ];
+                                    }
+                                    $supplierSummary[$supplierName]['totalProduct'] += $totalStock;
+                                    $supplierSummary[$supplierName]['totalHarga'] += $totalPrice;
+                                }
                             @endphp
 
                             <div class="col-xs-12 col-md-6" style="{{ $loop->iteration % 2 == 1 ? 'clear: both' : '' }}">
@@ -148,8 +165,8 @@
                                             <!-- Harga per Pcs Row -->
                                             <tr>
                                                 <td class="text-bold" style="background-color: #99cc99;">HARGA PER PCS</td>
-                                                <td colspan="{{ count($attributeValues->first() ?? []) }}"
-                                                    class="text-bold" style="background-color: #99cc99;">
+                                                <td colspan="{{ count($attributeValues->first() ?? []) }}" class="text-bold"
+                                                    style="background-color: #99cc99;">
                                                     {{ number_format($pricePerPcs, 0, ',', '.') }}
                                                 </td>
                                             </tr>
@@ -168,7 +185,36 @@
                             </div>
                         @endforeach
                     </div>
-
+                    @if (auth()->user()->hasRole('administrator'))
+                        <hr>
+                        <!-- Supplier Summary Table -->
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h4 class="text-center text-bold"
+                                    style="background-color: #99cc99; padding: 1rem; margin-bottom: 0;">
+                                    Supplier Summary</h4>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="background-color: lightgrey">SUPPLIER</th>
+                                            <th style="background-color: lightgrey" class="text-center">TOTAL PRODUCT</th>
+                                            <th style="background-color: lightgrey" class="text-center">TOTAL HARGA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($supplierSummary as $supplierName => $summary)
+                                            <tr>
+                                                <td>{{ $supplierName }}</td>
+                                                <td class="text-center">{{ number_format($summary['totalProduct']) }}</td>
+                                                <td class="text-center">
+                                                    {{ number_format($summary['totalHarga'], 0, ',', '.') }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @endif
                 </div><!-- /.box-body -->
             </div><!-- /.box -->
         </div>
