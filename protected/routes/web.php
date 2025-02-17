@@ -11,6 +11,7 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportPenjualanController;
 use App\Http\Controllers\ReturnController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
@@ -40,6 +41,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('return', ReturnController::class);
     Route::resource('user', UserController::class);
     Route::resource('supplier', SupplierController::class);
+    Route::resource('stock', StockController::class);
 
     Route::group(['middleware' => 'administrator'], function () {
         Route::resource('report-penjualan', ReportPenjualanController::class);

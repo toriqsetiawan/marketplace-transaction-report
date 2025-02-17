@@ -63,7 +63,7 @@
                             @forelse($data as $product)
                                 <!-- Parent Row -->
                                 <tr>
-                                    <td rowspan="{{ $product->variants->count() + 1 }}" class="text-center">
+                                    <td rowspan="{{ $product->variants->take(3)->count() + 1 }}" class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
                                             data-href="{{ route('product.destroy', $product->id) }}">
                                             <i class="fa fa-trash"></i>
@@ -85,7 +85,7 @@
                                     </td>
                                 </tr>
 
-                                @forelse ($product->variants as $variant)
+                                @forelse ($product->variants->take(3) as $variant)
                                     <!-- Sub Rows -->
                                     <tr class="{{ $variant->stock <= 0 ? 'bg-danger' : '' }}">
                                         <td class="attribute">
@@ -103,11 +103,11 @@
                                         </td>
                                     </tr>
                                 @endforelse
-                                {{-- <tr>
+                                <tr>
                                     <td colspan="5" class="text-center">
                                         <a href="{{ route('product.edit', $product->id) }}" class="btn btn-link"><i>load more...</i></a>
                                     </td>
-                                </tr> --}}
+                                </tr>
                             @empty
                                 <tr>
                                     <td class="text-center" colspan="5">Tidak ada data yang di tampilkan</td>
