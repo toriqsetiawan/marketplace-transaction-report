@@ -56,6 +56,13 @@
 
                                 // Remove duplicates and sort
                                 $attributeValues = $attributeValues->map(fn($values) => $values->unique()->sort());
+
+                                // Assume the price per piece is from the first variant's price (all variants assumed to have the same price per piece)
+                                $pricePerPcs = $product->harga_beli ?? 0;
+
+                                // Calculate the total price across all stock
+                                $totalStock = $product->variants->sum('stock');
+                                $totalPrice = $totalStock * $pricePerPcs;
                             @endphp
 
                             <div class="col-xs-12 col-md-6" style="{{ $loop->iteration % 2 == 1 ? 'clear: both' : '' }}">
@@ -67,10 +74,7 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th style="background-color: lightgrey">
-                                                {{-- {{ strtoupper($attributeValues->keys()->skip(1)->first() ?? 'SIZE') }} --}}
-                                                VARIANT
-                                            </th>
+                                            <th style="background-color: lightgrey">VARIANT</th>
                                             @foreach ($attributeValues->first() ?? [] as $columnHeader)
                                                 <th class="text-center" style="background-color: lightgrey">
                                                     {{ strtoupper($columnHeader) }}</th>
@@ -135,14 +139,36 @@
                                                 @endphp
                                                 <td class="text-center text-bold"
                                                     style="background-color: {{ $totalColumnStock == 0 ? '#ff6666' : '#99cc99' }};">
-                                                    {{ number_format($totalColumnStock) }}</td>
+                                                    {{ number_format($totalColumnStock) }}
+                                                </td>
                                             @endforeach
                                         </tr>
+
+                                        @if (auth()->user()->hasRole('administrator'))
+                                            <!-- Harga per Pcs Row -->
+                                            <tr>
+                                                <td class="text-bold" style="background-color: #99cc99;">HARGA PER PCS</td>
+                                                <td colspan="{{ count($attributeValues->first() ?? []) }}"
+                                                    class="text-bold" style="background-color: #99cc99;">
+                                                    {{ number_format($pricePerPcs, 0, ',', '.') }}
+                                                </td>
+                                            </tr>
+
+                                            <!-- Total Harga Row -->
+                                            <tr>
+                                                <td class="text-bold" style="background-color: #99cc99;">TOTAL HARGA</td>
+                                                <td colspan="{{ count($attributeValues->first() ?? []) }}"
+                                                    class="text-bold" style="background-color: #99cc99;">
+                                                    {{ number_format($totalPrice, 0, ',', '.') }}
+                                                </td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
                         @endforeach
                     </div>
+
                 </div><!-- /.box-body -->
             </div><!-- /.box -->
         </div>
