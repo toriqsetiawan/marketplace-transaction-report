@@ -64,11 +64,10 @@
 
                                 // Calculate the total price across all stock
                                 $totalStock = $product->variants->sum('stock');
+                                $totalPrice = $totalStock * $pricePerPcs;
 
                                 if (strtoupper($product->nama) == 'PACKING' || strtoupper($product->nama == 'INSOLE')) {
                                 } else {
-                                    $totalPrice = $totalStock * $pricePerPcs;
-
                                     // Add to supplier summary
                                     $supplierName = $product->supplier->name ?? 'Unknown Supplier';
                                     if (!isset($supplierSummary[$supplierName])) {
