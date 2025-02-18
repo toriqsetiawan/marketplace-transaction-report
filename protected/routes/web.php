@@ -35,12 +35,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('varian', VarianController::class);
     Route::resource('employee', EmployeeController::class);
     Route::resource('print', PrintController::class);
-    Route::resource('product', ProductController::class);
-    Route::resource('purchase', PurchaseController::class);
-    Route::resource('penjualan', PenjualanController::class);
-    Route::resource('return', ReturnController::class);
-    Route::resource('user', UserController::class);
-    Route::resource('supplier', SupplierController::class);
+
+    Route::group(['middleware' => ['admin']], function () {
+        Route::resource('product', ProductController::class);
+        Route::resource('purchase', PurchaseController::class);
+        Route::resource('penjualan', PenjualanController::class);
+        Route::resource('return', ReturnController::class);
+        Route::resource('user', UserController::class);
+        Route::resource('supplier', SupplierController::class);
+    });
+
     Route::resource('stock', StockController::class);
 
     Route::group(['middleware' => 'administrator'], function () {

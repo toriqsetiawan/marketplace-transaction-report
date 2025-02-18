@@ -30,7 +30,7 @@ class HomeController extends Controller
     public function index()
     {
         if (env('ONLY_ONLINE_SHOP')) {
-            return redirect('/product');
+            return redirect('/stock');
         }
 
         $employee = Employee::all()->count();

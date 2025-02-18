@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class Administrator
+class Admin
 {
     /**
      * Handle an incoming request.
@@ -16,8 +16,10 @@ class Administrator
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->user()->hasRole('administrator')) {
-            return redirect('/stock');
+        if (!auth()->user()->hasRole('admin')) {
+            if (!auth()->user()->hasRole('administrator')) {
+                return redirect('/stock');
+            }
         }
 
         return $next($request);
