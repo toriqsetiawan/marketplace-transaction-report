@@ -29,6 +29,10 @@ class HomeController extends Controller
      */
     public function index()
     {
+        if (env('ONLY_ONLINE_SHOP')) {
+            return redirect('/stock');
+        }
+
         $employee = Employee::all()->count();
         $varian = Varian::all()->count();
         $taxonomi = Taxonomi::all()->count();

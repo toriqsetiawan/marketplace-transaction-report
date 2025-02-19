@@ -1,24 +1,29 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Manajemen Produk
+    Product Management
 @stop
 
 @section('contentheader_title')
-    Manajemen Produk
+    Product Management
 @stop
 
 @section('main-content')
+    <style>
+        table td.attribute>span:first-child::after {
+            content: ' - ';
+        }
+    </style>
     <div class="row">
         <div class="col-xs-12">
-            @if(session()->has('success'))
+            @if (session()->has('success'))
                 <div class="alert alert-success alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                     <h4><i class="icon fa fa-check"></i> Message!</h4>
                     {{ session('success') }}.
                 </div>
             @endif
-            @if(session()->has('error'))
+            @if (session()->has('error'))
                 <div class="alert alert-danger alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                     <h4><i class="icon fa fa-check"></i> Message!</h4>
@@ -28,64 +33,87 @@
             <div class="box">
                 <div class="box-header">
                     <a href="{{ route('product.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus-circle"></i> Barang
+                        <i class="fa fa-plus-circle"></i> Product
                     </a>
                     <div class="box-tools">
                         <form action="?" method="get">
                             <div class="input-group" style="width: 200px;">
                                 <input type="text" name="search" class="form-control input-sm pull-right"
-                                       placeholder="Search" value="{{ request('search') }}">
+                                    placeholder="Search" value="{{ request('search') }}">
                                 <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-default"><i
+                                            class="fa fa-search"></i></button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
-                        <table class="table table-hover">
+                <div class="box-body table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
                                 <th class="text-center">Action</th>
-                                <th>Supplier</th>
-                                <th>SKU</th>
-                                <th>Nama</th>
-                                <th>Ukuran</th>
-                                <th>Mitra</th>
-                                <th>Offline</th>
-                                <th>Online</th>
-                                <th>Packing</th>
-                                <th>Updated</th>
+                                <th>Product</th>
+                                <th style="text-align: right">Harga Beli</th>
+                                <th style="text-align: right">Harga Jual</th>
+                                <th style="text-align: right">Stock</th>
                             </tr>
-                            @forelse($data as $key)
+                        </thead>
+                        <tbody>
+                            @forelse($data as $product)
+                                <!-- Parent Row -->
                                 <tr>
-                                    <td class="text-center">
+                                    <td rowspan="{{ $product->variants->take(3)->count() + 1 }}" class="text-center">
                                         <button type="button" class="btn btn-danger btn-xs btn-delete"
-                                                data-href="{{ route('product.destroy', $key->id) }}">
+                                            data-href="{{ route('product.destroy', $product->id) }}">
                                             <i class="fa fa-trash"></i>
                                         </button>
-                                        <a href="{{ route('product.edit', $key->id) }}" class="btn btn-xs btn-info">
+                                        <a href="{{ route('product.edit', $product->id) }}" class="btn btn-xs btn-info">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
-                                    <td>{{ $key->supplier ? $key->supplier->nama : '-' }}</td>
-                                    <td>{{ $key->sku }}</td>
-                                    <td>{{ $key->nama }}</td>
-                                    <td>{{ $key->ukuran }}</td>
-                                    <td>{{ number_format($key->harga_mitra, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_offline, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_online, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($key->harga_tambahan, 0, ',', '.') }}</td>
-                                    <td>{{ $key->updated_at }}</td>
+                                    <td>
+                                        <p class="text-bold text-uppercase" style="margin: 0">{{ $product->nama }}</p>
+                                        <p>Supplier: <i>{{ $product->supplier ? $product->supplier->name : '-' }}</i></p>
+                                    </td>
+                                    <td style="vertical-align: middle; text-align:right">
+                                        {{ !$product->variants->count() ? $product->harga_beli : '-' }}</td>
+                                    <td style="vertical-align: middle; text-align:right">
+                                        {{ !$product->variants->count() ? $product->harga_jual : '-' }}</td>
+                                    <td style="vertical-align: middle; text-align:right"><span
+                                            class="text-bold">{{ number_format($product->variants->sum('stock')) }}</span>
+                                    </td>
+                                </tr>
+
+                                @forelse ($product->variants->take(3) as $variant)
+                                    <!-- Sub Rows -->
+                                    <tr class="{{ $variant->stock <= 0 ? 'bg-danger' : '' }}">
+                                        <td class="attribute">
+                                            {{ $variant->attributeValues->pluck('value')->implode(' / ') }}
+                                        </td>
+                                        <td style="text-align:right">Rp. {{ number_format($variant->product->harga_beli) }}
+                                        </td>
+                                        <td style="text-align:right">Rp. {{ number_format($variant->price) }}</td>
+                                        <td style="text-align:right">{{ number_format($variant->stock) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            -
+                                        </td>
+                                    </tr>
+                                @endforelse
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <a href="{{ route('product.edit', $product->id) }}" class="btn btn-link"><i>load more...</i></a>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">
-                                        Tidak ada data yang ditampilkan
-                                    </td>
+                                    <td class="text-center" colspan="5">Tidak ada data yang di tampilkan</td>
                                 </tr>
                             @endforelse
-                        </table>
+                        </tbody>
                     </table>
                 </div><!-- /.box-body -->
                 <div class="box-footer text-right">
@@ -108,7 +136,7 @@
                         {{ method_field('DELETE') }}
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                        aria-hidden="true">×</span></button>
+                                    aria-hidden="true">×</span></button>
                             <h4 class="modal-title">Delete Data</h4>
                         </div>
                         <div class="modal-body">

@@ -58,5 +58,6 @@ desired effect
     @include('layouts.partials.scripts')
 @show
 
+@livewireScripts
 </body>
 </html>

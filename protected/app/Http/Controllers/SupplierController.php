@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mitra;
+use App\Models\User;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -17,14 +17,12 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Supplier::orderBy('nama')->paginate(20);
+        $data = Supplier::orderBy('name')->paginate(20);
 
         if ($request->has('search')) {
-            $data = Supplier::where('nama', 'like', '%' . $request->search . '%')
-                ->orderBy('nama')
+            $data = Supplier::where('name', 'like', '%' . $request->search . '%')
+                ->orderBy('name')
                 ->paginate(20);
-        } else {
-            $data = Supplier::orderBy('nama')->paginate(20);
         }
 
         return view('supplier.index')->with('data', $data);
@@ -48,7 +46,7 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'keterangan' => 'required|string|max:255',
         ]);
 
@@ -79,10 +77,10 @@ class SupplierController extends Controller
      */
     public function edit($id)
     {
-        $mitra = Mitra::findOrFail($id);
+        $data = Supplier::findOrFail($id);
 
         return view('supplier.update')
-            ->with('data', $mitra);
+            ->with('data', $data);
     }
 
     /**
@@ -94,7 +92,7 @@ class SupplierController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'keterangan' => 'required|string|max:255',
         ]);
 
@@ -103,7 +101,7 @@ class SupplierController extends Controller
         }
 
         $supplier = Supplier::findOrFail($id);
-        $supplier->nama = $request->nama;
+        $supplier->name = $request->name;
         $supplier->keterangan = $request->keterangan;
         $supplier->save();
 

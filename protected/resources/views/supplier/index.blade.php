@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Manajemen Supplier
+    Supplier Manajement
 @stop
 
 @section('contentheader_title')
-    Manajemen Supplier
+    Supplier Manajement
 @stop
 
 @section('main-content')
@@ -62,7 +62,7 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
-                                    <td>{{ $key->nama }}</td>
+                                    <td>{{ $key->name }}</td>
                                     <td>{{ $key->keterangan }}</td>
                                     <td>{{ $key->updated_at }}</td>
                                 </tr>

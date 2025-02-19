@@ -11,7 +11,7 @@ class Supplier extends Model
      *
      * @var string
      */
-    protected $table = 'supplier';
+    protected $table = 'suppliers';
 
     /**
      * Indicates if the model should be timestamped.
@@ -26,7 +26,7 @@ class Supplier extends Model
      * @var array
      */
     protected $fillable = [
-        'nama', 'keterangan'
+        'name', 'keterangan'
     ];
 
     public function products()

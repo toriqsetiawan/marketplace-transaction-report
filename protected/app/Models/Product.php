@@ -36,7 +36,7 @@ class Product extends Model
      * @var array
      */
     protected $fillable = [
-        'supplier_id', 'sku', 'nama', 'ukuran', 'harga_beli', 'harga_tambahan', 'harga_online', 'harga_offline', 'harga_mitra'
+        'supplier_id', 'nama', 'harga_beli', 'harga_jual'
     ];
 
     /**
@@ -46,6 +46,12 @@ class Product extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    // Relationship to ProductVariants
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 
     public function setNamaAttribute($value)
@@ -58,23 +64,18 @@ class Product extends Model
         $this->attributes['harga_beli'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
-    public function setHargaTambahanAttribute($value)
+    public function setHargaJualAttribute($value)
     {
-        $this->attributes['harga_tambahan'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+        $this->attributes['harga_jual'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
     }
 
-    public function setHargaOnlineAttribute($value)
+    public function getHargaBeliAttribute($value)
     {
-        $this->attributes['harga_online'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+        return round($value);
     }
 
-    public function setHargaOfflineAttribute($value)
+    public function getHargaJualAttribute($value)
     {
-        $this->attributes['harga_offline'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
-    }
-
-    public function setHargaMitraAttribute($value)
-    {
-        $this->attributes['harga_mitra'] = preg_replace("/[^\p{L}\p{N}\s]/u", "", $value);
+        return round($value);
     }
 }
