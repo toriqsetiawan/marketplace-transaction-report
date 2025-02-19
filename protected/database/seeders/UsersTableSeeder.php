@@ -19,13 +19,13 @@ class UsersTableSeeder extends Seeder
                 'role_id'    => 1,
                 'name'    => 'Administrator',
                 'email'    => 'toriqbagus@gmail.com',
-                'password'    => bcrypt('Hades.unit1')
+                'password'    => bcrypt('Adminstrator.123')
             ],
             [
                 'role_id'    => 2,
                 'name'    => 'Admin',
                 'email'    => 'sales.artfootwear@gmail.com',
-                'password'    => bcrypt('Hades.123')
+                'password'    => bcrypt('Admin.123')
             ],
             [
                 'role_id'    => 3,
