@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -16,6 +17,10 @@ class PenjualanController extends Controller
      */
     public function index(Request $request)
     {
+        $users = User::whereHas('role', function ($q) {
+            $q->whereIn('name', ['reseller', 'customer']);
+        })->get();
+
         $start = $request->start_date
             ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfDay()->format('Y-m-d H:i:s')
             : now()->startOfMonth();
@@ -25,12 +30,12 @@ class PenjualanController extends Controller
 
         $data = Transaction::with(['items.variant.product.variants.attributeValues.attribute', 'user'])
             ->where('created_at', '>=', $start)
-            ->where('created_at', '<=', $end);
-
-        $data = $data->orderBy('created_at', 'desc')
+            ->where('created_at', '<=', $end)
+            ->when($request->user, fn($q) => $q->where('user_id', $request->user))
+            ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        return view('penjualan.index')->with('data', $data);
+        return view('penjualan.index', compact('data', 'users'));
     }
 
     /**

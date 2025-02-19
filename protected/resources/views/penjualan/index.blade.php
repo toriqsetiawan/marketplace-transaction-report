@@ -29,7 +29,19 @@
                 <div class="box-header">
                     <input type="text" name="daterange" class="form-control" value=""
                         style="width: 17rem; margin: 1rem 0" />
-                    <div class="box-tools">
+                    <div class="box-tools" x-data="{
+                        user: '{{ request('user') }}',
+                        search() {
+                            window.location.href = `{{ route('penjualan.index') }}?user=${this.user}`
+                        }
+                    }" style="display: flex;align-items: center;gap: 16px;">
+                        <select name="user" id="user" class="form-control" x-model="user" @change="search()">
+                            <option value="">All Users</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}" {{ request('user') == $user->id ? 'selected' : '' }}>
+                                    {{ $user->name }}</option>
+                            @endforeach
+                        </select>
                         <a href="{{ route('penjualan.create') }}" class="btn btn-primary" style="margin: 1rem 0">
                             <i class="fa fa-plus-circle"></i> Create
                         </a>
