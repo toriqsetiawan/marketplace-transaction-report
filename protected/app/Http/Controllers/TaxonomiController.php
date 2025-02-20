@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Taxonomi;
+use App\Models\Taxonomi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

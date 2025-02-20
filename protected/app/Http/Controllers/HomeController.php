@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Employee;
-use App\Entities\Taxonomi;
-use App\Entities\Varian;
+use App\Models\Employee;
+use App\Models\Taxonomi;
+use App\Models\Varian;
 
 /**
  * Class HomeController
@@ -29,6 +29,10 @@ class HomeController extends Controller
      */
     public function index()
     {
+        if (env('ONLY_ONLINE_SHOP')) {
+            return redirect('/stock');
+        }
+
         $employee = Employee::all()->count();
         $varian = Varian::all()->count();
         $taxonomi = Taxonomi::all()->count();

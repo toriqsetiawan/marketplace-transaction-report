@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Ubah Supplier
+    Edit Supplier
 @endsection
 
 @section('contentheader_title')
-    Ubah Supplier
+    Edit Supplier
 @endsection
 
 @section('main-content')
@@ -38,8 +38,8 @@
                 <div class="box box-warning">
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="nama">Nama</label>
-                            <input type="text" id="nama" name="nama" class="form-control" value="{{ $data->nama ?? old('nama') }}">
+                            <label for="name">Nama</label>
+                            <input type="text" id="name" name="name" class="form-control" value="{{ $data->name ?? old('nama') }}">
                         </div>
                         <div class="form-group">
                             <label for="keterangan">Keterangan</label>

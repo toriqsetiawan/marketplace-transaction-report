@@ -45,66 +45,66 @@
                     </div>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Channel</th>
-                            <th>Marketplace</th>
-                            <th>Produk</th>
-                            <th>Ukuran</th>
-                            <th>Warna/Motif</th>
-                            <th>Jumlah</th>
-                            <th>Status</th>
-                            <th>Tanggal</th>
-                            {{-- <th>Action</th> --}}
-                        </tr>
-                        @forelse($data as $key)
-                            @php
-                                $color = '';
+                    @php
+                        // Initialize summary variables
+                        $totalPrice = 0;
+                        $totalBuyPrice = 0;
+                        $totalQuantity = 0;
+                    @endphp
 
-                                if (strtolower($key->status) == 'pending') {
-                                    $color = 'bg-info';
-                                } elseif (strtolower($key->status) == 'retur') {
-                                    $color = 'bg-red';
-                                }
-                            @endphp
-                            <tr class="{{ $color }}">
-                                <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
-                                </td>
-                                <td>{{ $key->channel == 'mitra' ? $key->mitra->nama : $key->name }}</td>
-                                <td>{{ $key->channel }}</td>
-                                <td>{{ $key->channel == 'online' ? $key->configFee->marketplace : '-' }}</td>
-                                <td>{{ $key->product->nama }}</td>
-                                <td>{{ $key->ukuran }}</td>
-                                <td>{{ $key->motif }}</td>
-                                <td>{{ $key->jumlah }}</td>
-                                <td>{{ $key->status }}</td>
-                                <td>{{ $key->created_at->format('d-m-Y') }}</td>
-                                {{-- <td>
-                                        <a href="{{ route('penjualan.edit', $key->id) }}" class="btn btn-xs btn-info"
-                                            title="Update">
-                                            <i class="fa fa-edit"></i> Update
-                                        </a>
-                                    </td> --}}
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center">
-                                    Tidak ada data yang ditampilkan
-                                </td>
-                            </tr>
-                        @endforelse
-                    </table>
+                    @foreach ($transactions as $transaction)
+                        <div>
+                            <h4>Transaction ID: {{ $transaction->id }}</h4>
+                            <p>User: {{ $transaction->user->name ?? 'N/A' }}</p>
+                            <p>Total Price: {{ $transaction->total_price }}</p>
+                            <p>Created At: {{ $transaction->created_at->format('d/m/Y H:i') }}</p>
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Buy Price</th>
+                                        <th>Sell Price</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($transaction->items as $item)
+                                        <tr>
+                                            <td>{{ $item->variant->product->nama ?? 'N/A' }}</td>
+                                            <td>{{ $item->variant->product->harga_beli ?? 0 }}</td>
+                                            <td>{{ $item->price }}</td>
+                                            <td>{{ $item->quantity }}</td>
+                                        </tr>
+                                        @php
+                                            // Add to summary
+                                            $totalPrice += $item->price * $item->quantity;
+                                            $totalBuyPrice +=
+                                                ($item->variant->product->harga_beli ?? 0) * $item->quantity;
+                                            $totalQuantity += $item->quantity;
+                                        @endphp
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr>
+                    @endforeach
+
+                    <!-- Display Summary -->
+                    <h3>Summary for the Filtered Date Range</h3>
+                    <p>Total Price: {{ $totalPrice }}</p>
+                    <p>Total Buy Price: {{ $totalBuyPrice }}</p>
+                    <p>Total Quantity: {{ $totalQuantity }}</p>
+
                 </div><!-- /.box-body -->
-                <div class="box-footer text-right">
+                {{-- <div class="box-footer text-right">
                     <div class="pull-left" style="margin-top: 20px">
                         <strong>Total data : {!! $data->total() !!}</strong>
                     </div>
                     <div class="pull-right">
                         {!! $data->appends(request()->all())->links() !!}
                     </div>
-                </div>
+                </div> --}}
             </div><!-- /.box -->
         </div>
     </div>

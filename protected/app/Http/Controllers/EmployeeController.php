@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Employee;
-use App\Entities\EmployeeLog;
+use App\Models\Employee;
+use App\Models\EmployeeLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

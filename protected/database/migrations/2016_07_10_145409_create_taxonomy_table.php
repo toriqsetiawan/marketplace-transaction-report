@@ -12,7 +12,7 @@ class CreateTaxonomyTable extends Migration {
 			$table->increments('id');
 			$table->string('nama', 255);
 			$table->string('slug', 255);
-			$table->enum('type', array('nominal', 'satuan'));
+			$table->enum('type', ['nominal', 'satuan']);
 			$table->timestamps();
 			$table->softDeletes();
 		});

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Supplier;
-use App\Entities\Transaction;
+use App\Models\ReturnTransaction;
+use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -11,103 +12,161 @@ class ReportPenjualanController extends Controller
 {
     public function index(Request $request)
     {
+        $users = User::whereHas('role', function ($q) {
+            $q->whereIn('name', ['reseller', 'customer']);
+        })->get();
+
         $start = $request->start_date
-            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfMonth()->format('Y-m-d H:i:s')
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfDay()->format('Y-m-d H:i:s')
             : now()->startOfMonth();
         $end = $request->end_date
-            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->endOfMonth()->format('Y-m-d H:i:s')
+            ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $transactions = Transaction::with(['configFee', 'mitra', 'product.supplier'])
-            ->where('created_at', '>=', $start)
-            ->where('created_at', '<=', $end)
-            ->where('status', 2)
+        $transactions = Transaction::with([
+            'items' => function ($q) {
+                $q->with(['variant.product.supplier'])
+                    ->where('price', '>', 0);
+            },
+            'user'
+        ])
+            ->whereBetween('created_at', [$start, $end])
+            ->when($request->user, fn($q) => $q->where('user_id', $request->user))
             ->get();
 
-        $data = [];
-
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'online')->groupBy('channel') as $trxMarketplace) {
-            foreach ($trxMarketplace as $online) {
-                $data[$online->channel][$online->marketplace][] = ($online->total_paid - $online->biaya_tambahan - $online->biaya_lain_lain - $online->harga_beli) * $online->jumlah;
-            }
-        }
-
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'mitra')->groupBy('name') as $trxMitra) {
-            foreach ($trxMitra as $mitra) {
-                $data[$mitra->channel][$mitra->mitra->nama][] = ($mitra->total_paid - $mitra->biaya_tambahan - $mitra->biaya_lain_lain - $mitra->harga_beli) * $mitra->jumlah;
-            }
-        }
-
-        foreach ($transactions->filter(fn ($q) => $q->channel == 'offline') as $offline) {
-            $data['offline'][] = ($offline->total_paid - $offline->biaya_tambahan - $offline->biaya_lain_lain - $offline->harga_beli) * $offline->jumlah;
-        }
-
-        $supplier = Supplier::all();
-
-        foreach ($supplier as $key) {
-            $filteredData = $transactions->filter(function ($q) use ($key) {
-                if ($q->product) {
-                    if ($q->product->supplier) {
-                        return $q->product->supplier->id == $key->id;
-                    }
-                }
-                return null;
+        // Process transactions and calculate totals
+        $transactionDetails = $transactions->map(function ($transaction) {
+            // Filter items
+            $filteredItems = $transaction->items->filter(function ($item) {
+                return !str_starts_with($item->variant->sku ?? '', 'packing-') &&
+                    !str_starts_with($item->variant->sku ?? '', 'insole-');
             });
-            foreach ($filteredData as $trx) {
-                $data[$key->nama][] = $trx->harga_beli * $trx->jumlah;
+
+            $totalBuyPrice = $filteredItems->sum(function ($item) {
+                return ($item->variant->product->harga_beli ?? 0) * $item->quantity;
+            });
+
+            $totalQuantity = $filteredItems->sum('quantity');
+
+            return [
+                'date' => $transaction->created_at->format('Y-m-d'),
+                'total_price' => $transaction->total_price,
+                'total_buy_price' => $totalBuyPrice,
+                'total_quantity' => $totalQuantity,
+            ];
+        });
+
+        // Group by date and sum totals for each date
+        $groupedTransactions = $transactionDetails->groupBy('date')->map(function ($group) {
+            return [
+                'date' => $group->first()['date'],
+                'total_price' => $group->sum('total_price'),
+                'total_buy_price' => $group->sum('total_buy_price'),
+                'total_quantity' => $group->sum('total_quantity')
+            ];
+        });
+
+        // Optionally convert to array or collection
+        $groupedTransactions = $groupedTransactions->values();
+
+        $data = $groupedTransactions->toArray();
+
+        // Report by supplier
+        $supplierSales = [];
+
+        foreach ($transactions as $transaction) {
+            $filteredItems = $transaction->items->filter(function ($item) {
+                return !str_starts_with($item->variant->sku ?? '', 'packing-') &&
+                    !str_starts_with($item->variant->sku ?? '', 'insole-');
+            });
+
+            foreach ($filteredItems as $item) {
+                $supplier = $item->variant->product->supplier;
+                $supplierName = $supplier->name ?? 'Unknown Supplier';
+
+                // Initialize supplier data if not already present
+                if (!isset($supplierSales[$supplierName])) {
+                    $supplierSales[$supplierName] = [
+                        'totalQuantity' => 0,
+                        'totalPrice' => 0,
+                    ];
+                }
+
+                // Update the total quantity and total price for the supplier
+                $supplierSales[$supplierName]['totalQuantity'] += $item->quantity;
+                $supplierSales[$supplierName]['totalPrice'] += $item->variant->product->harga_beli * $item->quantity;
             }
         }
 
-        return view('report-penjualan.index', compact('data', 'supplier'));
+        $returnTransactions = ReturnTransaction::with([
+            'items' => function ($q) {
+                $q->with(['variant.product.supplier'])
+                    ->where('price', '>', 0);
+            },
+            'user'
+        ])
+            ->whereBetween('created_at', [$start, $end])
+            ->when($request->user, fn($q) => $q->where('user_id', $request->user))
+            ->get();
+
+        $supplierReturn = [];
+
+        foreach ($returnTransactions as $transaction) {
+            $filteredItems = $transaction->items->filter(function ($item) {
+                return !str_starts_with($item->variant->sku ?? '', 'packing-') &&
+                    !str_starts_with($item->variant->sku ?? '', 'insole-');
+            });
+
+            foreach ($filteredItems as $item) {
+                $supplier = $item->variant->product->supplier;
+                $supplierName = $supplier->name ?? 'Unknown Supplier';
+
+                // Initialize supplier data if not already present
+                if (!isset($supplierReturn[$supplierName])) {
+                    $supplierReturn[$supplierName] = [
+                        'totalQuantity' => 0,
+                        'totalPrice' => 0,
+                    ];
+                }
+
+                // Update the total quantity and total price for the supplier
+                $supplierReturn[$supplierName]['totalQuantity'] += $item->quantity;
+                $supplierReturn[$supplierName]['totalPrice'] += $item->variant->product->harga_beli * $item->quantity;
+            }
+        }
+
+        return view('report-penjualan.index', compact(
+            'users',
+            'data',
+            'supplierSales',
+            'supplierReturn',
+        ));
     }
 
     public function show(Request $request, $id)
     {
         $start = $request->start_date
-            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfMonth()->format('Y-m-d H:i:s')
+            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->startOfDay()->format('Y-m-d H:i:s')
             : now()->startOfMonth();
         $end = $request->end_date
-            ? Carbon::createFromFormat('d/m/Y', $request->start_date)->endOfMonth()->format('Y-m-d H:i:s')
+            ? Carbon::createFromFormat('d/m/Y', $request->end_date)->endOfDay()->format('Y-m-d H:i:s')
             : now()->endOfMonth();
 
-        $transactions = Transaction::with(['product.supplier', 'configFee', 'mitra']);
+        $transactions = Transaction::with([
+            'items' => function ($q) {
+                $q->with(['variant.product'])
+                    ->where('price', '>', 0)
+                    ->whereDoesntHave('variant.product', function ($q) {
+                        $q->where('sku', 'like', 'packing-%')
+                            ->orWhere('sku', 'like', 'insole-%');
+                    });
+            },
+            'user'
+        ])
+            ->whereBetween('created_at', [$start, $end])
+            ->when($request->user, fn($q) => $q->where('user_id', $request->user))
+            ->get();
 
-        // todo filter
-        $transactions->where('created_at', '>=', $start);
-        $transactions->where('created_at', '<=', $end);
-
-        $ownerName = null;
-
-        switch ($request->mode) {
-            case 'shopee':
-                $transactions->where('marketplace', 1);
-                break;
-            case 'tiktok':
-                $transactions->where('marketplace', 2);
-                break;
-            case 'tokopedia':
-                $transactions->where('marketplace', 3);
-                break;
-            case 'lazada':
-                $transactions->where('marketplace', 4);
-                break;
-            case 'mitra':
-                $transactions->where('channel', 'mitra');
-                break;
-            case 'offline':
-                $transactions->where('channel', 'offline');
-                break;
-            default:
-                $ownerName = Supplier::find($request->mode);
-                $transactions->whereHas('product', fn ($q) => $q->where('supplier_id', $request->mode));
-                break;
-        }
-
-        $data = $transactions->orderBy('created_at', 'desc')
-            ->paginate(25);
-
-        $ownerName = $ownerName ? 'Produk dari ' . $ownerName->nama : null;
-
-        return view('report-penjualan.show', compact('data', 'ownerName'));
+        return view('report-penjualan.show', compact('transactions'));
     }
 }

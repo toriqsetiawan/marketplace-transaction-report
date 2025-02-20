@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Employee;
-use App\Entities\EmployeeLog;
-use App\Entities\Report;
-use App\Entities\ReportDetail;
-use App\Entities\ReportGlobal;
+use App\Models\Employee;
+use App\Models\EmployeeLog;
+use App\Models\Report;
+use App\Models\ReportDetail;
+use App\Models\ReportGlobal;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Arr;
@@ -135,6 +136,13 @@ class PrintController extends Controller
                 'count' => 0,
                 'date_at' => date('Y-m-d H:i:s'),
             ]);
+
+            $bon = array_map(function ($record) {
+                $record['created_at'] = Carbon::parse($record['created_at'])->format('Y-m-d H:i:s');
+                $record['updated_at'] = Carbon::parse($record['updated_at'])->format('Y-m-d H:i:s');
+                $record['date_at'] = Carbon::parse($record['date_at'])->format('Y-m-d');
+                return $record;
+            }, $bon);
 
             ReportDetail::insert($bon);
         }

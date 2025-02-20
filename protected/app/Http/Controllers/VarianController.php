@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Taxonomi;
-use App\Entities\Varian;
+use App\Models\Taxonomi;
+use App\Models\Varian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -100,7 +100,7 @@ class VarianController extends Controller
             'nama' => 'required|string|max:255',
             'harga_satuan' => 'required',
             'taxonomi_id' => 'required|exists:taxonomy,id',
-            'status' => 'required|boolean',
+            // 'status' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -112,7 +112,7 @@ class VarianController extends Controller
         $varian->nama = $request->nama;
         $varian->taxonomi_id = $request->taxonomi_id;
         $varian->harga_satuan = $request->harga_satuan;
-        $varian->status = $request->status;
+        $varian->status = $request->status == "true" ? 1 : 0;
         $varian->save();
 
         return redirect()->back()->with("success", "Sukses merubah data")->withInput();
