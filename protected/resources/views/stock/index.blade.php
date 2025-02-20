@@ -90,7 +90,7 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th style="background-color: lightgrey">VARIANT</th>
+                                            <th style="background-color: lightgrey; width: 12rem">VARIANT</th>
                                             @foreach ($attributeValues->first() ?? [] as $columnHeader)
                                                 <th class="text-center" style="background-color: lightgrey">
                                                     {{ strtoupper($columnHeader) }}</th>
@@ -116,8 +116,7 @@
                                                                     'value',
                                                                     'attribute.name',
                                                                 );
-                                                                $rowAttribute = $attributeValues
-                                                                    ->keys()
+                                                                $rowAttribute = $attributeValues->keys()
                                                                     ->skip(1)
                                                                     ->first(); // Row attribute name
                                                                 $columnAttribute = $attributeValues->keys()->first(); // Column attribute name

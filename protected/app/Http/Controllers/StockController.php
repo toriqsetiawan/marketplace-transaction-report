@@ -10,7 +10,10 @@ class StockController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Product::with(['supplier', 'variants.attributeValues.attribute']);
+        $data = Product::with(['supplier', 'variants.attributeValues' => function ($q) {
+            $q->with('attribute')
+                ->orderBy('value', 'asc');
+        }]);
 
         if ($request->has('search')) {
             $data->where('nama', 'like', '%' . $request->search . '%');
