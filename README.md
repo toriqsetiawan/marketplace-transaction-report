@@ -1,7 +1,12 @@
 # sistem rekap (mingguan dan bulanan) v.5.0.0
-Sistem pencatatan setoran dan bon setiap hari dan catatan penjualan marketplace
-- menggunakan Laravel 9.*
-- support 2 harga (reseller dan online)
+- Laravel 9.*
+- User management
+- Product management, support 2 harga (reseller dan online)
+- Stock management
+- Daily report
+- Purchasing
+- POS (point of sales)
+- Return management
 
 # Laravel PHP Framework
 
