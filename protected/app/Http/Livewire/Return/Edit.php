@@ -238,6 +238,11 @@ class Edit extends Component
                         $variant->save();
                     }
                 }
+
+                // update transaction status
+                $masterTrx = Transaction::where('transaction_code', $this->transactionNote)->first();
+                $masterTrx->status = 'return';
+                $masterTrx->save();
             }
 
             DB::commit();

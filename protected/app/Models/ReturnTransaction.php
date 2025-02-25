@@ -30,4 +30,9 @@ class ReturnTransaction extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class, 'note', 'transaction_code');
+    }
 }

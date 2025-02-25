@@ -31,7 +31,8 @@ class ReportPenjualanController extends Controller
             'user'
         ])
             ->whereBetween('created_at', [$start, $end])
-            ->when($request->user, fn($q) => $q->where('user_id', $request->user))
+            ->whereNot('status', 'return')
+            ->when($request->user, fn($q) => $q->whereIn('user_id', explode(',', $request->user)))
             ->get();
 
         // Process transactions and calculate totals
@@ -43,7 +44,7 @@ class ReportPenjualanController extends Controller
             });
 
             $totalBuyPrice = $filteredItems->sum(function ($item) {
-                return ($item->variant->product->harga_beli ?? 0) * $item->quantity;
+                return ($item->variant?->product->harga_beli ?? 0) * $item->quantity;
             });
 
             $totalQuantity = $filteredItems->sum('quantity');
@@ -81,7 +82,7 @@ class ReportPenjualanController extends Controller
             });
 
             foreach ($filteredItems as $item) {
-                $supplier = $item->variant->product->supplier;
+                $supplier = $item->variant?->product->supplier;
                 $supplierName = $supplier->name ?? 'Unknown Supplier';
 
                 // Initialize supplier data if not already present
@@ -94,7 +95,7 @@ class ReportPenjualanController extends Controller
 
                 // Update the total quantity and total price for the supplier
                 $supplierSales[$supplierName]['totalQuantity'] += $item->quantity;
-                $supplierSales[$supplierName]['totalPrice'] += $item->variant->product->harga_beli * $item->quantity;
+                $supplierSales[$supplierName]['totalPrice'] += $item->variant?->product->harga_beli * $item->quantity;
             }
         }
 
@@ -105,6 +106,9 @@ class ReportPenjualanController extends Controller
             },
             'user'
         ])
+            ->whereDoesntHave('transaction', function ($q) {
+                $q->where('status', 'return');
+            })
             ->whereBetween('created_at', [$start, $end])
             ->when($request->user, fn($q) => $q->where('user_id', $request->user))
             ->get();
@@ -118,7 +122,7 @@ class ReportPenjualanController extends Controller
             });
 
             foreach ($filteredItems as $item) {
-                $supplier = $item->variant->product->supplier;
+                $supplier = $item->variant?->product->supplier;
                 $supplierName = $supplier->name ?? 'Unknown Supplier';
 
                 // Initialize supplier data if not already present
@@ -131,7 +135,7 @@ class ReportPenjualanController extends Controller
 
                 // Update the total quantity and total price for the supplier
                 $supplierReturn[$supplierName]['totalQuantity'] += $item->quantity;
-                $supplierReturn[$supplierName]['totalPrice'] += $item->variant->product->harga_beli * $item->quantity;
+                $supplierReturn[$supplierName]['totalPrice'] += $item->variant?->product->harga_beli * $item->quantity;
             }
         }
 

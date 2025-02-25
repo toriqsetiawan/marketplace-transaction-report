@@ -33,10 +33,10 @@ class Edit extends Component
         foreach ($purchase->items as $item) {
             $this->cart[] = [
                 'id' => $item->variant->product_id,
-                'nama' => $item->variant->product->nama,
+                'nama' => $item->variant?->product->nama,
                 'price' => $item->price,
                 'quantity' => $item->quantity,
-                'variants' => $item->variant->product->variants->map(function ($variant) {
+                'variants' => $item->variant?->product->variants->map(function ($variant) {
                     return [
                         'id' => $variant->id,
                         'attributes' => $variant->attributeValues->mapWithKeys(function ($attr) {

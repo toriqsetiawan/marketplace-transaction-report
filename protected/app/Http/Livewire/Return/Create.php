@@ -163,6 +163,8 @@ class Create extends Component
 
             if ($transaction) {
                 $this->isTransactionCode = true;
+                $this->transactionCode = $transaction->transaction_code;
+
                 $customer = User::with(['role'])->findOrFail($transaction->user_id);
 
                 $items = $transaction->items->map(function ($item) use ($customer) {
@@ -172,8 +174,8 @@ class Create extends Component
                         'price' => $item->price,
                         'quantity' => $item->quantity,
                         'supplier' => [
-                            'id' => $item->variant->product->supplier['id'],
-                            'name' => $item->variant->product->supplier['name'],
+                            'id' => $item->variant?->product->supplier['id'],
+                            'name' => $item->variant?->product->supplier['name'],
                         ],
                         'variants' => $item->variant?->product->variants->map(function ($variant) use ($customer) {
                             $price = $customer->role->name === 'reseller' ? $variant->product->harga_jual : $variant->price;
@@ -201,6 +203,7 @@ class Create extends Component
                         'id' => $transaction->id,
                         'user' => $transaction->user,
                         'transaction_code' => $transaction->transaction_code,
+                        'note' => $transaction->note,
                         'transaction_date' => $transaction->created_at->format('Y-m-d'),
                         'note' => $transaction->note,
                         'total_price' => $transaction->total_price,
@@ -239,6 +242,11 @@ class Create extends Component
                 $variant->stock += $item['quantity'];
                 $variant->save();
             }
+
+            // update transaction status
+            $masterTrx = Transaction::where('transaction_code', $this->transactionCode)->first();
+            $masterTrx->status = 'return';
+            $masterTrx->save();
 
             DB::commit();
 

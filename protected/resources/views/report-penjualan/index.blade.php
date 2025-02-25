@@ -37,6 +37,15 @@
                     }">
                         <select name="user" id="user" class="form-control" x-model="user" @change="search()">
                             <option value="">All Users</option>
+                            <option value="{{ $users->filter(function ($q) {
+                                $keywords = ['Shopee', 'Tokopedia', 'Lazada', 'Tiktok'];
+                                foreach ($keywords as $keyword) {
+                                    if (str_contains($q->name, $keyword)) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            })->pluck('id')->implode(',') }}">Online</option>
                             @foreach ($users as $user)
                                 <option value="{{ $user->id }}"
                                     {{ request('user') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>

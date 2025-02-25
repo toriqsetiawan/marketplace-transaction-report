@@ -188,7 +188,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="transactionNote">Note (No Transaction, etc)</label>
-                        <textarea name="transactionNote" id="transactionNote" class="form-control" rows="5" x-model="transactionNote"></textarea>
+                        <textarea name="transactionNote" id="transactionNote" class="form-control" rows="5" x-model="transactionNote" readonly></textarea>
                     </div>
                 </div>
             </div>

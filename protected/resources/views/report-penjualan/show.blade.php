@@ -45,66 +45,54 @@
                     </div>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
-                    @php
-                        // Initialize summary variables
-                        $totalPrice = 0;
-                        $totalBuyPrice = 0;
-                        $totalQuantity = 0;
-                    @endphp
-
-                    @foreach ($transactions as $transaction)
-                        <div>
-                            <h4>Transaction ID: {{ $transaction->id }}</h4>
-                            <p>User: {{ $transaction->user->name ?? 'N/A' }}</p>
-                            <p>Total Price: {{ $transaction->total_price }}</p>
-                            <p>Created At: {{ $transaction->created_at->format('d/m/Y H:i') }}</p>
-
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Item Name</th>
-                                        <th>Buy Price</th>
-                                        <th>Sell Price</th>
-                                        <th>Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($transaction->items as $item)
-                                        <tr>
-                                            <td>{{ $item->variant->product->nama ?? 'N/A' }}</td>
-                                            <td>{{ $item->variant->product->harga_beli ?? 0 }}</td>
-                                            <td>{{ $item->price }}</td>
-                                            <td>{{ $item->quantity }}</td>
-                                        </tr>
-                                        @php
-                                            // Add to summary
-                                            $totalPrice += $item->price * $item->quantity;
-                                            $totalBuyPrice +=
-                                                ($item->variant->product->harga_beli ?? 0) * $item->quantity;
-                                            $totalQuantity += $item->quantity;
-                                        @endphp
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <hr>
-                    @endforeach
-
-                    <!-- Display Summary -->
-                    <h3>Summary for the Filtered Date Range</h3>
-                    <p>Total Price: {{ $totalPrice }}</p>
-                    <p>Total Buy Price: {{ $totalBuyPrice }}</p>
-                    <p>Total Quantity: {{ $totalQuantity }}</p>
-
+                    <table class="table table-striped">
+                        <tr>
+                            <th>No</th>
+                            <th>Code</th>
+                            <th>Customer</th>
+                            <th>Product / Variant / Quantity / Sub Total</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center">Status</th>
+                            <th>Date</th>
+                        </tr>
+                        @foreach ($transactions as $transaction)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $transaction->transaction_code }}</td>
+                                <td>{{ $transaction->user->name ?? 'N/A' }}</td>
+                                <td>
+                                    <table style="width: 100%;">
+                                        @foreach ($transaction->items as $item)
+                                            <tr>
+                                                <td style="width: 50%">{{ $item->variant?->product?->nama }}</td>
+                                                <td style="width: 32%">
+                                                    {{ $item->variant?->product?->variants()->where('id', $item->variant_id)->first()->attributeValues()->implode('value', '/') }}
+                                                </td>
+                                                <td style="width: 5%">{{ $item->quantity }}</td>
+                                                <td class="text-right" style="width: 13%">
+                                                    {{ number_format($item->price) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </td>
+                                <td class="text-right">{{ number_format($transaction->total_price) }}</td>
+                                <td class="text-center">
+                                    @if ($transaction->status == 'pending')
+                                        <span class="label label-warning text-uppercase">{{ $transaction->status }}</span>
+                                    @elseif ($transaction->status == 'paid')
+                                        <span class="label label-success text-uppercase">{{ $transaction->status }}</span>
+                                    @elseif ($transaction->status == 'cancel')
+                                        <span class="label label-default text-uppercase">{{ $transaction->status }}</span>
+                                    @else
+                                        <span class="label label-danger text-uppercase">{{ $transaction->status }}</span>
+                                    @endif
+                                </td>
+                                <td>{{ $transaction->created_at->format('d-m-Y') }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
                 </div><!-- /.box-body -->
-                {{-- <div class="box-footer text-right">
-                    <div class="pull-left" style="margin-top: 20px">
-                        <strong>Total data : {!! $data->total() !!}</strong>
-                    </div>
-                    <div class="pull-right">
-                        {!! $data->appends(request()->all())->links() !!}
-                    </div>
-                </div> --}}
             </div><!-- /.box -->
         </div>
     </div>

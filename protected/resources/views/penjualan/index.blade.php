@@ -60,7 +60,7 @@
                             <th>Action</th>
                         </tr>
                         @forelse($data as $key)
-                            <tr>
+                            <tr class="{{ $key->status == 'return' ? 'bg-danger' : '' }}">
                                 <td>{{ !request()->has('page') || request('page') == 1 ? ++$i : (request('page') - 1) * $data->perPage() + ++$i }}
                                 </td>
                                 <td>{{ $key->transaction_code }}</td>
