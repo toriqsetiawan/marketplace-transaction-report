@@ -25,8 +25,12 @@ class ReportPenjualanController extends Controller
 
         $transactions = Transaction::with([
             'items' => function ($q) {
-                $q->with(['variant.product.supplier'])
-                    ->where('price', '>', 0);
+                $q->with([
+                    'variant' => function ($q) {
+                        $q->withTrashed()
+                        ->with(['product.supplier']);
+                    }
+                ]);
             },
             'user'
         ])
@@ -38,13 +42,19 @@ class ReportPenjualanController extends Controller
         // Process transactions and calculate totals
         $transactionDetails = $transactions->map(function ($transaction) {
             // Filter items
-            $filteredItems = $transaction->items->filter(function ($item) {
-                return !str_starts_with($item->variant->sku ?? '', 'packing-') &&
-                    !str_starts_with($item->variant->sku ?? '', 'insole-');
-            });
+            $filteredItems = $transaction->items
+                ->filter(function ($item) {
+                    return !str_starts_with($item->variant->sku ?? '', 'packing-') &&
+                        !str_starts_with($item->variant->sku ?? '', 'insole-') &&
+                        $item->price > 0;
+                });
 
-            $totalBuyPrice = $filteredItems->sum(function ($item) {
-                return ($item->variant?->product->harga_beli ?? 0) * $item->quantity;
+            $totalBuyPrice = $transaction->items->sum(function ($item) {
+                if ($item->variant?->product->harga_jual == 0) {
+                    return ($item->variant?->price ?? 0) * $item->quantity;
+                } else {
+                    return ($item->variant?->product->harga_beli ?? 0) * $item->quantity;
+                }
             });
 
             $totalQuantity = $filteredItems->sum('quantity');
@@ -158,12 +168,12 @@ class ReportPenjualanController extends Controller
 
         $transactions = Transaction::with([
             'items' => function ($q) {
-                $q->with(['variant.product'])
-                    ->where('price', '>', 0)
-                    ->whereDoesntHave('variant.product', function ($q) {
-                        $q->where('sku', 'like', 'packing-%')
-                            ->orWhere('sku', 'like', 'insole-%');
-                    });
+                $q->with(['variant.product']);
+                // ->where('price', '>', 0)
+                // ->whereDoesntHave('variant.product', function ($q) {
+                //     $q->where('sku', 'like', 'packing-%')
+                //         ->orWhere('sku', 'like', 'insole-%');
+                // });
             },
             'user'
         ])

@@ -116,7 +116,8 @@
                                                                     'value',
                                                                     'attribute.name',
                                                                 );
-                                                                $rowAttribute = $attributeValues->keys()
+                                                                $rowAttribute = $attributeValues
+                                                                    ->keys()
                                                                     ->skip(1)
                                                                     ->first(); // Row attribute name
                                                                 $columnAttribute = $attributeValues->keys()->first(); // Column attribute name
@@ -124,6 +125,14 @@
                                                                     $attributes[$columnAttribute] === $columnHeader;
                                                             })
                                                             ->sum('stock');
+
+                                                        if (
+                                                            $stock == 0 &&
+                                                            $product->supplier_id == 2 &&
+                                                            auth()->user()->hasRole('reseller')
+                                                        ) {
+                                                            $stock = 1;
+                                                        }
                                                     @endphp
                                                     <td class="text-center"
                                                         style="background-color: {{ $stock == 0 ? '#ff6666' : 'transparent' }}">
@@ -133,31 +142,33 @@
                                             </tr>
                                         @endforeach
 
-                                        <!-- Total Row -->
-                                        <tr>
-                                            <td class="text-bold" style="background-color: #99cc99;">TOTAL</td>
-                                            @foreach ($attributeValues->first() ?? [] as $columnHeader)
-                                                @php
-                                                    $totalColumnStock = $product->variants
-                                                        ->filter(function ($variant) use (
-                                                            $columnHeader,
-                                                            $attributeValues,
-                                                        ) {
-                                                            $attributes = $variant->attributeValues->pluck(
-                                                                'value',
-                                                                'attribute.name',
-                                                            );
-                                                            $columnAttribute = $attributeValues->keys()->first(); // Column attribute name
-                                                            return $attributes[$columnAttribute] === $columnHeader;
-                                                        })
-                                                        ->sum('stock');
-                                                @endphp
-                                                <td class="text-center text-bold"
-                                                    style="background-color: {{ $totalColumnStock == 0 ? '#ff6666' : '#99cc99' }};">
-                                                    {{ number_format($totalColumnStock) }}
-                                                </td>
-                                            @endforeach
-                                        </tr>
+                                        @if (auth()->user()->hasRole('administrator') || auth()->user()->hasRole('admin'))
+                                            <!-- Total Row -->
+                                            <tr>
+                                                <td class="text-bold" style="background-color: #99cc99;">TOTAL</td>
+                                                @foreach ($attributeValues->first() ?? [] as $columnHeader)
+                                                    @php
+                                                        $totalColumnStock = $product->variants
+                                                            ->filter(function ($variant) use (
+                                                                $columnHeader,
+                                                                $attributeValues,
+                                                            ) {
+                                                                $attributes = $variant->attributeValues->pluck(
+                                                                    'value',
+                                                                    'attribute.name',
+                                                                );
+                                                                $columnAttribute = $attributeValues->keys()->first(); // Column attribute name
+                                                                return $attributes[$columnAttribute] === $columnHeader;
+                                                            })
+                                                            ->sum('stock');
+                                                    @endphp
+                                                    <td class="text-center text-bold"
+                                                        style="background-color: {{ $totalColumnStock == 0 ? '#ff6666' : '#99cc99' }};">
+                                                        {{ number_format($totalColumnStock) }}
+                                                    </td>
+                                                @endforeach
+                                            </tr>
+                                        @endif
 
                                         @if (auth()->user()->hasRole('administrator'))
                                             <!-- Harga per Pcs Row -->
