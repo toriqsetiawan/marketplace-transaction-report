@@ -245,8 +245,11 @@ class Create extends Component
 
             // update transaction status
             $masterTrx = Transaction::where('transaction_code', $this->transactionCode)->first();
-            $masterTrx->status = 'return';
-            $masterTrx->save();
+
+            if ($masterTrx) {
+                $masterTrx->status = 'return';
+                $masterTrx->save();
+            }
 
             DB::commit();
 

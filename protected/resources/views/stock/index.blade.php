@@ -98,6 +98,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php
+                                            $totalAllColumnsStock = 0;
+                                        @endphp
                                         <!-- Dynamic Row Headers -->
                                         @foreach ($attributeValues->skip(1)->first() ?? [] as $rowHeader)
                                             <tr>
@@ -145,7 +148,7 @@
                                         @if (auth()->user()->hasRole('administrator') || auth()->user()->hasRole('admin'))
                                             <!-- Total Row -->
                                             <tr>
-                                                <td class="text-bold" style="background-color: #99cc99;">TOTAL</td>
+                                                <td class="text-bold" style="background-color: #99cc99;">SUB TOTAL</td>
                                                 @foreach ($attributeValues->first() ?? [] as $columnHeader)
                                                     @php
                                                         $totalColumnStock = $product->variants
@@ -161,6 +164,8 @@
                                                                 return $attributes[$columnAttribute] === $columnHeader;
                                                             })
                                                             ->sum('stock');
+
+                                                        $totalAllColumnsStock += $totalColumnStock;
                                                     @endphp
                                                     <td class="text-center text-bold"
                                                         style="background-color: {{ $totalColumnStock == 0 ? '#ff6666' : '#99cc99' }};">
@@ -168,21 +173,42 @@
                                                     </td>
                                                 @endforeach
                                             </tr>
+                                            <tr>
+                                                <td class="text-bold" style="background-color: #99cc99;">TOTAL</td>
+                                                <td colspan="{{ count($attributeValues->first() ?? []) }}" class="text-bold"
+                                                    style="background-color: #99cc99;">
+                                                    <div style="display: flex; justify-content: space-between;">
+                                                        {{ number_format($totalAllColumnsStock, 0, ',', '.') }} pasang
+
+                                                        @php
+                                                            $kodi = floor($totalAllColumnsStock / 20);
+                                                            $pasang = $totalAllColumnsStock % 20;
+                                                        @endphp
+
+                                                        @if ($kodi > 0)
+                                                            <span>{{ $kodi }} kd {{ $pasang > 0 ? " $pasang ps" : '' }}</span>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         @endif
 
                                         @if (auth()->user()->hasRole('administrator'))
                                             <!-- Harga per Pcs Row -->
                                             <tr>
-                                                <td class="text-bold" style="background-color: #99cc99;">HARGA PER PCS</td>
-                                                <td colspan="{{ count($attributeValues->first() ?? []) }}" class="text-bold"
-                                                    style="background-color: #99cc99;">
-                                                    {{ number_format($pricePerPcs, 0, ',', '.') }}
+                                                <td class="text-bold" style="background-color: #99cc99;">HARGA</td>
+                                                <td colspan="{{ count($attributeValues->first() ?? []) }}"
+                                                    class="text-bold" style="background-color: #99cc99;">
+                                                    <div style="display: flex; justify-content: space-between;">
+                                                        <span>{{ number_format($pricePerPcs, 0, ',', '.') }} / ps</span>
+                                                        <span>{{ number_format($pricePerPcs * 20, 0, ',', '.') }} / kd</span>
+                                                    </div>
                                                 </td>
                                             </tr>
 
                                             <!-- Total Harga Row -->
                                             <tr>
-                                                <td class="text-bold" style="background-color: #99cc99;">TOTAL HARGA</td>
+                                                <td class="text-bold" style="background-color: #99cc99;">TOTAL Rp</td>
                                                 <td colspan="{{ count($attributeValues->first() ?? []) }}"
                                                     class="text-bold" style="background-color: #99cc99;">
                                                     {{ number_format($totalPrice, 0, ',', '.') }}
@@ -211,6 +237,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php
+                                            $totalAllProducts = 0;
+                                            $totalAllHarga = 0;
+                                        @endphp
                                         @foreach ($supplierSummary as $supplierName => $summary)
                                             <tr>
                                                 <td>{{ $supplierName }}</td>
@@ -218,7 +248,22 @@
                                                 <td class="text-center">
                                                     {{ number_format($summary['totalHarga'], 0, ',', '.') }}</td>
                                             </tr>
+                                            @php
+                                                $totalAllProducts += $summary['totalProduct'];
+                                                $totalAllHarga += $summary['totalHarga'];
+                                            @endphp
                                         @endforeach
+                                        @if (count($supplierSummary) > 0)
+                                            <tr>
+                                                <td class="text-bold" style="background-color: #99cc99;">TOTAL</td>
+                                                <td class="text-bold text-center" style="background-color: #99cc99;">
+                                                    {{ number_format($totalAllProducts) }}
+                                                </td>
+                                                <td class="text-bold text-center" style="background-color: #99cc99;">
+                                                    {{ number_format($totalAllHarga, 0, ',', '.') }}
+                                                </td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
