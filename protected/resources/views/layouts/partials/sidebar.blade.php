@@ -88,6 +88,11 @@
                     </a>
                 </li>
                 @if (auth()->user()->hasRole('administrator'))
+                    <li class="{{ activateWhenRoute('ads-report*') }}">
+                        <a href="{{ route('ads-report.index') }}">
+                            <i class='fa fa-print'></i> <span>Ads Report</span>
+                        </a>
+                    </li>
                     <li class="{{ activateWhenRoute('report-penjualan*') }}">
                         <a href="{{ route('report-penjualan.index') }}">
                             <i class='fa fa-print'></i> <span>Report</span>

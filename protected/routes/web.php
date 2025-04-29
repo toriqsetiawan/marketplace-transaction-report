@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdwordsReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TaxonomiController;
 use App\Http\Controllers\VarianController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PdfParseController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PenjualanController;
@@ -48,8 +50,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('stock', StockController::class);
 
     Route::group(['middleware' => 'administrator'], function () {
+        Route::resource('ads-report', AdwordsReportController::class);
         Route::resource('report-penjualan', ReportPenjualanController::class);
     });
+
+    Route::resource('pdf-parse', PdfParseController::class);
 
     // Custom routes
     Route::post('transaction/recovery', [PrintController::class, 'recovery'])->name('transaction.recovery');

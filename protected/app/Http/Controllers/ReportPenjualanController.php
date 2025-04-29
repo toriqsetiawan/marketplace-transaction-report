@@ -13,7 +13,7 @@ class ReportPenjualanController extends Controller
     public function index(Request $request)
     {
         $users = User::whereHas('role', function ($q) {
-            $q->whereIn('name', ['reseller', 'customer']);
+            $q->whereIn('name', ['customer']);
         })->get();
 
         $start = $request->start_date
