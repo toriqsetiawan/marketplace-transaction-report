@@ -28,7 +28,7 @@ Route::get('/', function () {
 });
 
 // Home route
-Route::get('home', [HomeController::class, 'index']);
+Route::get('home', [HomeController::class, 'index'])->name('home');
 
 // Authenticated routes
 Route::group(['middleware' => 'auth'], function () {
@@ -77,3 +77,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('transaction/bon/delete', [TransactionController::class, 'destroy'])->name('transaction.bon.delete');
     Route::post('transaction/setor/delete', [TransactionController::class, 'destroy'])->name('transaction.setor.delete');
 });
+
+Route::get('language/{locale}', [App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');

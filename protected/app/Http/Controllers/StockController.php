@@ -19,10 +19,8 @@ class StockController extends Controller
             $data->where('nama', 'like', '%' . $request->search . '%');
         }
 
-        $data = $data->get()
-            ->sortByDesc(function ($product) {
-                return $product->variants->count();
-            });
+        $data = $data->orderBy('id', 'desc')
+            ->paginate(20);
 
         $supplier = Supplier::all();
 
