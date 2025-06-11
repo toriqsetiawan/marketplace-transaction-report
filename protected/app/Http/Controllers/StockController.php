@@ -19,6 +19,12 @@ class StockController extends Controller
             $data->where('nama', 'like', '%' . $request->search . '%');
         }
 
+        if ($request->has('user')) {
+            $data->whereHas('supplier', function ($q) use ($request) {
+                $q->where('id', $request->user);
+            });
+        }
+
         $data = $data->get()
             ->sortByDesc(function ($product) {
                 return $product->variants->count();

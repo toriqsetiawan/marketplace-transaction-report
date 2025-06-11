@@ -54,8 +54,8 @@ desired effect
 
 </div><!-- ./wrapper -->
 
+@include('layouts.partials.scripts')
 @section('scripts')
-    @include('layouts.partials.scripts')
 @show
 
 @livewireScripts

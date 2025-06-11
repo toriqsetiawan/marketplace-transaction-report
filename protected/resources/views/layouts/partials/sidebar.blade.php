@@ -98,6 +98,11 @@
                             <i class='fa fa-print'></i> <span>Report</span>
                         </a>
                     </li>
+                    <li class="{{ activateWhenRoute('report-grafik*') }}">
+                        <a href="{{ route('report-grafik.index') }}">
+                            <i class='fa fa-print'></i> <span>Report Grafik</span>
+                        </a>
+                    </li>
                 @endif
             @endif
         </ul><!-- /.sidebar-menu -->

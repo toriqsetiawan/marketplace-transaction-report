@@ -12,6 +12,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportPenjualanController;
+use App\Http\Controllers\ReportGrafikController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserController;
@@ -52,6 +53,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'administrator'], function () {
         Route::resource('ads-report', AdwordsReportController::class);
         Route::resource('report-penjualan', ReportPenjualanController::class);
+        Route::resource('report-grafik', ReportGrafikController::class);
     });
 
     Route::resource('pdf-parse', PdfParseController::class);

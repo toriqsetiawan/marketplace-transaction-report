@@ -23,7 +23,21 @@
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header" style="margin-bottom: 2rem">
-                    <div class="box-tools">
+                    <div class="box-tools" style="display: flex;align-items: center;gap: 16px;">
+                        <div class="" x-data="{
+                            user: '{{ request('user') }}',
+                            search() {
+                                window.location.href = `{{ route('stock.index') }}?user=${this.user}`
+                            }
+                        }">
+                            <select name="user" id="user" class="form-control" x-model="user" @change="search()">
+                                <option value="">All Suppliers</option>
+                                @foreach ($supplier as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ request('supplier') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <form action="?" method="get">
                             <div class="input-group" style="width: 200px;">
                                 <input type="text" name="search" class="form-control input-sm pull-right"
@@ -66,7 +80,12 @@
                                 $totalStock = $product->variants->sum('stock');
                                 $totalPrice = $totalStock * $pricePerPcs;
 
-                                if (strtoupper($product->nama) == 'PACKING' || strtoupper($product->nama == 'INSOLE')) {
+                                if (
+                                    strtoupper($product->nama) == 'PACKING' ||
+                                    strtoupper($product->nama) == 'INSOLE' ||
+                                    Str::contains(strtoupper($product->nama), 'SOLE')
+                                ) {
+                                    // Do nothing
                                 } else {
                                     // Add to supplier summary
                                     $supplierName = $product->supplier->name ?? 'Unknown Supplier';
@@ -86,6 +105,7 @@
                                 <h4 class="text-center text-bold"
                                     style="background-color: #99cc99; padding: 1rem; margin-bottom: 0">
                                     {{ strtoupper($product->nama) }}</h4>
+                                <p style="background-color: #99cc99; padding: 1rem; margin-bottom: 0">Supplier : <span class="text-bold">{{ $product->supplier?->name }}</span></p>
 
                                 <table class="table table-bordered">
                                     <thead>
